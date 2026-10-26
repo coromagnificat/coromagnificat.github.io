@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Misa Dominical - Parroquia NS de Guadalupe</title>
+    <style>
+        :root {
+            --bg-pastel: #f5f7f8;
+            --text-size: 16px;
+            --primary-color: #2c3e50;
+            --accent-color: #7f8c8d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-pastel);
+            color: var(--primary-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Barra Superior de Controles con Símbolos */
+        .top-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            min-height: 50px;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: bold;
+            width: 40px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-action:active {
+            background: #cbd5e1;
+        }
+
+        /* Contenedor de Pantallas */
+        #container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 24px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Iconos de Fondo en Duotono (7% Opacidad) */
+        .bg-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70vw;
+            height: 70vw;
+            max-width: 260px;
+            opacity: 0.07;
+            pointer-events: none;
+            z-index: 0;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            margin: 0 auto;
+            max-width: 450px;
+            font-size: var(--text-size);
+            text-align: center;
+        }
+
+        /* Portada Estilo Vertical */
+        .portada {
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(180deg, #f4f6f9 0%, #e9edf4 100%);
+        }
+
+        .portada h1 {
+            font-size: 1.8em;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .portada h2 {
+            font-size: 1.1em;
+            color: #475569;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .portada p {
+            font-size: 0.85em;
+            color: #64748b;
+        }
+
+        /* Índice */
+        .index-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 4px;
+        }
+
+        .index-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .index-item {
+            padding: 11px 14px;
+            margin-bottom: 8px;
+            background: #ffffff;
+            border-radius: 8px;
+            border-left: 4px solid #2980b9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        .index-item:active {
+            background: #f1f5f9;
+        }
+
+        .index-name { font-weight: 600; font-size: 0.95em; }
+        .index-tone { font-weight: bold; color: var(--accent-color); font-size: 0.9em; }
+
+        /* Estructura de Cantos */
+        .song-header {
+            margin-bottom: 16px;
+            border-bottom: 1px dashed #cbd5e1;
+            padding-bottom: 8px;
+        }
+
+        .song-title {
+            font-size: 1.25em;
+            color: #8b0000;
+            font-weight: bold;
+        }
+
+        .song-meta {
+            font-size: 0.85em;
+            color: #64748b;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .stanza {
+            margin-bottom: 14px;
+            line-height: 1.5;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+
+        .repeated-line {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        /* Barra Inferior de Navegación */
+        .bottom-bar {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 24px;
+            min-height: 56px;
+            z-index: 10;
+        }
+
+        .btn-nav {
+            background: #2c3e50;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-nav:active {
+            background: #2980b9;
+        }
+
+        .page-num {
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        /* SVGs Duotono Incorporados */
+        .icon-church { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231e3a8a"><path d="M12 2L2 22h20L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/></svg>'); }
+        .icon-entrada { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232980b9"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>'); }
+        .icon-piedad { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e74c3c"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>'); }
+        .icon-gloria { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23f1c40f"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 15.8c-.45-.76-.7-1.65-.7-2.8 0-2.76 2.24-5 5-5zm6.76 1.74L17.3 9.2c.44.76.7 1.65.7 2.8 0 2.76-2.24 5-5 5v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg>'); }
+        .icon-lecturas { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%238e44ad"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.1-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.35-.75-2.25-1z"/></svg>'); }
+        .icon-ofertorio { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d35400"><path d="M12 2c-5.33 4.55-8 8.41-8 11.58C4 17.99 7.58 21 12 21s8-3.01 8-7.42c0-3.17-2.67-7.03-8-11.58z"/></svg>'); }
+        .icon-santo { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2327ae60"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>'); }
+        .icon-cordero { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2316a085"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>'); }
+        .icon-comunion { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23c0392b"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'); }
+    </style>
+</head>
+<body onclick="launchAutoFullscreen()">
+
+    <!-- Panel de Gestión Superior -->
+    <div class="top-bar">
+        <div class="btn-group">
+            <button class="btn-action" onclick="adjustTextSize(1); event.stopPropagation();">+</button>
+            <button class="btn-action" onclick="adjustTextSize(-1); event.stopPropagation();">-</button>
+        </div>
+        <div class="btn-group">
+            <button class="btn-action" onclick="toggleFullscreen(); event.stopPropagation();">⛶</button>
+            <button class="btn-action" onclick="goToIndexPage(); event.stopPropagation();">☰</button>
+        </div>
+    </div>
+
+    <!-- Contenedor Único de Diapositivas -->
+    <div id="container">
+
+        <!-- PÁGINA 0: Portada Base -->
+        <div class="slide active portada" id="p0">
+            <div class="bg-icon icon-church"></div>
+            <div class="slide-content">
+                <h1>Misa Dominical</h1>
+                <h2>Esquema de Cantos</h2>
+                <p>Parroquia Nuestra Señora de Guadalupe</p>
+                <p>Campo Claro, Mérida</p>
+            </div>
+        </div>
+
+        <!-- PÁGINA 1: Índice Litúrgico Dinámico -->
+        <div class="slide" id="p1">
+            <div class="bg-icon icon-church"></div>
+            <div class="slide-content">
+                <div class="index-title">Esquema Litúrgico</div>
+                <ul class="index-list" id="index-render-zone"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Barra Inferior de Avance/Retroceso Simbólico -->
+    <div class="bottom-bar">
+        <button class="btn-nav" onclick="navigateSlide(-1); event.stopPropagation();">‹</button>
+        <div class="page-num" id="page-indicator">1 / 2</div>
+        <button class="btn-nav" onclick="navigateSlide(1); event.stopPropagation();">›</button>
+    </div>
+
+    <script>
+        // Transcripción y mapeo litúrgico absoluto respetando las tres primeras palabras
+        const cancioneroData = [
+            {
+                title: "Den al señor",
+                moment: "Entrada",
+                tone: "Sol",
+                icon: "icon-entrada",
+                pages: [
+                    [
+                        "Den al señor sus alabanzas, denle poder, honor y\nGloria, a una voz canten un himno al señor",
+                        "Den al señor...",
+                        "En siete días creo Dios al mundo, adan pecó y perdio el cielo\nJesus vino para redimirnos, murió en la cruz y nos salvo",
+                        "Den al señor..."
+                    ],
+                    [
+                        "Den al señor...\n\nJesus dijo a Pedro ven te llamo, el camino es duro más iré contigo\nPedro respondió soy un pecador, tiro su red y hacia el Señor corrió",
+                        "Den al señor...",
+                        "Den al señor..."
+                    ]
+                ]
+            },
+            {
+                title: "Ten piedad",
+                moment: "Penitencial",
+                tone: "Re",
+                icon: "icon-piedad",
+                pages: [
+                    [
+                        "Señor ten piedad de nosotros, Señor ten piedad",
+                        "Señor ten piedad...",
+                        "Cristo, Cristo, Cristo ten piedad",
+                        "Cristo, Cristo, Cristo...",
+                        "Señor ten piedad de nosotros, Señor ten piedad",
+                        "Señor ten piedad..."
+                    ]
+                ]
+            },
+            {
+                title: "Gloria en las alturas",
+                moment: "Gloria",
+                tone: "Do",
+                icon: "icon-gloria",
+                pages: [
+                    [
+                        "Gloria en las alturas\ny en la tierra paz\na las almas puras\nde buena voluntad",
+                        "Hoy te bendecimos\nSeñor te adoramos\nPor tu inmensa gloria\nMil gracias te damos\nAl Rey de los Cielos\nDios Todopoderoso\nY a su único hijo\nCordero Glorioso",
+                        "Tú que quitas el pecado\ndel mundo\nTen piedad de nosotros\nY escuchas las súplicas\nTú que estás sentado\na la derecha del Padre\nTen piedad de nosotros\nPiedad de nosotros"
+                    ],
+                    [
+                        "Tú solo eres Santo\nSolo Tú altísimo\ncon el Espíritu Santo\nSeñor Jesucristo\nEl Cielo y la Tierra\nPoblados de su gloria\nTe alaban y te bendicen\nSeñor de la gloria"
+                    ]
+                ]
+            },
+            {
+                title: "Canta hermano",
+                moment: "Entre lecturas",
+                tone: "Re",
+                icon: "icon-lecturas",
+                pages: [
+                    [
+                        "Canta hermano, eleva tu voz,\nel mundo necesita un canto de amor.\nVen conmigo, vamos a sembrar\nla palabra de Dios y a mi pueblo llegar.",
+                        "Canta hermano, eleva..."
+                    ]
+                ]
+            },
+            {
+                title: "Espíritu Santo derrámate",
+                moment: "Ofertorio",
+                tone: "Re",
+                icon: "icon-ofertorio",
+                pages: [
+                    [
+                        "Espíritu Santo, derrámate sobre estas ofrendas que hoy te presentamos para que se transformen en el cuerpo y sangre de nuestro Señor.",
+                        "Espíritu Santo, derrámate...",
+                        "Y podamos comer tu cuerpo\ny podamos beber tu sangre,\ny podamos comer tu cuerpo\nven el Espíritu Santo.",
+                        "Y podamos comer tu cuerpo..."
+                    ]
+                ]
+            },
+            {
+                title: "Santo flamenco",
+                moment: "Santo",
+                tone: "Mi-",
+                icon: "icon-santo",
+                pages: [
+                    [
+                        "Santo es el Señor, mi Dios\ndigno de alabanza\nA El el poder, el honor y la gloria",
+                        "Ohsanna, Ohsanna, Ohsanna\nOh Señor",
+                        "Bendito el que viene\nen nombre del Señor\ncon todos tus santos\ncantamos para ti",
+                        "Ohsanna, Ohsanna, Ohsanna..."
+                    ]
+                ]
+            },
+            {
+                title: "Cordero Flamenco",
+                moment: "Cordero",
+                tone: "La-",
+                icon: "icon-cordero",
+                pages: [
+                    [
+                        "Cordero de Dios que quitas el pecado del mundo",
+                        "Cordero de Dios...",
+                        "Ten piedad, ten piedad de nosotros",
+                        "Ten piedad, ten piedad... (bis)",
+                        "Cordero de Dios que quitas el pecado del mundo",
+                        "Cordero de Dios...",
+                        "Danos la paz, danos la paz.",
+                        "Danos, danos, danos la paz",
+                        "Danos, danos, danos..."
+                    ]
+                ]
+            },
+            {
+                title: "Jesús amigo",
+                moment: "Comunión",
+                tone: "La-",
+                icon: "icon-comunion",
+                pages: [
+                    [
+                        "Hoy te quiero contar, Jesús amigo que contigo soy feliz\nSi tengo tu amistad lo tengo todo pues estas dentro de mí.\nDespués de comulgar me haces como tú, me llenas de tu paz\nEn cada pedacito de este pan, completo estás y así te das.\nEstas ahí por mí por que conoces que sin ti pequeño soy\nDe ahora en adelante nada nos separará ya lo verás.",
+                        "TE ESCONDES EN EL PAN Y AUNQUE NO TER PUEDO VER\nTE PUEDO ACOMPAÑAR ES MI LUGAR PREFERIDO\nHOY QUIERO COMULGAR ABRIRTE MI CORAZÓN\nY ASI DE PAR EN PAR ERES MI MEJOR AMIGO.",
+                        "Dos mil años atrás a tus amigos invitaste a cenar\nY ahí les prometiste que con ellos por siempre ibas a estar.\nY ahora cada vez que el sacerdote eleva el pan en el altar,\nMe pongo de rodillas porque sé, que en esa hostia tú estás."
+                    ],
+                    [
+                        "TE ESCONDES EN EL PAN ....",
+                        "ME VUELVES A SALVAR, COMO LO HICISTE EN LA CRUZ,\nEN CADA MISA TÚ, REPITES TU SACRIFICIO.",
+                        "HOY QUIERO COMULGAR ABRIRTE MI CORAZÓN\nY ASI DE PAR EN PAR ERES MI MEJOR AMIGO, JESUS"
+                    ]
+                ]
+            },
+            {
+                title: "Mi Dios y mi todo",
+                moment: "Salida",
+                tone: "Do",
+                icon: "icon-church",
+                pages: [
+                    [
+                        "Solo tú, solo  tú, solo  tú\nSolo tú, solo  tú, solo  tú",
+                        "Eres bueno, eres  bueno, mi  Dios\nEres bueno, eres  bueno, mi  Dios",
+                        "Solo tú, solo  tú, solo  tú\nEres bueno, eres  bueno, mi  Dios",
+                        "Solo Tú eres bueno (3v)\n mi Dios (bis)",
+                        "Bueno solo  eres tú,\nbueno solo  eres tú,\nPorque bueno es,\neres mi todo es,\n bueno solo eres  tú"
+                    ],
+                    [
+                        "Solo a  ti la alabanza,\na  ti el honor,\na  ti la acción de  gracias\nA ti devolvamos todo lo robado, porque  todo el bien es  tuyo",
+                        "Solo Tú eres bueno (3v)\n mi Dios (bis)",
+                        "Bueno solo  eres tú,\nbueno solo  eres tú,\nPorque bueno es,\neres mi todo es,\n bueno solo eres  tú"
+                    ]
+                ]
+            }
+        ];
+
+        let totalSlides = 2;
+        const mapNavigationIndexes = [];
+
+        const containerNode = document.getElementById('container');
+        const indexRenderZone = document.getElementById('index-render-zone');
+
+        // Generador Dinámico de Estructuras
+        cancioneroData.forEach((canto, indexCanto) => {
+            mapNavigationIndexes.push(totalSlides);
+
+            // Inyección al listado del Índice base
+            const li = document.createElement('li');
+            li.className = 'index-item';
+            li.onclick = (e) => { e.stopPropagation(); targetSlide(mapNavigationIndexes[indexCanto]); };
+            li.innerHTML = `<span class="index-name">${canto.moment}: ${canto.title}</span><span class="index-tone">${canto.tone}</span>`;
+            indexRenderZone.appendChild(li);
+
+            // División de pantallas por Cantos
+            canto.pages.forEach((pageBlock, indexPage) => {
+                const actualId = totalSlides;
+                const div = document.createElement('div');
+                div.className = 'slide';
+                div.id = `p${actualId}`;
+
+                let rawHtml = `
+                    <div class="bg-icon ${canto.icon}"></div>
+                    <div class="slide-content">
+                        <div class="song-header">
+                            <div class="song-title">${canto.title} ${canto.pages.length > 1 ? `(${indexPage + 1}/${canto.pages.length})` : ''}</div>
+                            <div class="song-meta">${canto.moment} • Tono: ${canto.tone}</div>
+                        </div>
+                `;
+
+                pageBlock.forEach(textBlock => {
+                    const isCompression = textBlock.includes('...');
+                    rawHtml += `<div class="stanza ${isCompression ? 'repeated-line' : ''}">${textBlock}</div>`;
+                });
+
+                rawHtml += `</div>`;
+                div.innerHTML = rawHtml;
+                containerNode.appendChild(div);
+                totalSlides++;
+            });
+        });
+
+        let activeIndex = 0;
+
+        function renderState() {
+            document.querySelectorAll('.slide').forEach((el, index) => {
+                el.classList.toggle('active', index === activeIndex);
+            });
+            document.getElementById('page-indicator').innerText = `${activeIndex + 1} / ${totalSlides}`;
+
+            const activeContainer = document.querySelector('.slide.active');
+            if (activeContainer) activeContainer.scrollTop = 0;
+        }
+
+        function navigateSlide(offset) {
+            activeIndex = (activeIndex + offset + totalSlides) % totalSlides;
+            renderState();
+        }
+
+        function targetSlide(index) {
+            activeIndex = index;
+            renderState();
+        }
+
+        function goToIndexPage() {
+            activeIndex = 1;
+            renderState();
+        }
+
+        function adjustTextSize(multiplier) {
+            const rootStyle = document.documentElement;
+            const currentSize = parseFloat(window.getComputedStyle(rootStyle).getPropertyValue('--text-size'));
+            rootStyle.style.setProperty('--text-size', (currentSize + multiplier) + 'px');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function launchAutoFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+            document.body.removeAttribute('onclick');
+        }
+    </script>
+</body>
+</html>

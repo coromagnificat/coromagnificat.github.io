@@ -9,24 +9,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --base-lyrics-size: 22px; }
+        :root { --base-lyrics-size: 15px; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #0f172a; font-family: 'Quicksand', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; overflow: hidden; color: #1e293b; }
+        body { background-color: #0f172a; font-family: 'Quicksand', sans-serif; min-height: 100vh; min-height: 100dvh; overflow: hidden; color: #1e293b; margin: 0; }
         .app-container { width: 100vw; height: 100vh; height: 100dvh; position: relative; background-color: #fff; overflow: hidden; transition: all 0.3s ease; }
-        .app-container.windowed { width: 405px; height: 720px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .app-container.windowed { width: min(405px, 100vw); height: min(720px, 100vh); height: min(720px, 100dvh); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 75px 24px 90px 24px; text-align: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1; overflow: hidden; }
         .slide-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: 0 auto; width: 100%; overflow: hidden; }
+        .slide:not(:first-child) .slide-content { max-width: 80%; }
         .slide.active { opacity: 1; visibility: visible; z-index: 2; }
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding: 0 4px; display: flex; flex-direction: column; max-height: 100%; }
         .bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.03; z-index: 0; pointer-events: none; }
         .bg-watermark i { font-size: 450px; color: #000; }
         .bg-cream { background-color: #fffaf0; } .bg-mint { background-color: #f4fff8; } .bg-sky { background-color: #f0f7ff; } .bg-rose { background-color: #fff5f7; } .bg-lavender { background-color: #f9f8ff; } .bg-peach { background-color: #fff5ea; }
         h1 { font-family: 'Poppins', sans-serif; font-size: 28px; color: #0f172a; margin-top: 10px; }
         h2.song-title { font-family: 'Poppins', sans-serif; font-size: 22px; color: #334155; text-transform: uppercase; flex-shrink: 0; margin-top: 10px; }
         .tone-badge { align-self: center; background-color: rgba(0, 0, 0, 0.06); padding: 4px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; color: #475569; margin: 6px 0 12px 0; flex-shrink: 0; }
-        .lyrics { font-size: var(--base-lyrics-size); line-height: 1.45; font-weight: 700; white-space: pre-wrap; color: #1e293b; margin: auto 0; transition: font-size 0.15s ease; overflow-y: auto; padding: 0 4px; flex-grow: 1; max-height: 100%; text-align: left; }
+        .moment-label { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 10px; margin-bottom: 2px; flex-shrink: 0; }
+        .lyrics { font-size: var(--base-lyrics-size); line-height: 1.45; font-weight: 700; white-space: pre-line; color: #1e293b; margin: auto 0; transition: font-size 0.15s ease; padding: 0 4px; text-align: left; }
         .repeat { color: #94a3b8; font-style: italic; font-weight: bold; font-size: 0.9em; display: block; margin-top: 2px; }
         .footer { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; padding-top: 8px; flex-shrink: 0; text-align: center; }
-        .index-container { overflow-y: auto; flex-grow: 1; width: 100%; padding-right: 5px; margin-bottom: 5px; }
+        .index-container { width: 100%; padding-right: 5px; margin-bottom: 5px; }
         .index-list { list-style: none; width: 100%; text-align: left; }
         .index-list li { padding: 12px 8px; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: calc(var(--base-lyrics-size) * 0.7); font-weight: 700; color: #334155; }
         .index-list li:hover { background-color: rgba(0,0,0,0.03); }
@@ -34,11 +37,9 @@
         ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
         .nav-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 24px env(safe-area-inset-bottom, 12px) 24px; background: linear-gradient(to top, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, transparent 100%); pointer-events: none; }
         .nav-btn { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.08); width: 48px; height: 48px; border-radius: 50px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); cursor: pointer; display: flex; justify-content: center; align-items: center; color: #475569; font-size: 18px; pointer-events: auto; }
-        .nav-btn i { color: #475569; display: inline-block; visibility: visible; }
         .top-actions { position: absolute; top: 15px; left: 0; width: 100%; padding: 0 20px; z-index: 101; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
         .action-group { display: flex; gap: 8px; pointer-events: auto; }
         .action-btn { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); backdrop-filter: blur(4px); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; color: #475569; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        .action-btn i { color: #475569; display: inline-block; visibility: visible; }
     </style>
 </head>
 <body>
@@ -46,12 +47,12 @@
 <div class="app-container" id="appFrame">
     <div class="top-actions">
         <div class="action-group">
-            <button class="action-btn" onclick="changeFontSize(-2)" title="Reducir Letra"><i class="fa-solid fa-minus"></i></button>
-            <button class="action-btn" onclick="changeFontSize(2)" title="Aumentar Letra"><i class="fa-solid fa-plus"></i></button>
+            <button class="action-btn" onclick="changeFontSize(-1)" title="Reducir Letra"><i class="fa-solid fa-minus"></i></button>
+            <button class="action-btn" onclick="changeFontSize(1)" title="Aumentar Letra"><i class="fa-solid fa-plus"></i></button>
         </div>
         <div class="action-group">
             <button class="action-btn" onclick="goToSlide(1)" title="Ir al Índice"><i class="fa-solid fa-list"></i></button>
-            <button class="action-btn" onclick="toggleMaximize()" id="maxBtn" title="Vista Completa"><i class="fa-solid fa-compress"></i></button>
+            <button class="action-btn" onclick="toggleMaximize()" id="maxBtn" title="Pantalla Completa"><i class="fa-solid fa-expand"></i></button>
         </div>
     </div>
 
@@ -60,8 +61,8 @@
         <div class="bg-watermark"><i class="fa-solid fa-church"></i></div>
         <div class="slide-content" style="justify-content: center;">
             <h1>Misa domingo 4.10.2026</h1>
-            <p style="font-size: 16px; color: #64748b; margin-top: 5px; font-weight: 700;">4.10.2026</p>
-            <div class="footer" style="margin-top: 60px;">Desliza o usa botones</div>
+            <p style="font-size: 16px; color: #64748b; margin-top: 5px; font-weight: 700;">Parroquia NS de Guadalupe</p>
+            <div class="footer" style="margin-top: 60px;">Usa los botones</div>
         </div>
     </div>
 
@@ -69,10 +70,11 @@
     <div class="slide bg-lavender">
         <div class="bg-watermark"><i class="fa-solid fa-book"></i></div>
         <div class="slide-content">
-            <h2 class="song-title" style="margin-bottom: 10px;">Esquema / Índice</h2>
-            <div class="index-container">
-                <ul class="index-list">
-<li onclick="goToSlide(2)">1. Entrada: Aquí estamos Señor <span class="tone">Re</span></li>
+            <div class="scroll-area">
+                <h2 class="song-title" style="margin-bottom: 10px;">Esquema</h2>
+                <div class="index-container">
+                    <ul class="index-list">
+                        <li onclick="goToSlide(2)">1. Entrada: Aquí estamos Señor <span class="tone">Re</span></li>
 <li onclick="goToSlide(3)">2. Penitencial: Señor, Señor ten piedad de nosotros <span class="tone">Do</span></li>
 <li onclick="goToSlide(4)">3. Gloria: Galindo <span class="tone">Do</span></li>
 <li onclick="goToSlide(5)">4. Lecturas: Aleluya (Danos oh Señor) <span class="tone">Mi</span></li>
@@ -80,23 +82,26 @@
 <li onclick="goToSlide(7)">6. Santo: Dumbi-Dumbi <span class="tone">Re</span></li>
 <li onclick="goToSlide(8)">7. paz: Mi paz os dejo <span class="tone">Mi</span></li>
 <li onclick="goToSlide(9)">8. Cordero: Cordero <span class="tone">Mi</span></li>
-<li onclick="goToSlide(10)">9. Comunión: Hazme un instrumento de tu paz <span class="tone">Do</span></li>
-<li onclick="goToSlide(11)">10. Comunión: Tu el único Rey <span class="tone">Do</span></li>
-<li onclick="goToSlide(12)">11. Comunión: Alma de Cristo <span class="tone">La-</span></li>
-<li onclick="goToSlide(13)">12. Salida: Hermano Francisco Alegre <span class="tone">Do</span></li>
-                </ul>
+<li onclick="goToSlide(10)">9. - Hazme un instrumento de tu paz: Comunión: <span class="tone">Do</span></li>
+<li onclick="goToSlide(11)">10. Salida: Hermano Francisco Alegre <span class="tone">Do</span></li>
+
+                    </ul>
+                </div>
             </div>
             <div class="footer">Presiona para ir directo al canto</div>
         </div>
     </div>
 
     <!-- Bloques de Diapositivas -->
+    
     <div class="slide bg-sky">
         <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Entrada</h2>
-            <div class="tone-badge">Tono: Re</div>
-            <div class="lyrics">Aquí estamos Señor
+            <div class="scroll-area">
+                <div class="moment-label">Aquí estamos Señor</div>
+                <h2 class="song-title">Entrada</h2>
+                <div class="tone-badge">Re</div>
+                <div class="lyrics">Aquí estamos Señor
 En Tu casa otra vez
 Que alegría volverte a encontrar
 Vamos a compartir
@@ -117,15 +122,17 @@ una alianza que viene de Dios
 En el nombre de Dios vamos a celebrar el misterio
 de la Salvación El Sr nos dará su palabra y su pan.
 Es la fiesta del Pueblo de Dios</div>
-            <div class="footer">Aquí estamos Señor - Pág. 1</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-rose">
         <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Penitencial</h2>
-            <div class="tone-badge">Tono: Do</div>
-            <div class="lyrics">Señor, Señor ten piedad de nosotros
+            <div class="scroll-area">
+                <div class="moment-label">Señor, Señor ten piedad de nosotros</div>
+                <h2 class="song-title">Penitencial</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Señor, Señor ten piedad de nosotros
 Señor, Señor ten piedad de nosotros
 
 Cristo, ten piedad. Ten piedad de nosotros
@@ -133,16 +140,18 @@ Cristo, ten piedad. Ten piedad de nosotros
 
 Señor, Señor ten piedad de nosotros
 Señor, Señor ten piedad de nosotros</div>
-            <div class="footer">Señor, Señor ten piedad de nosotros - Pág. 2</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-mint">
         <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Gloria</h2>
-            <div class="tone-badge">Tono: Do</div>
-            <div class="lyrics">Gloria a Dios en el Cielo y en la tierra paz
-a los hombres que ama el Señor <span class="repeat">(2)</span>
+            <div class="scroll-area">
+                <div class="moment-label">Galindo</div>
+                <h2 class="song-title">Gloria</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Gloria a Dios en el Cielo y en la tierra paz
+a los hombres que ama el Señor (2)
 
 | I |
 
@@ -173,15 +182,17 @@ solo Tú, OH Señor
 solo tu altísimo Jesucristo
 con el Espíritu Santo
 en la Gloria de Dios Padre</div>
-            <div class="footer">Galindo - Pág. 3</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-peach">
         <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Lecturas</h2>
-            <div class="tone-badge">Tono: Mi</div>
-            <div class="lyrics">Aleluyaaa, aleluyaaa
+            <div class="scroll-area">
+                <div class="moment-label">Aleluya (Danos oh Señor)</div>
+                <h2 class="song-title">Lecturas</h2>
+                <div class="tone-badge">Mi</div>
+                <div class="lyrics">Aleluyaaa, aleluyaaa
 Aleluyaaa, aleluyaaa
 
 Danos OH Señor,
@@ -191,34 +202,38 @@ Tu palabra que es amor
 
 Aleluyaaa, aleluyaaa
 Aleluyaaa, aleluyaaa</div>
-            <div class="footer">Aleluya (Danos oh Señor) - Pág. 4</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-lavender">
         <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Ofrendas</h2>
-            <div class="tone-badge">Tono: Do</div>
-            <div class="lyrics">Este Pan y Vino, Señor se transformarán
+            <div class="scroll-area">
+                <div class="moment-label">Este Pan y vino, Señor</div>
+                <h2 class="song-title">Ofrendas</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Este Pan y Vino, Señor se transformarán
 en Tu cuerpo y Sangre, Señor, en nuestro manjar
 
 Gracias al Sol y al labrador, en el altar florecen hoy
 las espigas, los racimos que presentamos a Dios.
 
-Lo q&#x27; sembré con mi dolor, Lo q&#x27; pedí en mi oración
-hoy son frutos, son ofrendas q&#x27; presentamos a Dios.
+Lo q' sembré con mi dolor, Lo q' pedí en mi oración
+hoy son frutos, son ofrendas q' presentamos a Dios.
 
 Este pan y vino, Señor, se transformarán en tu cuerpo y Sangre, Señor
 en nuestro manjar, en nuestro manjar, en nuestro manjar.</div>
-            <div class="footer">Este Pan y vino, Señor - Pág. 5</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-cream">
         <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Santo</h2>
-            <div class="tone-badge">Tono: Re</div>
-            <div class="lyrics">Santo es el Señor
+            <div class="scroll-area">
+                <div class="moment-label">Dumbi-Dumbi</div>
+                <h2 class="song-title">Santo</h2>
+                <div class="tone-badge">Re</div>
+                <div class="lyrics">Santo es el Señor
 Dios del Universo
 Santo es el Señor
 Santo es el Señor
@@ -233,15 +248,17 @@ Hossanna en el cielo
 Santo es el Señor (Santo es el Señor)
 Santo es el Señor (Santo es el Señor)
 Santo es el Señor</div>
-            <div class="footer">Dumbi-Dumbi - Pág. 6</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-sky">
         <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">paz</h2>
-            <div class="tone-badge">Tono: Mi</div>
-            <div class="lyrics">Mi paz os dejo
+            <div class="scroll-area">
+                <div class="moment-label">Mi paz os dejo</div>
+                <h2 class="song-title">paz</h2>
+                <div class="tone-badge">Mi</div>
+                <div class="lyrics">Mi paz os dejo
 Mi paz os doy
 No como el mundo la da
 la doy yo
@@ -254,15 +271,17 @@ recíbe el amor
 de parte de Cristo el Señor (bis)
 
 Junto con la salvación</div>
-            <div class="footer">Mi paz os dejo - Pág. 7</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-rose">
         <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Cordero</h2>
-            <div class="tone-badge">Tono: Mi</div>
-            <div class="lyrics">Cordero de Dios que quitas el pecado del mundo
+            <div class="scroll-area">
+                <div class="moment-label">Cordero</div>
+                <h2 class="song-title">Cordero</h2>
+                <div class="tone-badge">Mi</div>
+                <div class="lyrics">Cordero de Dios que quitas el pecado del mundo
 Ten piedad
 Cordero de Dios que quitas el pecado del mundo
 Ten piedad
@@ -270,15 +289,17 @@ Cordero de Dios que quitas el pecado del mundo
 Danos la paz (Danos la paz )
 Danos la paz (Danos la paz )
 Danos la paz</div>
-            <div class="footer">Cordero - Pág. 8</div>
+            </div>
         </div>
     </div>
     <div class="slide bg-mint">
         <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Comunión</h2>
-            <div class="tone-badge">Tono: Do</div>
-            <div class="lyrics">Hazme un instrumento de tu paz
+            <div class="scroll-area">
+                <div class="moment-label">Comunión:</div>
+                <h2 class="song-title">- Hazme un instrumento de tu paz</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Hazme un instrumento de tu paz
 Donde haya odio, lleve yo tu amor
 Donde haya injuria, tu perdón, Señor
 Donde haya duda,  fe en Ti
@@ -309,16 +330,12 @@ Ser entendido como entender
 Ser amado como yo amar
 
 Hazme un instrumento de tu paz
-Hazme un instrumento de tu paz</div>
-            <div class="footer">Hazme un instrumento de tu paz - Pág. 9</div>
-        </div>
-    </div>
-    <div class="slide bg-peach">
-        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
-        <div class="slide-content">
-            <h2 class="song-title">Comunión</h2>
-            <div class="tone-badge">Tono: Do</div>
-            <div class="lyrics">Tú él único Rey,que tiene que reinar
+Hazme un instrumento de tu paz
+
+<span class="repeat">Tu el único Rey</span>
+Do
+
+Tú él único Rey,que tiene que reinar
 El único Señor al que voy a alabar.
 Hoy levanto el corazón al que lo conquistó
 Simplemente porque tú eres Dios
@@ -331,21 +348,16 @@ Y reconocer que Tú eres Dios.
 Que alabarte a tí Señor, sea siempre lo primero
 Fijo mi mirada en el cielo.
 
- [Tú el único Rey...]
+<span class="repeat">Tú el único Rey...</span>
 
 Y a ti toda alabanza Todo el poder
 y el honor Toda la gloria al Señor.(x4)
 
- [Tú el único Rey <span class="repeat">(2veces)</span>]</div>
-            <div class="footer">Tu el único Rey - Pág. 10</div>
-        </div>
-    </div>
-    <div class="slide bg-lavender">
-        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
-        <div class="slide-content">
-            <h2 class="song-title">Comunión</h2>
-            <div class="tone-badge">Tono: La-</div>
-            <div class="lyrics">Alma de Cristo Santifícame
+<span class="repeat">Tú el único Rey (2veces)</span>
+
+<span class="repeat">Alma de Cristo (La-)</span>
+
+Alma de Cristo Santifícame
 Cuerpo de Cristo Sálvame
 Sangre de Cristo Embriágame
 Agua del Costado de Cristo Lávame
@@ -362,16 +374,18 @@ Para con tus santos Te alaben por los
 siglos de los siglos
 Amén
 
- [y del enemigo ...]</div>
-            <div class="footer">Alma de Cristo - Pág. 11</div>
+<span class="repeat">y del enemigo ...</span></div>
+            </div>
         </div>
     </div>
-    <div class="slide bg-cream">
-        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
         <div class="slide-content">
-            <h2 class="song-title">Salida</h2>
-            <div class="tone-badge">Tono: Do</div>
-            <div class="lyrics">I
+            <div class="scroll-area">
+                <div class="moment-label">Hermano Francisco Alegre</div>
+                <h2 class="song-title">Salida</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">I
 Un amigo que ha vivido entre las flores
 un amigo que ha llamado hermano al sol
 
@@ -381,87 +395,89 @@ un hermano como pocos un amor.
 
 
 Es San Francisco, es nuestro guía,
-es el que canta a la hermana creación <span class="repeat">(Bis)</span></div>
-            <div class="footer">Hermano Francisco Alegre - Pág. 12</div>
+es el que canta a la hermana creación (Bis)</div>
+            </div>
         </div>
     </div>
 
     <div class="nav-overlay">
         <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
-        <div id="pageIndicator" style="font-size: 14px; font-weight: 700; color: #64748b;">1 / 14</div>
+        <div id="pageIndicator" style="font-size: 14px; font-weight: 700; color: #64748b;">1 / 12</div>
         <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 </div>
 
 <script>
-    let currentSlide = 0;
-    let currentFontSize = 22;
-    const slides = document.querySelectorAll('.slide');
-    const pageIndicator = document.getElementById('pageIndicator');
-    const appFrame = document.getElementById('appFrame');
-    const maxBtn = document.getElementById('maxBtn');
+            let currentSlide = 0;
+            let currentFontSize = 15;
+            const slides = document.querySelectorAll('.slide');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const appFrame = document.getElementById('appFrame');
+            const maxBtn = document.getElementById('maxBtn');
 
-    function updateSlideVisibility() {
-        slides.forEach((slide, index) => {
-            if(index === currentSlide) {
-                slide.classList.add('active');
-                slide.scrollTop = 0;
-                const l = slide.querySelector('.lyrics'); if(l) l.scrollTop = 0;
-            } else {
-                slide.classList.remove('active');
-            }
-        });
-        pageIndicator.innerText = (currentSlide + 1) + ' / ' + slides.length;
-    }
-
-    function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlideVisibility(); } }
-    function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlideVisibility(); } }
-    function goToSlide(idx) { if (idx >= 0 && idx < slides.length) { currentSlide = idx; updateSlideVisibility(); } }
-
-    function changeFontSize(amount) {
-        let n = currentFontSize + amount;
-        if (n >= 14 && n <= 36) { currentFontSize = n; document.documentElement.style.setProperty('--base-lyrics-size', n + 'px'); }
-    }
-
-    function toggleMaximize() {
-        appFrame.classList.toggle('windowed');
-        if (appFrame.classList.contains('windowed')) {
-            maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-            maxBtn.title = "Desplegar completo";
-            if (document.fullscreenElement && document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        } else {
-            maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-            maxBtn.title = "Vista de Ventana";
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log("Pantalla completa sujeta a interacción de usuario.");
+            function updateSlideVisibility() {
+                slides.forEach((slide, index) => {
+                    if(index === currentSlide) {
+                        slide.classList.add('active');
+                        slide.scrollTop = 0;
+                        const sa = slide.querySelector('.scroll-area'); if(sa) sa.scrollTop = 0;
+                    } else {
+                        slide.classList.remove('active');
+                    }
                 });
+                pageIndicator.innerText = (currentSlide + 1) + ' / ' + slides.length;
             }
-        }
-    }
 
-    document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) {
-            appFrame.classList.add('windowed');
-            maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-        } else {
-            appFrame.classList.remove('windowed');
-            maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-        }
-    });
+            function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlideVisibility(); } }
+            function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlideVisibility(); } }
+            function goToSlide(idx) { if (idx >= 0 && idx < slides.length) { currentSlide = idx; updateSlideVisibility(); } }
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') nextSlide(); if (e.key === 'ArrowLeft') prevSlide();
-    });
+            function changeFontSize(amount) {
+                let n = currentFontSize + amount;
+                if (n >= 10 && n <= 25) { currentFontSize = n; document.documentElement.style.setProperty('--base-lyrics-size', n + 'px'); }
+            }
 
-    let ts = 0;
-    appFrame.addEventListener('touchstart', e => ts = e.changedTouches[0].screenX);
-    appFrame.addEventListener('touchend', e => {
-        let te = e.changedTouches[0].screenX;
-        if (ts - te > 60) nextSlide(); if (te - ts > 60) prevSlide();
-    });
-</script>
+            function toggleMaximize() {
+                if (document.fullscreenElement) {
+                    // Estaba maximizado -> salir de pantalla completa
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                } else {
+                    // No estaba maximizado -> entrar en pantalla completa
+                    const el = document.documentElement;
+                    const reqFS = el.requestFullscreen
+                        || el.webkitRequestFullscreen
+                        || el.msRequestFullscreen;
+                    if (reqFS) {
+                        reqFS.call(el).catch(() => {});
+                    }
+                }
+            }
+
+            // Único listener que sincroniza el icono con el estado REAL de FS.
+            // Así nunca aparece un tercer estado desincronizado.
+            function syncMaxBtn() {
+                const isFS = document.fullscreenElement
+                    || document.webkitFullscreenElement
+                    || document.msFullscreenElement;
+                if (isFS) {
+                    appFrame.classList.remove('windowed');
+                    maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                    maxBtn.title = "Salir de Pantalla Completa";
+                } else {
+                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                    maxBtn.title = "Pantalla Completa";
+                }
+            }
+            document.addEventListener('fullscreenchange', syncMaxBtn);
+            document.addEventListener('webkitfullscreenchange', syncMaxBtn);
+            document.addEventListener('MSFullscreenChange', syncMaxBtn);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') nextSlide(); if (e.key === 'ArrowLeft') prevSlide();
+            });
+
+        </script>
 </body>
 </html>

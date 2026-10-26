@@ -1,152 +1,103 @@
 <!DOCTYPE html>
-<html lang="es" data-tema="dia">
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Directorio de cancioneros — Coro Parroquial</title>
-<script>(function(){var t=null;try{t=localStorage.getItem('tema');}catch(e){}if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'noche':'dia';}document.documentElement.setAttribute('data-tema',t);})();</script>
-<style>:root {
-  --fondo:#fdfcf7; --fondo-alt:#f4f0e8; --texto:#22201c; --texto-suave:#5a554c;
-  --primario:#7a4a2b; --secundario:#b08d5c; --tarjeta:#ffffff;
-  --borde:#e5dfd3; --sombra:rgba(0,0,0,0.08);
-  --radius:10px; --max-width:960px; --trans:0.25s ease; color-scheme:light;
-}
-[data-tema="noche"]{
-  --fondo:#1a1a1f; --fondo-alt:#22222a; --texto:#eae7e0; --texto-suave:#a9a396;
-  --primario:#e3a76f; --secundario:#a88560; --tarjeta:#26262e;
-  --borde:#3a3a45; --sombra:rgba(0,0,0,0.5); color-scheme:dark;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
-              "Helvetica Neue",Arial,sans-serif;
-  background:var(--fondo); color:var(--texto); line-height:1.65;
-  transition:background var(--trans),color var(--trans);
-  min-height:100vh; display:flex; flex-direction:column;
-}
-a{color:var(--primario)}
-a:hover{color:var(--secundario)}
-.site-header{
-  background:var(--tarjeta); border-bottom:1px solid var(--borde);
-  position:sticky; top:0; z-index:100; box-shadow:0 1px 3px var(--sombra);
-}
-.nav{
-  max-width:var(--max-width); margin:0 auto; padding:0.75rem 1rem;
-  display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
-}
-.brand{font-weight:700;color:var(--primario);text-decoration:none;font-size:1.05rem}
-.brand:hover{color:var(--secundario)}
-.nav-links{display:flex;gap:0.25rem;flex:1;flex-wrap:wrap}
-.nav-links a{
-  color:var(--texto);text-decoration:none;padding:0.4rem 0.7rem;
-  border-radius:var(--radius);font-size:0.95rem;transition:background var(--trans);
-}
-.nav-links a:hover{background:var(--fondo-alt)}
-.theme-toggle{
-  background:transparent;border:1px solid var(--borde);
-  border-radius:var(--radius);cursor:pointer;padding:0.35rem 0.6rem;
-  color:var(--texto);font-size:1rem;line-height:1;transition:background var(--trans);
-}
-.theme-toggle:hover{background:var(--fondo-alt)}
-.theme-toggle .icon-moon{display:none}
-[data-tema="noche"] .theme-toggle .icon-sun{display:none}
-[data-tema="noche"] .theme-toggle .icon-moon{display:inline}
-.breadcrumb{
-  max-width:var(--max-width);margin:0 auto;padding:0.5rem 1rem;
-  font-size:0.85rem;color:var(--texto-suave);background:var(--fondo-alt);
-  border-top:1px solid var(--borde);
-}
-.breadcrumb a{color:var(--texto-suave);text-decoration:none}
-.breadcrumb a:hover{color:var(--primario)}
-main.container{
-  max-width:var(--max-width);margin:0 auto;padding:1.5rem 1rem 3rem;
-  flex:1;width:100%;
-}
-h1,h2,h3{color:var(--primario);line-height:1.25}
-h1{font-size:1.8rem;margin-top:0}
-.seccion-titulo{
-  margin-top:2rem;padding-bottom:0.35rem;
-  border-bottom:2px solid var(--secundario);font-size:1.3rem;
-}
-.cards{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:1rem;margin:1rem 0 1.5rem;
-}
-.card{
-  display:block;background:var(--tarjeta);border:1px solid var(--borde);
-  border-radius:var(--radius);padding:1rem 1.1rem;
-  text-decoration:none;color:var(--texto);
-  transition:transform var(--trans),box-shadow var(--trans),border-color var(--trans);
-}
-.card:hover{
-  transform:translateY(-2px);box-shadow:0 4px 14px var(--sombra);
-  border-color:var(--secundario);
-}
-.card h3{margin:0 0 0.35rem;font-size:1.05rem;color:var(--primario)}
-.card p{margin:0;font-size:0.9rem;color:var(--texto-suave)}
-.btn-primario{
-  display:inline-block;padding:0.65rem 1.2rem;background:var(--primario);
-  color:var(--tarjeta);text-decoration:none;border-radius:var(--radius);
-  font-weight:600;transition:background var(--trans),transform var(--trans);
-}
-.btn-primario:hover{
-  background:var(--secundario);color:var(--tarjeta);transform:translateY(-1px);
-}
-.site-footer{
-  text-align:center;padding:1rem;font-size:0.85rem;
-  color:var(--texto-suave);background:var(--fondo-alt);
-  border-top:1px solid var(--borde);
-}
-@media (max-width:600px){
-  .nav{padding:0.5rem;gap:0.5rem}
-  .nav-links{order:3;flex-basis:100%}
-  main.container{padding:1rem 0.75rem 2rem}
-  h1{font-size:1.5rem}
-  .cards{grid-template-columns:1fr}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancioneros · Coro Magníficat</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --cm-primary: #1e3a5f; --cm-secondary: #2c5282; --cm-accent: #3182ce;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; color: #2d3748; background:#f7fafc; }
+    .navbar-custom { background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); }
+    .page-title { color: var(--cm-primary); }
+    .card { border:1px solid #e2e8f0; border-radius:.75rem; overflow:hidden; }
+    .card-header { background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%); color:#fff; font-weight:600; }
+    .list-group-item { border:0; border-left:3px solid var(--cm-secondary); padding:.7rem 1rem; }
+    .list-group-item:hover { background:#ebf4ff; }
+    .list-group-item a { color:#2d3748; text-decoration:none; display:block; }
+    .footer { background: var(--cm-primary); color:#cbd5e0; padding:1.5rem 0; margin-top:3rem; }
+    .sort-btn {
+      font-size:.75rem; line-height:1; padding:.25rem .5rem;
+      font-weight:600; letter-spacing:.3px;
+    }
+  </style>
 </head>
 <body>
-<header class="site-header">
-  <nav class="nav">
-    <a class="brand" href="../index.html">🎵 Coro Parroquial</a>
-    <div class="nav-links">
-      <a href="../index.html">Inicio</a>
-      <a href="../cancioneros/index.html">Cancioneros</a>
+  <nav class="navbar navbar-custom navbar-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="../index.html">
+        <i class="bi bi-arrow-left me-2"></i>Coro Magníficat
+      </a>
     </div>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema día/noche" title="Cambiar tema">
-      <span class="icon-sun">☀</span><span class="icon-moon">☾</span>
-    </button>
   </nav>
-  <div class="breadcrumb"><a href="../index.html">Inicio</a> › <span>Directorio de cancioneros</span></div>
-</header>
-<main class="container">
-  <h1>Directorio de cancioneros</h1>
-  <p>Selecciona una ocasión para ver los cancioneros disponibles.</p>
-<section id="generales"><h2 class="seccion-titulo">Cancioneros generales y ediciones anteriores</h2><p>Base del repertorio y ediciones anuales pasadas.</p><div class="cards"><a class="card" href="generales/cancionero-2019.html"><h3>Cancionero 2019</h3></a><a class="card" href="generales/cantosordenadosv3.html"><h3>CantosOrdenadosV3</h3></a><a class="card" href="generales/cancionero-adela.html"><h3>Cancionero Adela</h3></a><a class="card" href="generales/excel-merger-tool.html"><h3>excel merger tool</h3></a><a class="card" href="generales/tabla-de-esquemas.html"><h3>Esquemas</h3></a><a class="card" href="generales/cantos-apuntes.html"><h3>Cantos Apuntes</h3></a></div></section>
-<section id="hora-santa"><h2 class="seccion-titulo">Hora Santa</h2><p>Cantos y meditaciones para la adoración.</p><div class="cards"><a class="card" href="hora-santa/cantos-horasanta.html"><h3>Cantos HoraSanta</h3></a><a class="card" href="hora-santa/horasanta.html"><h3>Hora Santa - Meditacion cantada</h3></a></div></section>
-<section id="misas-dominicales"><h2 class="seccion-titulo">Misas dominicales</h2><p>Repertorio para las misas del domingo.</p><div class="cards"><a class="card" href="misas-dominicales/cantos-esquema20261025.html"><h3>Cantos Esquema20261025</h3></a><a class="card" href="misas-dominicales/cantos-cancionero.html"><h3>Cantos Cancionero</h3></a><a class="card" href="misas-dominicales/cantos-misadomingo.html"><h3>Cantos MisaDomingo</h3></a><a class="card" href="misas-dominicales/cancionero20261004.html"><h3>Cancionero20261004</h3></a></div></section>
-<section id="tiempos-liturgicos"><h2 class="seccion-titulo">Tiempos litúrgicos</h2><p>Adviento, Navidad, Cuaresma, Pascua, Tiempo Ordinario.</p><div class="cards"><a class="card" href="tiempos-liturgicos/cancionero-oct2026.html"><h3>Cancionero oct2026</h3></a></div></section>
-<section id="celebraciones-especiales"><h2 class="seccion-titulo">Celebraciones especiales</h2><p>Bautismos, matrimonios, funerales, fiestas patronales.</p><p><em>Próximamente.</em></p></section>
-</main>
-<footer class="site-footer">
-  <p>Coro Parroquial · Última actualización: 2026-10-25</p>
-</footer>
-<script>(function(){
-  'use strict';
-  var root=document.documentElement;
-  document.addEventListener('DOMContentLoaded',function(){
-    var btn=document.getElementById('theme-toggle');
-    if(!btn)return;
-    btn.addEventListener('click',function(){
-      var actual=root.getAttribute('data-tema')||'dia';
-      var nuevo=actual==='dia'?'noche':'dia';
-      root.setAttribute('data-tema',nuevo);
-      try{localStorage.setItem('tema',nuevo);}catch(e){}
-    });
-  });
-})();
-</script>
+  <main class="container py-5">
+    <h1 class="page-title mb-4"><i class="bi bi-journal-text me-2"></i>Cancioneros</h1>
+    <p class="lead text-muted mb-4">Explora los cancioneros por categoría:</p>
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header"><i class="bi bi-calendar-week-fill me-2"></i>Misas dominicales <span class="badge bg-secondary">15</span></div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">15 archivo(s) en esta categoría.</p>
+          <a href="cancioneros/misas-dominicales/index.html" class="btn btn-outline-primary w-100">
+            <i class="bi bi-folder2-open me-1"></i>Abrir
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header"><i class="bi bi-journal-bookmark-fill me-2"></i>Cancioneros generales <span class="badge bg-secondary">3</span></div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">3 archivo(s) en esta categoría.</p>
+          <a href="cancioneros/generales/index.html" class="btn btn-outline-primary w-100">
+            <i class="bi bi-folder2-open me-1"></i>Abrir
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header"><i class="bi bi-brightness-high-fill me-2"></i>Hora Santa <span class="badge bg-secondary">2</span></div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">2 archivo(s) en esta categoría.</p>
+          <a href="cancioneros/hora-santa/index.html" class="btn btn-outline-primary w-100">
+            <i class="bi bi-folder2-open me-1"></i>Abrir
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header"><i class="bi bi-calendar-event-fill me-2"></i>Tiempos litúrgicos <span class="badge bg-secondary">1</span></div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">1 archivo(s) en esta categoría.</p>
+          <a href="cancioneros/tiempos-liturgicos/index.html" class="btn btn-outline-primary w-100">
+            <i class="bi bi-folder2-open me-1"></i>Abrir
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header"><i class="bi bi-award-fill me-2"></i>Celebraciones especiales <span class="badge bg-secondary">0</span></div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">0 archivo(s) en esta categoría.</p>
+          <a href="cancioneros/celebraciones-especiales/index.html" class="btn btn-outline-primary w-100">
+            <i class="bi bi-folder2-open me-1"></i>Abrir
+          </a>
+        </div>
+      </div>
+    </div>
+</div>
+  </main>
+  <footer class="footer">
+    <div class="container text-center small">Coro Magníficat · Cancioneros</div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

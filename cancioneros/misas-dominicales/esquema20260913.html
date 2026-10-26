@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Misa dominical 13 de Septiembre de 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --base-lyrics-size: 15px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #0f172a; font-family: 'Quicksand', sans-serif; min-height: 100vh; min-height: 100dvh; overflow: hidden; color: #1e293b; margin: 0; }
+        .app-container { width: 100vw; height: 100vh; height: 100dvh; position: relative; background-color: #fff; overflow: hidden; transition: all 0.3s ease; }
+        .app-container.windowed { width: min(405px, 100vw); height: min(720px, 100vh); height: min(720px, 100dvh); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 75px 24px 90px 24px; text-align: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1; overflow: hidden; }
+        .slide-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: 0 auto; width: 100%; overflow: hidden; }
+        .slide:not(:first-child) .slide-content { max-width: 80%; }
+        .slide.active { opacity: 1; visibility: visible; z-index: 2; }
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding: 0 4px; display: flex; flex-direction: column; max-height: 100%; }
+        .bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.03; z-index: 0; pointer-events: none; }
+        .bg-watermark i { font-size: 450px; color: #000; }
+        .bg-cream { background-color: #fffaf0; } .bg-mint { background-color: #f4fff8; } .bg-sky { background-color: #f0f7ff; } .bg-rose { background-color: #fff5f7; } .bg-lavender { background-color: #f9f8ff; } .bg-peach { background-color: #fff5ea; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 28px; color: #0f172a; margin-top: 10px; }
+        h2.song-title { font-family: 'Poppins', sans-serif; font-size: 22px; color: #334155; text-transform: uppercase; flex-shrink: 0; margin-top: 10px; }
+        .tone-badge { align-self: center; background-color: rgba(0, 0, 0, 0.06); padding: 4px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; color: #475569; margin: 6px 0 12px 0; flex-shrink: 0; }
+        .moment-label { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 10px; margin-bottom: 2px; flex-shrink: 0; }
+        .lyrics { font-size: var(--base-lyrics-size); line-height: 1.45; font-weight: 700; white-space: pre-line; color: #1e293b; margin: auto 0; transition: font-size 0.15s ease; padding: 0 4px; text-align: left; }
+        .repeat { color: #94a3b8; font-style: italic; font-weight: bold; font-size: 0.9em; display: block; margin-top: 2px; }
+        .footer { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; padding-top: 8px; flex-shrink: 0; text-align: center; }
+        .index-container { width: 100%; padding-right: 5px; margin-bottom: 5px; }
+        .index-list { list-style: none; width: 100%; text-align: left; }
+        .index-list li { padding: 12px 8px; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: calc(var(--base-lyrics-size) * 0.7); font-weight: 700; color: #334155; }
+        .index-list li:hover { background-color: rgba(0,0,0,0.03); }
+        .index-list li span.tone { color: #64748b; font-size: 0.75em; background: rgba(0,0,0,0.04); padding: 2px 8px; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+        .nav-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 24px env(safe-area-inset-bottom, 12px) 24px; background: linear-gradient(to top, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, transparent 100%); pointer-events: none; }
+        .nav-btn { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.08); width: 48px; height: 48px; border-radius: 50px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); cursor: pointer; display: flex; justify-content: center; align-items: center; color: #475569; font-size: 18px; pointer-events: auto; }
+        .top-actions { position: absolute; top: 15px; left: 0; width: 100%; padding: 0 20px; z-index: 101; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .action-group { display: flex; gap: 8px; pointer-events: auto; }
+        .action-btn { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); backdrop-filter: blur(4px); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; color: #475569; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="appFrame">
+    <div class="top-actions">
+        <div class="action-group">
+            <button class="action-btn" onclick="changeFontSize(-1)" title="Reducir Letra"><i class="fa-solid fa-minus"></i></button>
+            <button class="action-btn" onclick="changeFontSize(1)" title="Aumentar Letra"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="action-group">
+            <button class="action-btn" onclick="goToSlide(1)" title="Ir al Índice"><i class="fa-solid fa-list"></i></button>
+            <button class="action-btn" onclick="toggleMaximize()" id="maxBtn" title="Pantalla Completa"><i class="fa-solid fa-expand"></i></button>
+        </div>
+    </div>
+
+    <!-- Portada -->
+    <div class="slide bg-cream active">
+        <div class="bg-watermark"><i class="fa-solid fa-church"></i></div>
+        <div class="slide-content" style="justify-content: center;">
+            <h1>Misa dominical 13 de Septiembre de 2026</h1>
+            <p style="font-size: 16px; color: #64748b; margin-top: 5px; font-weight: 700;">Parroquia Guadalupe</p>
+            <div class="footer" style="margin-top: 60px;">Usa los botones</div>
+        </div>
+    </div>
+
+    <!-- Índice -->
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-book"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <h2 class="song-title" style="margin-bottom: 10px;">Esquema</h2>
+                <div class="index-container">
+                    <ul class="index-list">
+                        <li onclick="goToSlide(2)">1. Entrada: Alegre la mañana <span class="tone">Re</span></li>
+<li onclick="goToSlide(3)">2. Penitencial: Ten piedad <span class="tone">Señor, Señor,</span></li>
+<li onclick="goToSlide(4)">3. Gloria: Gloria en las alturas <span class="tone">Do</span></li>
+<li onclick="goToSlide(5)">4. Entre lecturas: Canta alma mía <span class="tone">Re, Mi</span></li>
+<li onclick="goToSlide(6)">5. Ofertorio: Ante tu altar <span class="tone">Do</span></li>
+<li onclick="goToSlide(7)">6. Padre nuestro: Padre nuestro estación 0 <span class="tone">Mi</span></li>
+<li onclick="goToSlide(8)">7. Santo: Santo hosanna <span class="tone">La-</span></li>
+<li onclick="goToSlide(9)">8. Paz: Mi paz Te doy a Ti <span class="tone">La</span></li>
+<li onclick="goToSlide(10)">9. Comunión: Jesús Amigo <span class="tone">Do</span></li>
+<li onclick="goToSlide(11)">10. Salida: María mírame <span class="tone">Do</span></li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="footer">Presiona para ir directo al canto</div>
+        </div>
+    </div>
+
+    <!-- Bloques de Diapositivas -->
+    
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Alegre la mañana</div>
+                <h2 class="song-title">Entrada</h2>
+                <div class="tone-badge">Re</div>
+                <div class="lyrics">Alegre la mañana que nos habla de ti,
+alegre la mañana. (2)
+
+En nombre del Dios Padre, del Hijo y del Espíritu,
+salimos de la noche y estrenamos la aurora;
+saludamos el gozo de la luz que nos llega
+resucitada y resucitadora.
+
+Tu mano acerca el fuego a la sombría tierra
+y el rostro de las cosas se alegra en tu presencia.
+Silabeas el alba igual que una palabra.
+Tú pronuncias el mar como sentencia.
+
+Regresa, desde el sueño, el hombre a su memoria,
+acude a su trabajo, madruga sus dolores;
+le confías la tierra, y a la tarde la encuentras,
+rica de pan y amarga de sudores.
+
+Y tú te regocijas, oh Dios, y tú prolongas
+en sus pequeñas manos tus manos poderosas.
+Y están de cuerpo entero los dos así creando,
+los dos así velando por las cosas.
+
+¡Bendita la mañana que trae la gran noticia
+de tu presencia joven, en gloria y poderío;
+la serena certeza con que el día proclama
+que el sepulcro de Cristo está vacío!</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Ten piedad</div>
+                <h2 class="song-title">Penitencial</h2>
+                <div class="tone-badge">Señor, Señor,</div>
+                <div class="lyrics">ten piedad de nosotros
+
+Cristo ten piedad
+ten piedad de nosotros
+
+Señor, Señor,
+ten piedad de nosotros</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Gloria en las alturas</div>
+                <h2 class="song-title">Gloria</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Gloria en las Alturas
+Gloria en las alturas
+y en la Tierra paz
+a las almas puras
+de buena voluntad (2 Veces)
+
+Hoy Te Bendecimos
+Señor Te adoramos
+Por Tu inmensa gloria
+Mil gracias Te damos
+
+Al Rey de los Cielos
+Dios Todopoderoso
+
+Y a su único hijo
+Cordero Glorioso
+Gloria en las alturas
+
+Tú que quitas el pecado
+del mundo
+Ten piedad de nosotros
+Y escuchas las súplicas
+Tú que estás sentado
+a la derecha del Padre
+Ten piedad de nosotros
+Piedad de nosotros
+
+Tú solo eres Santo
+solo Tú altísimo
+con el Espíritu Santo
+Señor Jesucristo
+El Cielo y la Tierra
+Poblados de su gloria
+Te alaban y Te bendicen
+Señor de la gloria</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Canta alma mía</div>
+                <h2 class="song-title">Entre lecturas</h2>
+                <div class="tone-badge">Re, Mi</div>
+                <div class="lyrics">Canta alma mía
+elogios al Señor
+Su amor eterno
+que en la cruz derramó
+
+El te libró de la muerte.
+Vida nueva te dió
+
+Canta alma mía
+Canta alma mía
+Canta elogios al Señor</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Ante tu altar</div>
+                <h2 class="song-title">Ofertorio</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Ante tu altar
+Hoy como hermanos
+El pan y el vino te presentamos (Bis)
+
+Fruto del sudor
+Y del esfuerzo del hombre
+Son transformados
+en cuerpo y sangre de nuestro Señor (Bis)
+
+Todos unidos en tus manos estamos
+y como trigo puro nos puedes sembrar.
+Pués el trigo que no muere solo se queda.
+Y el que muere,
+y el que muere fruto eterno dará</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Padre nuestro estación 0</div>
+                <h2 class="song-title">Padre nuestro</h2>
+                <div class="tone-badge">Mi</div>
+                <div class="lyrics">Padre  nuestro que estás en el  cielo
+Santificado sea tu  nombre
+Venga a nosotros  tu reino
+Y hágase  tu voluntad
+
+Así en la tierra  como en el  cielo
+Danos hoy  nuestro pan de cada  día
+Y perdona  nuestras ofensas
+Como nosotros  perdonamos  a los que nos ofenden
+
+No nos  dejes caer en tentación
+Y líbranos del  mal
+Y líbranos del  mal
+
+No nos  dejes caer en tentación
+Y líbranos del  mal
+Y líbranos del  mal
+Padre nuestro</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Santo hosanna</div>
+                <h2 class="song-title">Santo</h2>
+                <div class="tone-badge">La-</div>
+                <div class="lyrics">Santo Santo Saaanto
+Santo es el Señor.
+Santo es el Señor Dios del Universo.
+
+Llenos están el cielo y la tierra
+de su Gloria Ohsanna
+Ohsanna, Ohsanna, Ohsanna en el cielo.
+Ohsanna, Ohsanna, Ohsanna en el cieeeelo.
+
+Bendito el que viene en nombre de el Señor
+Ohsanna, Ohsanna, Ohsanna en el Cielo.
+Ohsanna, Ohsanna, Ohsanna en el cieeeelo.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Mi paz Te doy a Ti</div>
+                <h2 class="song-title">Paz</h2>
+                <div class="tone-badge">La</div>
+                <div class="lyrics">Mi paz Te doy a Ti
+es la paz que el mundo no da
+es la paz que el mundo no entiende
+para Ti recíbela
+mi paz Te doy a Ti
+
+Mi amor Te doy a Ti
+es amor q' el mundo no da
+es amor q' el mundo no entiende
+para Ti recíbelo
+mi paz Te doy a Ti</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Jesús Amigo</div>
+                <h2 class="song-title">Comunión</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">I
+Hoy, te quiero contar Jesús Amigo,
+que contigo estoy feliz.
+Si tengo tu amistad lo tengo todo,
+pues estás dentro de mí
+Después de comulgar, me haces como tú,
+me llenas con tu paz
+En cada pedacito de este pan,
+completo estás, y así te das
+Estás ahí por mí, porque conoces,
+que sin ti pequeño soy
+De ahora en adelante,
+nada nos, separará, ya lo verás.
+
+Te escondes en el pan,
+y aunque no te puedo ver,
+te puedo acompañar,
+es mi lugar, preferido
+Hoy quiero comulgar,
+abrirte mi corazón,
+así de par en par,
+eres mi mejor, amigo
+
+Dos, mil años atrás a tus amigos,
+invitaste a cenar,
+y ahí les prometiste que con ellos,
+por siempre ibas a estar.
+Y ahora cada vez,
+que el sacerdote eleva el pan, en el altar,
+me pongo de rodillas porque sé,
+que en esa hostia tú estás.
+
+<span class="repeat">Te escondes en el pan...</span>
+
+Me vuelves a salvar, como lo hiciste en la cruz,
+en cada misa tú, repites tu, sacrificio.
+Hoy quiero comulgar... eres mi mejor amigo Jesús.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">María mírame</div>
+                <h2 class="song-title">Salida</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">María mírame, María mírame
+Si Tú me miras Él también me mirara
+Madre mía, mírame De la mano llévame
+Muy cerca de Él Que ahí me quiero quedar
+
+María, cúbreme con tu manto
+Que tengo miedo, no sé rezar
+Que por tus ojos misericordiosos
+Tendré la fuerza, tendré la paz
+
+<span class="repeat">María mírame, María ...</span>
+
+Madre, consuélame de mis penas
+Es que no quiero ofenderle más
+Que por tus ojos misericordiosos
+Quiero ir al cielo y verlos ya
+
+<span class="repeat">María mírame, María ...</span>
+
+Madre, acógeme en el pesebre,
+junto a tu Niño y a San José
+Que por tus ojos misericordiosos
+Toda mi vida, sea un Belén
+
+<span class="repeat">María mírame, María ...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-overlay">
+        <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+        <div id="pageIndicator" style="font-size: 14px; font-weight: 700; color: #64748b;">1 / 12</div>
+        <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+</div>
+
+<script>
+            let currentSlide = 0;
+            let currentFontSize = 15;
+            const slides = document.querySelectorAll('.slide');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const appFrame = document.getElementById('appFrame');
+            const maxBtn = document.getElementById('maxBtn');
+
+            function updateSlideVisibility() {
+                slides.forEach((slide, index) => {
+                    if(index === currentSlide) {
+                        slide.classList.add('active');
+                        slide.scrollTop = 0;
+                        const sa = slide.querySelector('.scroll-area'); if(sa) sa.scrollTop = 0;
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+                pageIndicator.innerText = (currentSlide + 1) + ' / ' + slides.length;
+            }
+
+            function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlideVisibility(); } }
+            function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlideVisibility(); } }
+            function goToSlide(idx) { if (idx >= 0 && idx < slides.length) { currentSlide = idx; updateSlideVisibility(); } }
+
+            function changeFontSize(amount) {
+                let n = currentFontSize + amount;
+                if (n >= 10 && n <= 25) { currentFontSize = n; document.documentElement.style.setProperty('--base-lyrics-size', n + 'px'); }
+            }
+
+            function toggleMaximize() {
+                if (document.fullscreenElement) {
+                    // Estaba maximizado -> salir de pantalla completa
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                } else {
+                    // No estaba maximizado -> entrar en pantalla completa
+                    const el = document.documentElement;
+                    const reqFS = el.requestFullscreen
+                        || el.webkitRequestFullscreen
+                        || el.msRequestFullscreen;
+                    if (reqFS) {
+                        reqFS.call(el).catch(() => {});
+                    }
+                }
+            }
+
+            // Único listener que sincroniza el icono con el estado REAL de FS.
+            // Así nunca aparece un tercer estado desincronizado.
+            function syncMaxBtn() {
+                const isFS = document.fullscreenElement
+                    || document.webkitFullscreenElement
+                    || document.msFullscreenElement;
+                if (isFS) {
+                    appFrame.classList.remove('windowed');
+                    maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                    maxBtn.title = "Salir de Pantalla Completa";
+                } else {
+                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                    maxBtn.title = "Pantalla Completa";
+                }
+            }
+            document.addEventListener('fullscreenchange', syncMaxBtn);
+            document.addEventListener('webkitfullscreenchange', syncMaxBtn);
+            document.addEventListener('MSFullscreenChange', syncMaxBtn);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') nextSlide(); if (e.key === 'ArrowLeft') prevSlide();
+            });
+
+        </script>
+</body>
+</html>
