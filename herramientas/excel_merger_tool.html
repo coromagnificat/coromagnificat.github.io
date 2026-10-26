@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fusionador Excel - CantosOrdenadosV3</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ExcelJS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <style>
+        .drop-zone--over {
+            border-color: #3b82f6 !important;
+            background-color: #eff6ff !important;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-emerald-600 rounded-xl text-white shadow-lg">
+                    <i class="fa-solid fa-file-excel text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Fusión de Archivos Excel</h1>
+                    <p class="text-xs text-slate-400">Generador automático de <span class="text-emerald-400 font-semibold">CantosOrdenadosV3.xlsx</span></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="tabAppBtn" onclick="switchTab('app')" class="px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white shadow transition-all hover:bg-emerald-500">
+                    <i class="fa-solid fa-sliders mr-2"></i> Herramienta Interactiva
+                </button>
+                <button id="tabCodeBtn" onclick="switchTab('code')" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-all">
+                    <i class="fa-solid fa-code mr-2"></i> Código Python
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: WEB APP -->
+        <div id="tabApp" class="space-y-6">
+
+            <!-- Instruction Cards Header -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-blue-500"></i>
+                        Instrucciones de Fusión
+                    </h2>
+                    <p class="text-sm text-slate-600 mt-1">
+                        Carga los archivos <strong class="text-slate-800">CantosOrdenados.xlsx</strong> (Estructura base) y <strong class="text-slate-800">CantosOrdenadosV2.xlsx</strong> (Nuevos datos). El sistema combinará la información manteniendo formatos, fuentes, colores y registros duplicados.
+                    </p>
+                </div>
+                <button onclick="generateSampleFiles()" class="text-xs font-semibold px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition border border-slate-300 whitespace-nowrap">
+                    <i class="fa-solid fa-flask mr-1 text-emerald-600"></i> Probar con archivos demo
+                </button>
+            </div>
+
+            <!-- Upload Dropzones Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- File 1: Base Structure -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border-2 border-dashed border-slate-300 hover:border-emerald-500 transition-all flex flex-col items-center justify-center text-center relative group" id="dropZone1">
+                    <input type="file" id="fileInput1" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFileSelect(event, 1)">
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-file-invoice"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base">1. CantosOrdenados.xlsx</h3>
+                    <p class="text-xs text-slate-500 mt-1">Archivo de Estructura Base, Formatos y Primer Lote de Datos</p>
+                    <div id="file1Status" class="mt-4 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Arrastra o selecciona el archivo 1
+                    </div>
+                </div>
+
+                <!-- File 2: New Data -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border-2 border-dashed border-slate-300 hover:border-blue-500 transition-all flex flex-col items-center justify-center text-center relative group" id="dropZone2">
+                    <input type="file" id="fileInput2" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFileSelect(event, 2)">
+                    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base">2. CantosOrdenadosV2.xlsx</h3>
+                    <p class="text-xs text-slate-500 mt-1">Archivo con Nuevos Datos a Integrar</p>
+                    <div id="file2Status" class="mt-4 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Arrastra o selecciona el archivo 2
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Process & Merge Action Bar -->
+            <div id="summaryCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-slate-100 pb-4 mb-4">
+                    <div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-2">
+                            <i class="fa-solid fa-circle-check mr-1.5"></i> Archivos Listos para Fusionar
+                        </span>
+                        <h3 class="text-lg font-bold text-slate-800">Resumen de Combinación</h3>
+                    </div>
+                    <button id="btnMerge" onclick="processAndMerge()" class="w-full lg:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 text-base">
+                        <i class="fa-solid fa-file-circle-plus text-lg"></i>
+                        Generar y Descargar CantosOrdenadosV3.xlsx
+                    </button>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                        <p class="text-xs font-medium text-slate-500">Filas Originales (V1)</p>
+                        <p id="statV1Rows" class="text-xl font-bold text-slate-800 mt-0.5">0</p>
+                    </div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                        <p class="text-xs font-medium text-slate-500">Filas Nuevas (V2)</p>
+                        <p id="statV2Rows" class="text-xl font-bold text-blue-600 mt-0.5">+0</p>
+                    </div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                        <p class="text-xs font-medium text-slate-500">Filas Totales (V3)</p>
+                        <p id="statV3Rows" class="text-xl font-bold text-emerald-600 mt-0.5">0</p>
+                    </div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                        <p class="text-xs font-medium text-slate-500">Columnas Mapeadas</p>
+                        <p id="statCols" class="text-xl font-bold text-slate-800 mt-0.5">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column Mapping Preview Panel -->
+            <div id="mappingCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired text-blue-500"></i>
+                    Alineación e Mapeo de Columnas
+                </h3>
+                <p class="text-xs text-slate-500 mb-4">Se mapean los nombres de columna de V2 a la estructura exacta de V1. Las celdas adoptarán los estilos gráficos originales.</p>
+                
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100 text-slate-700 font-semibold uppercase">
+                            <tr>
+                                <th class="p-3 rounded-l-lg">Columna V1 (Estructura)</th>
+                                <th class="p-3">Estatus</th>
+                                <th class="p-3 rounded-r-lg">Origen V2 (Datos Nuevos)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mappingTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Live Data Preview Table -->
+            <div id="previewCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-table text-emerald-600"></i>
+                            Previsualización del Resultado V3
+                        </h3>
+                        <p class="text-xs text-slate-500">Muestra combinada de datos ordenados según la estructura V1.</p>
+                    </div>
+                    <input type="text" id="previewSearch" oninput="filterPreviewTable()" placeholder="Buscar en la tabla..." class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full sm:w-64">
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-xl custom-scrollbar max-h-96">
+                    <table class="w-full text-xs text-left" id="previewTable">
+                        <thead id="previewThead" class="bg-slate-800 text-slate-200 font-semibold sticky top-0">
+                            <!-- Populated dynamically -->
+                        </thead>
+                        <tbody id="previewTbody" class="divide-y divide-slate-200 bg-white">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 flex justify-between items-center text-xs text-slate-500">
+                    <span id="previewCountText">Mostrando registros...</span>
+                    <span>Conserva duplicados: <strong class="text-emerald-600">Sí</strong></span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB 2: PYTHON CODE -->
+        <div id="tabCode" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-brands fa-python text-blue-500 text-xl"></i>
+                            Código Python con <code class="bg-slate-100 text-blue-600 px-2 py-0.5 rounded text-sm font-mono">openpyxl</code>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Si prefieres ejecutar este procedimiento de forma automatizada en tu servidor o consola local, utiliza el siguiente script:</p>
+                    </div>
+                    <button onclick="copyPythonCode()" class="px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition flex items-center gap-1.5">
+                        <i class="fa-regular fa-copy"></i> Copiar Código
+                    </button>
+                </div>
+
+                <div class="relative bg-slate-900 rounded-xl p-4 overflow-x-auto font-mono text-xs text-emerald-400 custom-scrollbar border border-slate-800">
+<pre id="pythonCodeBlock"><code>import openpyxl
+from copy import copy
+
+def fusionar_cantos(file_v1="CantosOrdenados.xlsx", file_v2="CantosOrdenadosV2.xlsx", file_out="CantosOrdenadosV3.xlsx"):
+    """
+    Fusiona CantosOrdenados.xlsx y CantosOrdenadosV2.xlsx manteniendo:
+    - Estructura exacta, orden y nombres de columnas de V1.
+    - Estilos visuales (fuentes, rellenos, bordes, alineación, formato numérico).
+    - Mantiene todos los registros duplicados.
+    """
+    print("Cargando archivos Excel...")
+    wb1 = openpyxl.load_workbook(file_v1)
+    wb2 = openpyxl.load_workbook(file_v2)
+    
+    ws1 = wb1.active
+    ws2 = wb2.active
+
+    # 1. Obtener mapeo de encabezados de V1
+    headers_v1 = [cell.value for cell in ws1[1]]
+    
+    # 2. Obtener encabezados de V2
+    headers_v2 = [cell.value for cell in ws2[1]]
+    
+    # Mapeo de nombre de columna a índice en V2
+    map_v2 = {}
+    for idx, h in enumerate(headers_v2):
+        if h is not None:
+            map_v2[str(h).strip().lower()] = idx + 1
+
+    # Copiar estilos de celda desde la última fila con datos de V1 (o fila 2 si existe)
+    sample_row_idx = ws1.max_row if ws1.max_row >= 2 else 2
+
+    # 3. Leer filas de V2 e insertarlas en V1
+    filas_agregadas = 0
+    for row_idx in range(2, ws2.max_row + 1):
+        # Verificar si la fila de V2 no está completamente vacía
+        row_values = [ws2.cell(row=row_idx, column=c).value for c in range(1, len(headers_v2) + 1)]
+        if not any(v is not None for v in row_values):
+            continue
+
+        target_row = ws1.max_row + 1
+        
+        for col_v1_idx, header_name in enumerate(headers_v1, start=1):
+            target_cell = ws1.cell(row=target_row, column=col_v1_idx)
+            
+            # Buscar valor correspondiente en V2 por nombre de columna
+            norm_header = str(header_name).strip().lower() if header_name else ""
+            if norm_header in map_v2:
+                col_v2_idx = map_v2[norm_header]
+                val = ws2.cell(row=row_idx, column=col_v2_idx).value
+                target_cell.value = val
+            else:
+                target_cell.value = None
+
+            # Copiar estilos de la fila de muestra en V1
+            sample_cell = ws1.cell(row=sample_row_idx, column=col_v1_idx)
+            if sample_cell.has_style:
+                target_cell.font = copy(sample_cell.font)
+                target_cell.fill = copy(sample_cell.fill)
+                target_cell.border = copy(sample_cell.border)
+                target_cell.alignment = copy(sample_cell.alignment)
+                target_cell.number_format = sample_cell.number_format
+
+        filas_agregadas += 1
+
+    # 4. Guardar resultado final
+    wb1.save(file_out)
+    print(f"¡Éxito! Se integraron {filas_agregadas} registros de V2 en {file_out}.")
+
+if __name__ == "__main__":
+    fusionar_cantos()
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Global State variables
+        let file1Data = null; // ExcelJS Workbook for V1
+        let file2Data = null; // ExcelJS Workbook for V2
+        let file1Buffer = null;
+        let file2Buffer = null;
+        let v1Headers = [];
+        let v2Headers = [];
+        let v1RowsData = [];
+        let v2RowsData = [];
+        let mergedRowsPreview = [];
+
+        // Tab Switching
+        function switchTab(tab) {
+            const tabApp = document.getElementById('tabApp');
+            const tabCode = document.getElementById('tabCode');
+            const btnApp = document.getElementById('tabAppBtn');
+            const btnCode = document.getElementById('tabCodeBtn');
+
+            if (tab === 'app') {
+                tabApp.classList.remove('hidden');
+                tabCode.classList.add('hidden');
+                btnApp.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white shadow transition-all hover:bg-emerald-500";
+                btnCode.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-all";
+            } else {
+                tabApp.classList.add('hidden');
+                tabCode.classList.remove('hidden');
+                btnCode.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white shadow transition-all hover:bg-emerald-500";
+                btnApp.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-all";
+            }
+        }
+
+        // Handle Drag & Drop styling
+        ['dropZone1', 'dropZone2'].forEach((zoneId, idx) => {
+            const zone = document.getElementById(zoneId);
+            ['dragenter', 'dragover'].forEach(eventName => {
+                zone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drop-zone--over');
+                }, false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                zone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drop-zone--over');
+                }, false);
+            });
+        });
+
+        // Handle File Selection
+        async function handleFileSelect(event, fileNum) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const buffer = e.target.result;
+                const workbook = new ExcelJS.Workbook();
+                await workbook.xlsx.load(buffer);
+
+                if (fileNum === 1) {
+                    file1Buffer = buffer;
+                    file1Data = workbook;
+                    updateFileStatus(1, file.name, true);
+                    parseWorkbook1();
+                } else {
+                    file2Buffer = buffer;
+                    file2Data = workbook;
+                    updateFileStatus(2, file.name, true);
+                    parseWorkbook2();
+                }
+
+                checkBothFilesLoaded();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function updateFileStatus(fileNum, filename, success) {
+            const statusEl = document.getElementById(`file${fileNum}Status`);
+            if (success) {
+                statusEl.className = "mt-4 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 flex items-center gap-1.5";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> ${filename}`;
+            }
+        }
+
+        // Parse File 1 (Structure + Initial Data)
+        function parseWorkbook1() {
+            const sheet = file1Data.worksheets[0];
+            if (!sheet) return;
+
+            v1Headers = [];
+            v1RowsData = [];
+
+            const headerRow = sheet.getRow(1);
+            headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+                v1Headers.push({
+                    colIndex: colNumber,
+                    name: cell.value ? String(cell.value).trim() : `Columna ${colNumber}`
+                });
+            });
+
+            sheet.eachRow((row, rowNumber) => {
+                if (rowNumber > 1) {
+                    const rowObj = {};
+                    v1Headers.forEach(h => {
+                        const cellVal = row.getCell(h.colIndex).value;
+                        rowObj[h.name] = formatCellValue(cellVal);
+                    });
+                    v1RowsData.push(rowObj);
+                }
+            });
+        }
+
+        // Parse File 2 (New Data)
+        function parseWorkbook2() {
+            const sheet = file2Data.worksheets[0];
+            if (!sheet) return;
+
+            v2Headers = [];
+            v2RowsData = [];
+
+            const headerRow = sheet.getRow(1);
+            headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+                v2Headers.push({
+                    colIndex: colNumber,
+                    name: cell.value ? String(cell.value).trim() : `Columna ${colNumber}`
+                });
+            });
+
+            sheet.eachRow((row, rowNumber) => {
+                if (rowNumber > 1) {
+                    const rowObj = {};
+                    v2Headers.forEach(h => {
+                        const cellVal = row.getCell(h.colIndex).value;
+                        rowObj[h.name] = formatCellValue(cellVal);
+                    });
+                    v2RowsData.push(rowObj);
+                }
+            });
+        }
+
+        function formatCellValue(val) {
+            if (val === null || val === undefined) return '';
+            if (typeof val === 'object') {
+                if (val.result !== undefined) return val.result; // Formula result
+                if (val.text !== undefined) return val.text; // Rich text or hyperlink
+                if (val instanceof Date) return val.toLocaleDateString();
+            }
+            return String(val);
+        }
+
+        function checkBothFilesLoaded() {
+            if (file1Data && file2Data) {
+                document.getElementById('summaryCard').classList.remove('hidden');
+                document.getElementById('mappingCard').classList.remove('hidden');
+                document.getElementById('previewCard').classList.remove('hidden');
+
+                // Update Stats
+                document.getElementById('statV1Rows').textContent = v1RowsData.length;
+                document.getElementById('statV2Rows').textContent = `+${v2RowsData.length}`;
+                document.getElementById('statV3Rows').textContent = v1RowsData.length + v2RowsData.length;
+                document.getElementById('statCols').textContent = v1Headers.length;
+
+                renderMappingTable();
+                renderPreviewTable();
+            }
+        }
+
+        // Render Column Mapping
+        function renderMappingTable() {
+            const tbody = document.getElementById('mappingTableBody');
+            tbody.innerHTML = '';
+
+            const v2HeaderNamesLower = v2Headers.map(h => h.name.toLowerCase());
+
+            v1Headers.forEach(h1 => {
+                const tr = document.createElement('tr');
+                const matchedInV2 = v2HeaderNamesLower.includes(h1.name.toLowerCase());
+
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800">${h1.name}</td>
+                    <td class="p-3">
+                        ${matchedInV2 
+                            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700"><i class="fa-solid fa-link"></i> Coincidencia Exacta</span>`
+                            : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700"><i class="fa-solid fa-triangle-exclamation"></i> Sin origen V2 (se usará vacío)</span>`}
+                    </td>
+                    <td class="p-3 text-slate-600">${matchedInV2 ? h1.name : '—'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Render Data Preview Table
+        function renderPreviewTable() {
+            const thead = document.getElementById('previewThead');
+            const tbody = document.getElementById('previewTbody');
+
+            // Set Headers
+            let headerHTML = '<tr><th class="p-2.5 border-b border-slate-700 text-center w-12">#</th>';
+            headerHTML += '<th class="p-2.5 border-b border-slate-700 text-center">Origen</th>';
+            v1Headers.forEach(h => {
+                headerHTML += `<th class="p-2.5 border-b border-slate-700 whitespace-nowrap">${h.name}</th>`;
+            });
+            headerHTML += '</tr>';
+            thead.innerHTML = headerHTML;
+
+            // Combine Data
+            mergedRowsPreview = [
+                ...v1RowsData.map(r => ({ ...r, _source: 'V1 (Original)' })),
+                ...v2RowsData.map(r => {
+                    const rowObj = { _source: 'V2 (Nuevo)' };
+                    v1Headers.forEach(h => {
+                        rowObj[h.name] = r[h.name] || '';
+                    });
+                    return rowObj;
+                })
+            ];
+
+            renderTableBody(mergedRowsPreview);
+        }
+
+        function renderTableBody(dataRows) {
+            const tbody = document.getElementById('previewTbody');
+            tbody.innerHTML = '';
+
+            const maxDisplay = 50; // Limit preview rows for smooth performance
+            const displayRows = dataRows.slice(0, maxDisplay);
+
+            displayRows.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = row._source.includes('V1') ? 'hover:bg-slate-50' : 'bg-blue-50/40 hover:bg-blue-50';
+
+                let rowHTML = `<td class="p-2 text-center text-slate-400 border-b border-slate-100 font-mono">${idx + 1}</td>`;
+                rowHTML += `<td class="p-2 text-center border-b border-slate-100">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${row._source.includes('V1') ? 'bg-slate-100 text-slate-600' : 'bg-blue-100 text-blue-800'}">
+                        ${row._source}
+                    </span>
+                </td>`;
+
+                v1Headers.forEach(h => {
+                    rowHTML += `<td class="p-2 border-b border-slate-100 whitespace-nowrap text-slate-700">${row[h.name] !== undefined ? row[h.name] : ''}</td>`;
+                });
+
+                tr.innerHTML = rowHTML;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('previewCountText').textContent = `Mostrando ${displayRows.length} de ${dataRows.length} filas en vista previa.`;
+        }
+
+        function filterPreviewTable() {
+            const query = document.getElementById('previewSearch').value.toLowerCase();
+            if (!query) {
+                renderTableBody(mergedRowsPreview);
+                return;
+            }
+
+            const filtered = mergedRowsPreview.filter(row => {
+                return Object.values(row).some(val => String(val).toLowerCase().includes(query));
+            });
+
+            renderTableBody(filtered);
+        }
+
+        async function processAndMerge() {
+            if (!file1Data || !file2Data) {
+                alert("Por favor carga ambos archivos antes de continuar.");
+                return;
+            }
+
+            const btn = document.getElementById('btnMerge');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Procesando y Aplicando Formatos...`;
+            btn.disabled = true;
+
+            try {
+                // Clone Workbook 1 to preserve exact formatting, macros, sheet views, and layouts
+                const wb1 = new ExcelJS.Workbook();
+                await wb1.xlsx.load(file1Buffer);
+                
+                const wb2 = new ExcelJS.Workbook();
+                await wb2.xlsx.load(file2Buffer);
+
+                const ws1 = wb1.worksheets[0];
+                const ws2 = wb2.worksheets[0];
+
+                // Map File 1 headers
+                const headerRow1 = ws1.getRow(1);
+                const colMap1 = {}; // Header name lower -> col index in V1
+                headerRow1.eachCell({ includeEmpty: false }, (cell, colNum) => {
+                    if (cell.value) {
+                        colMap1[String(cell.value).trim().toLowerCase()] = colNum;
+                    }
+                });
+
+                // Map File 2 headers
+                const headerRow2 = ws2.getRow(1);
+                const colMap2 = {}; // Header name lower -> col index in V2
+                headerRow2.eachCell({ includeEmpty: false }, (cell, colNum) => {
+                    if (cell.value) {
+                        colMap2[String(cell.value).trim().toLowerCase()] = colNum;
+                    }
+                });
+
+                // Sample style cell source (last data row in V1, or row 2)
+                const sampleRowNumber = ws1.rowCount >= 2 ? ws1.rowCount : 2;
+                const sampleRow = ws1.getRow(sampleRowNumber);
+
+                // Append rows from File 2 to File 1
+                let startTargetRow = ws1.rowCount + 1;
+
+                ws2.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) { // Skip header in V2
+                        const newRow = ws1.getRow(startTargetRow);
+
+                        // For each column defined in File 1
+                        Object.keys(colMap1).forEach(headerLower => {
+                            const targetColIdx = colMap1[headerLower];
+                            const sourceColIdx = colMap2[headerLower];
+
+                            const targetCell = newRow.getCell(targetColIdx);
+
+                            // Set Value
+                            if (sourceColIdx) {
+                                const sourceCell = row.getCell(sourceColIdx);
+                                targetCell.value = sourceCell.value;
+                            } else {
+                                targetCell.value = null;
+                            }
+
+                            // Copy Exact Cell Formatting from V1 Sample Row
+                            const sampleCell = sampleRow.getCell(targetColIdx);
+                            if (sampleCell) {
+                                if (sampleCell.font) targetCell.font = JSON.parse(JSON.stringify(sampleCell.font));
+                                if (sampleCell.fill) targetCell.fill = JSON.parse(JSON.stringify(sampleCell.fill));
+                                if (sampleCell.border) targetCell.border = JSON.parse(JSON.stringify(sampleCell.border));
+                                if (sampleCell.alignment) targetCell.alignment = JSON.parse(JSON.stringify(sampleCell.alignment));
+                                if (sampleCell.numFmt) targetCell.numFmt = sampleCell.numFmt;
+                            }
+                        });
+
+                        newRow.commit();
+                        startTargetRow++;
+                    }
+                });
+
+                // Export to Excel file buffer
+                const outBuffer = await wb1.xlsx.writeBuffer();
+                const blob = new Blob([outBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                
+                // Trigger Download
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'CantosOrdenadosV3.xlsx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                alert("¡Fusión realizada con éxito! Se ha descargado CantosOrdenadosV3.xlsx con los estilos y formatos preservados.");
+
+            } catch (err) {
+                console.error(err);
+                alert("Ocurrió un error al procesar los archivos: " + err.message);
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // Generate Mock Sample Files for testing
+        async function generateSampleFiles() {
+            // Create CantosOrdenados.xlsx (Base)
+            const wb1 = new ExcelJS.Workbook();
+            const ws1 = wb1.addWorksheet('Cantos');
+
+            ws1.columns = [
+                { header: 'ID Canto', key: 'id', width: 12 },
+                { header: 'Título del Canto', key: 'titulo', width: 28 },
+                { header: 'Categoría', key: 'categoria', width: 18 },
+                { header: 'Tiempo Litúrgico', key: 'tiempo', width: 20 },
+                { header: 'Página / Número', key: 'pagina', width: 15 }
+            ];
+
+            // Header styling
+            ws1.getRow(1).font = { bold: true, color: { argb: 'FFFFFF' }, name: 'Calibri', size: 11 };
+            ws1.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '166534' } }; // Dark green
+            ws1.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+            ws1.addRow({ id: 101, titulo: 'Canto de Entrada - Pescador de Hombres', categoria: 'Entrada', tiempo: 'Ordinario', pagina: 'Pág. 12' });
+            ws1.addRow({ id: 102, titulo: 'Señor Ten Piedad', categoria: 'Kyrie', tiempo: 'Cuaresma', pagina: 'Pág. 15' });
+            ws1.addRow({ id: 103, titulo: 'Aleluya Canto Litúrgico', categoria: 'Aleluya', tiempo: 'Pascua', pagina: 'Pág. 22' });
+
+            // Apply data row formatting
+            for (let r = 2; r <= 4; r++) {
+                const row = ws1.getRow(r);
+                row.font = { name: 'Calibri', size: 10 };
+                row.border = {
+                    bottom: { style: 'thin', color: { argb: 'E2E8F0' } },
+                    right: { style: 'thin', color: { argb: 'E2E8F0' } }
+                };
+            }
+
+            const buf1 = await wb1.xlsx.writeBuffer();
+            file1Buffer = buf1;
+            file1Data = wb1;
+            updateFileStatus(1, 'CantosOrdenados.xlsx (Demo)', true);
+            parseWorkbook1();
+
+            // Create CantosOrdenadosV2.xlsx (New Data)
+            const wb2 = new ExcelJS.Workbook();
+            const ws2 = wb2.addWorksheet('Cantos');
+
+            ws2.columns = [
+                { header: 'ID Canto', key: 'id', width: 12 },
+                { header: 'Título del Canto', key: 'titulo', width: 28 },
+                { header: 'Categoría', key: 'categoria', width: 18 },
+                { header: 'Tiempo Litúrgico', key: 'tiempo', width: 20 },
+                { header: 'Página / Número', key: 'pagina', width: 15 }
+            ];
+
+            ws2.addRow({ id: 104, titulo: 'Santo es el Señor', categoria: 'Santo', tiempo: 'Ordinario', pagina: 'Pág. 30' });
+            ws2.addRow({ id: 105, titulo: 'Cordero de Dios', categoria: 'Comunión', tiempo: 'Ordinario', pagina: 'Pág. 34' });
+            ws2.addRow({ id: 102, titulo: 'Señor Ten Piedad (Duplicado de muestra)', categoria: 'Kyrie', tiempo: 'Cuaresma', pagina: 'Pág. 15' });
+
+            const buf2 = await wb2.xlsx.writeBuffer();
+            file2Buffer = buf2;
+            file2Data = wb2;
+            updateFileStatus(2, 'CantosOrdenadosV2.xlsx (Demo)', true);
+            parseWorkbook2();
+
+            checkBothFilesLoaded();
+        }
+
+        function copyPythonCode() {
+            const code = document.getElementById('pythonCodeBlock').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert("¡Código Python copiado al portapapeles!");
+            });
+        }
+    </script>
+</body>
+</html>

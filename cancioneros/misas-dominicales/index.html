@@ -23,6 +23,55 @@
       font-size:.75rem; line-height:1; padding:.25rem .5rem;
       font-weight:600; letter-spacing:.3px;
     }
+
+    /* ── Listados con scroll interno: máx. 10 filas visibles ───────────── */
+    /* display:block es CRÍTICO: neutraliza el flex-column de .list-group    */
+    /* de Bootstrap, que comprime los hijos para caber y rompe el scroll.    */
+    .song-list,
+    .file-list {
+      max-height: 450px !important;   /* 10 filas × 45px */
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      display: block !important;
+      scrollbar-width: thin;
+      scrollbar-color: #a0aec0 #edf2f7;
+    }
+    .song-list::-webkit-scrollbar,
+    .file-list::-webkit-scrollbar { width: 6px; }
+    .song-list::-webkit-scrollbar-track,
+    .file-list::-webkit-scrollbar-track { background: #edf2f7; }
+    .song-list::-webkit-scrollbar-thumb,
+    .file-list::-webkit-scrollbar-thumb { background: #a0aec0; border-radius: 3px; }
+    .song-list::-webkit-scrollbar-thumb:hover,
+    .file-list::-webkit-scrollbar-thumb:hover { background: #718096; }
+
+    /* Altura fija + flex-shrink:0 para que el cálculo 10×45 sea exacto */
+    .song-list .list-group-item,
+    .file-list .list-group-item {
+      height: 45px !important;
+      min-height: 45px !important;
+      max-height: 45px !important;
+      flex-shrink: 0 !important;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      padding: .55rem 1rem;
+    }
+    /* Títulos largos: una sola línea truncada con elipsis */
+    .song-list .list-group-item > a,
+    .file-list .list-group-item > a {
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .song-list .list-group-item > a > i,
+    .file-list .list-group-item > a > i,
+    .file-list .list-group-item > i {
+      flex-shrink: 0;
+    }
+
   </style>
 </head>
 <body>
@@ -41,66 +90,82 @@
     <button class="btn btn-sm btn-outline-light sort-btn" type="button" data-sort-target="#file-list" title="Ordenar archivos (A→Z / Z→A)">A→Z</button>
   </div>
   <div class="card-body p-0">
-    <div class="list-group" id="file-list" data-sort-dir="asc">
+    <div class="list-group file-list" id="file-list"
+         data-sort-dir="asc" style="max-height:450px !important;overflow-y:auto !important;overflow-x:hidden !important;display:block !important;scrollbar-width:thin;scrollbar-color:#a0aec0 #edf2f7;">
       <a href="Esquema20260614.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20130626">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20130626
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20130626</span>
       </a>
       <a href="Esquema20260621.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260621">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260621
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260621</span>
       </a>
       <a href="esquema20260712.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260712">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260712
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260712</span>
       </a>
       <a href="Domingo20260726.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260726">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260726
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260726</span>
       </a>
       <a href="Esquema_20260802.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260802">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260802
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260802</span>
       </a>
       <a href="Esquema20260823c.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260823">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260823
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260823</span>
       </a>
       <a href="esquema20260830.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260830">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260830
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260830</span>
       </a>
       <a href="esquema20260913.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260913">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260913
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260913</span>
       </a>
       <a href="misa20260920.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260920">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260920
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260920</span>
       </a>
       <a href="Domingo20260927.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20260927">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20260927
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20260927</span>
       </a>
       <a href="Cantos20261003.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20261003">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20261003
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20261003</span>
       </a>
       <a href="Esquema20261011.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20261011">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20261011
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20261011</span>
       </a>
       <a href="Esquema20261018.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20261018">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20261018
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20261018</span>
       </a>
       <a href="Esquema20261025.html" class="list-group-item list-group-item-action"
          data-sort-key="Misa del 20261025">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Misa del 20261025
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Misa del 20261025</span>
       </a>
       <a href="Esquema_260816.html" class="list-group-item list-group-item-action"
          data-sort-key="Toma de pocesion Padre Jorge Onerger">
-        <i class="bi bi-file-earmark-text me-2 text-muted"></i>Toma de pocesion Padre Jorge Onerger
+        <i class="bi bi-file-earmark-text me-2 text-muted"></i>
+        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Toma de pocesion Padre Jorge Onerger</span>
       </a>
     </div>
   </div>
@@ -112,6 +177,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
   (function () {
+    // ── Ordenación asc/desc por lista ──────────────────────────────────
     function sortList(listEl, dir) {
       var items = Array.prototype.slice.call(listEl.children);
       items.sort(function (a, b) {
@@ -133,6 +199,32 @@
         btn.textContent = newDir === 'asc' ? 'A\u2192Z' : 'Z\u2192A';
       });
     });
+
+    // ── Refuerzo: máx. 10 filas visibles con scroll interno ───────────
+    function enforceMaxHeight() {
+      var MAX_H = 450;   // 10 filas × 45 px
+      var ROW_H = 45;
+      document.querySelectorAll('.song-list, .file-list').forEach(function (ul) {
+        ul.style.setProperty('max-height', MAX_H + 'px', 'important');
+        ul.style.setProperty('overflow-y', 'auto', 'important');
+        ul.style.setProperty('overflow-x', 'hidden', 'important');
+        ul.style.setProperty('display', 'block', 'important');
+        // Bloquear la compresión flex de Bootstrap en cada fila
+        Array.prototype.forEach.call(ul.children, function (li) {
+          li.style.setProperty('height', ROW_H + 'px', 'important');
+          li.style.setProperty('min-height', ROW_H + 'px', 'important');
+          li.style.setProperty('max-height', ROW_H + 'px', 'important');
+          li.style.setProperty('flex-shrink', '0', 'important');
+          li.style.setProperty('box-sizing', 'border-box', 'important');
+        });
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', enforceMaxHeight);
+    } else {
+      enforceMaxHeight();
+    }
+    window.addEventListener('load', enforceMaxHeight);
   })();
   </script>
 </body>

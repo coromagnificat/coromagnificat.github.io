@@ -23,6 +23,55 @@
       font-size:.75rem; line-height:1; padding:.25rem .5rem;
       font-weight:600; letter-spacing:.3px;
     }
+
+    /* ── Listados con scroll interno: máx. 10 filas visibles ───────────── */
+    /* display:block es CRÍTICO: neutraliza el flex-column de .list-group    */
+    /* de Bootstrap, que comprime los hijos para caber y rompe el scroll.    */
+    .song-list,
+    .file-list {
+      max-height: 450px !important;   /* 10 filas × 45px */
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      display: block !important;
+      scrollbar-width: thin;
+      scrollbar-color: #a0aec0 #edf2f7;
+    }
+    .song-list::-webkit-scrollbar,
+    .file-list::-webkit-scrollbar { width: 6px; }
+    .song-list::-webkit-scrollbar-track,
+    .file-list::-webkit-scrollbar-track { background: #edf2f7; }
+    .song-list::-webkit-scrollbar-thumb,
+    .file-list::-webkit-scrollbar-thumb { background: #a0aec0; border-radius: 3px; }
+    .song-list::-webkit-scrollbar-thumb:hover,
+    .file-list::-webkit-scrollbar-thumb:hover { background: #718096; }
+
+    /* Altura fija + flex-shrink:0 para que el cálculo 10×45 sea exacto */
+    .song-list .list-group-item,
+    .file-list .list-group-item {
+      height: 45px !important;
+      min-height: 45px !important;
+      max-height: 45px !important;
+      flex-shrink: 0 !important;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      padding: .55rem 1rem;
+    }
+    /* Títulos largos: una sola línea truncada con elipsis */
+    .song-list .list-group-item > a,
+    .file-list .list-group-item > a {
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .song-list .list-group-item > a > i,
+    .file-list .list-group-item > a > i,
+    .file-list .list-group-item > i {
+      flex-shrink: 0;
+    }
+
   </style>
 </head>
 <body>
@@ -72,9 +121,9 @@
     </div>
     <div class="col-md-6 col-lg-4">
       <div class="card h-100 shadow-sm">
-        <div class="card-header"><i class="bi bi-calendar-event-fill me-2"></i>Tiempos litúrgicos <span class="badge bg-secondary">1</span></div>
+        <div class="card-header"><i class="bi bi-calendar-event-fill me-2"></i>Tiempos litúrgicos <span class="badge bg-secondary">0</span></div>
         <div class="card-body">
-          <p class="text-muted small mb-3">1 archivo(s) en esta categoría.</p>
+          <p class="text-muted small mb-3">0 archivo(s) en esta categoría.</p>
           <a href="cancioneros/tiempos-liturgicos/index.html" class="btn btn-outline-primary w-100">
             <i class="bi bi-folder2-open me-1"></i>Abrir
           </a>
