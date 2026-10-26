@@ -9,11 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --base-lyrics-size: 16px; }
+        :root { --base-lyrics-size: 15px; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #0f172a; font-family: 'Quicksand', sans-serif; min-height: 100vh; min-height: 100dvh; overflow: hidden; color: #1e293b; margin: 0; }
         .app-container { width: 100vw; height: 100vh; height: 100dvh; position: relative; background-color: #fff; overflow: hidden; transition: all 0.3s ease; }
-        .app-container.windowed { width: 405px; height: 720px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .app-container.windowed { width: min(405px, 100vw); height: min(720px, 100vh); height: min(720px, 100dvh); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 75px 24px 90px 24px; text-align: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1; overflow: hidden; }
         .slide-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: 0 auto; width: 100%; overflow: hidden; }
         .slide:not(:first-child) .slide-content { max-width: 80%; }
@@ -52,7 +52,7 @@
         </div>
         <div class="action-group">
             <button class="action-btn" onclick="goToSlide(1)" title="Ir al Índice"><i class="fa-solid fa-list"></i></button>
-            <button class="action-btn" onclick="toggleMaximize()" id="maxBtn" title="Vista Completa"><i class="fa-solid fa-compress"></i></button>
+            <button class="action-btn" onclick="toggleMaximize()" id="maxBtn" title="Pantalla Completa"><i class="fa-solid fa-expand"></i></button>
         </div>
     </div>
 
@@ -71,7 +71,7 @@
         <div class="bg-watermark"><i class="fa-solid fa-book"></i></div>
         <div class="slide-content">
             <div class="scroll-area">
-                <h2 class="song-title" style="margin-bottom: 10px;">Esquema / Índice</h2>
+                <h2 class="song-title" style="margin-bottom: 10px;">Esquema</h2>
                 <div class="index-container">
                     <ul class="index-list">
                         <li onclick="goToSlide(2)">1. Entrada: La misa es una fiesta <span class="tone">Re</span></li>
@@ -207,20 +207,7 @@ Aleluyaaa, aleluyaaa</div>
                 <div class="moment-label">Ofertorio</div>
                 <h2 class="song-title">Ante tu altar</h2>
                 <div class="tone-badge">Re</div>
-                <div class="lyrics">Ante tu altar
-Hoy como hermanos
-El pan y el vino te presentamos (Bis)
-
-Fruto del sudor
-Y del esfuerzo del hombre
-Son transformados
-en cuerpo y sangre de nuestro Señor (Bis)
-
-Todos unidos en tus manos estamos
-y como trigo puro nos puedes sembrar.
-Pués el trigo que no muere solo se queda.
-Y el que muere,
-y el que muere fruto eterno dará</div>
+                <div class="lyrics"></div>
             </div>
         </div>
     </div>
@@ -231,17 +218,17 @@ y el que muere fruto eterno dará</div>
                 <div class="moment-label">Santo</div>
                 <h2 class="song-title">Santo Ohsanna</h2>
                 <div class="tone-badge">La-</div>
-                <div class="lyrics">Santo, santo, santo es el Señor (2v)
-Dios del universo. (2v)
+                <div class="lyrics">Santo, santo, santo es el Señor.
+Dios del universo, santo es el Señor.
 
-Hosanna, hosanna, hosanna, hosanna
-en lo alto del cielo. (2v)
+Hosanna, hosanna, hosanna en el cielo,
+Hosanna, hosanna, hosanna en el cielo.
 
-Bendito el que viene en el nombre del Señor (2v)
-En el nombre del Señor. (2v)
+Bendito el que viene en el nombre del Señor. Hosanna
+Bendito el que viene en el nombre del Señor. Hosanna
 
-Hosanna, hosanna, hosanna, hosanna
-en lo alto del cielo. (2v)</div>
+Hosanna, hosanna, hosanna en el cielo,
+Hosanna, hosanna, hosanna en el cielo.</div>
             </div>
         </div>
     </div>
@@ -417,7 +404,7 @@ Ella es, ella es, ella es maría</div>
 
 <script>
             let currentSlide = 0;
-            let currentFontSize = 16;
+            let currentFontSize = 15;
             const slides = document.querySelectorAll('.slide');
             const pageIndicator = document.getElementById('pageIndicator');
             const appFrame = document.getElementById('appFrame');
@@ -442,37 +429,45 @@ Ella es, ella es, ella es maría</div>
 
             function changeFontSize(amount) {
                 let n = currentFontSize + amount;
-                if (n >= 12 && n <= 36) { currentFontSize = n; document.documentElement.style.setProperty('--base-lyrics-size', n + 'px'); }
+                if (n >= 10 && n <= 25) { currentFontSize = n; document.documentElement.style.setProperty('--base-lyrics-size', n + 'px'); }
             }
 
             function toggleMaximize() {
-                appFrame.classList.toggle('windowed');
-                if (appFrame.classList.contains('windowed')) {
-                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-                    maxBtn.title = "Desplegar completo";
-                    if (document.fullscreenElement && document.exitFullscreen) {
-                        document.exitFullscreen();
+                if (document.fullscreenElement) {
+                    // Estaba maximizado -> salir de pantalla completa
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
                     }
                 } else {
-                    maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-                    maxBtn.title = "Vista de Ventana";
-                    if (!document.fullscreenElement) {
-                        document.documentElement.requestFullscreen().catch(err => {
-                            console.log("Pantalla completa sujeta a interacción de usuario.");
-                        });
+                    // No estaba maximizado -> entrar en pantalla completa
+                    const el = document.documentElement;
+                    const reqFS = el.requestFullscreen
+                        || el.webkitRequestFullscreen
+                        || el.msRequestFullscreen;
+                    if (reqFS) {
+                        reqFS.call(el).catch(() => {});
                     }
                 }
             }
 
-            document.addEventListener('fullscreenchange', () => {
-                if (!document.fullscreenElement) {
-                    appFrame.classList.add('windowed');
-                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-                } else {
+            // Único listener que sincroniza el icono con el estado REAL de FS.
+            // Así nunca aparece un tercer estado desincronizado.
+            function syncMaxBtn() {
+                const isFS = document.fullscreenElement
+                    || document.webkitFullscreenElement
+                    || document.msFullscreenElement;
+                if (isFS) {
                     appFrame.classList.remove('windowed');
                     maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                    maxBtn.title = "Salir de Pantalla Completa";
+                } else {
+                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                    maxBtn.title = "Pantalla Completa";
                 }
-            });
+            }
+            document.addEventListener('fullscreenchange', syncMaxBtn);
+            document.addEventListener('webkitfullscreenchange', syncMaxBtn);
+            document.addEventListener('MSFullscreenChange', syncMaxBtn);
 
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') nextSlide(); if (e.key === 'ArrowLeft') prevSlide();
