@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dios es fiel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --base-lyrics-size: 22px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #0f172a; font-family: 'Quicksand', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; overflow: hidden; color: #1e293b; }
+        .app-container { width: 100vw; height: 100vh; height: 100dvh; position: relative; background-color: #fff; overflow: hidden; transition: all 0.3s ease; }
+        .app-container.windowed { width: 405px; height: 720px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 75px 24px 90px 24px; text-align: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1; overflow: hidden; }
+        .slide-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: 0 auto; width: 100%; overflow: hidden; }
+        .slide.active { opacity: 1; visibility: visible; z-index: 2; }
+        .bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.03; z-index: 0; pointer-events: none; }
+        .bg-watermark i { font-size: 450px; color: #000; }
+        .bg-cream { background-color: #fffaf0; } .bg-mint { background-color: #f4fff8; } .bg-sky { background-color: #f0f7ff; } .bg-rose { background-color: #fff5f7; } .bg-lavender { background-color: #f9f8ff; } .bg-peach { background-color: #fff5ea; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 28px; color: #0f172a; margin-top: 10px; }
+        h2.song-title { font-family: 'Poppins', sans-serif; font-size: 22px; color: #334155; text-transform: uppercase; flex-shrink: 0; margin-top: 10px; }
+        .tone-badge { align-self: center; background-color: rgba(0, 0, 0, 0.06); padding: 4px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; color: #475569; margin: 6px 0 12px 0; flex-shrink: 0; }
+        .lyrics { font-size: var(--base-lyrics-size); line-height: 1.45; font-weight: 700; white-space: pre-line; color: #1e293b; margin: auto 0; transition: font-size 0.15s ease; overflow-y: auto; padding: 0 4px; flex-grow: 1; max-height: 100%; text-align: left; }
+        .repeat { color: #94a3b8; font-style: italic; font-weight: bold; font-size: 0.9em; display: block; margin-top: 2px; }
+        .footer { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; padding-top: 8px; flex-shrink: 0; text-align: center; }
+        .index-container { overflow-y: auto; flex-grow: 1; width: 100%; padding-right: 5px; margin-bottom: 5px; }
+        .index-list { list-style: none; width: 100%; text-align: left; }
+        .index-list li { padding: 12px 8px; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: calc(var(--base-lyrics-size) * 0.7); font-weight: 700; color: #334155; }
+        .index-list li:hover { background-color: rgba(0,0,0,0.03); }
+        .index-list li span.tone { color: #64748b; font-size: 0.75em; background: rgba(0,0,0,0.04); padding: 2px 8px; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+        .nav-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 24px env(safe-area-inset-bottom, 12px) 24px; background: linear-gradient(to top, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, transparent 100%); pointer-events: none; }
+        .nav-btn { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.08); width: 48px; height: 48px; border-radius: 50px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); cursor: pointer; display: flex; justify-content: center; align-items: center; color: #475569; font-size: 18px; pointer-events: auto; }
+        .top-actions { position: absolute; top: 15px; left: 0; width: 100%; padding: 0 20px; z-index: 101; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .action-group { display: flex; gap: 8px; pointer-events: auto; }
+        .action-btn { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); backdrop-filter: blur(4px); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; color: #475569; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="appFrame">
+    <div class="top-actions">
+        <div class="action-group">
+            <button class="action-btn" onclick="changeFontSize(-2)" title="Reducir Letra"><i class="fa-solid fa-minus"></i></button>
+            <button class="action-btn" onclick="changeFontSize(2)" title="Aumentar Letra"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="action-group">
+            <button class="action-btn" onclick="goToSlide(1)" title="Ir al Índice"><i class="fa-solid fa-list"></i></button>
+            <button class="action-btn" onclick="toggleMaximize()" id="maxBtn" title="Vista Completa"><i class="fa-solid fa-compress"></i></button>
+        </div>
+    </div>
+
+    <!-- Portada -->
+    <div class="slide bg-cream active">
+        <div class="bg-watermark"><i class="fa-solid fa-church"></i></div>
+        <div class="slide-content" style="justify-content: center;">
+            <h1>Dios es fiel</h1>
+            <p style="font-size: 16px; color: #64748b; margin-top: 5px; font-weight: 700;">¡Qué hermoso eres, Señor! Grande es tu fidelidad.</p>
+            <div class="footer" style="margin-top: 60px;">Desliza o usa botones</div>
+        </div>
+    </div>
+
+    <!-- Índice -->
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-book"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title" style="margin-bottom: 10px;">Esquema / Índice</h2>
+            <div class="index-container">
+                <ul class="index-list">
+                    <li onclick="goToSlide(2)">1. Adoración: Tu fidelidad <span class="tone">Re</span></li>
+<li onclick="goToSlide(3)">2. Tuyo soy, Señor, porque tu amor en la cruz me dio vida eterna.: Entrega <span class="tone">Toma mis manos, mis labios y mi vida entera, hermoso Padre celestial.</span></li>
+<li onclick="goToSlide(4)">3. Entrega: Tuyo soy <span class="tone">Do</span></li>
+<li onclick="goToSlide(5)">4. Quiero alabarte más y más, hermoso Dios, porque tu gracia es infinita.: Alabanza <span class="tone">Las aves del cielo cantan tu grandeza y yo también quiero alabarte.</span></li>
+<li onclick="goToSlide(6)">5. Quiero alabarte: Alabanza <span class="tone">Sol</span></li>
+<li onclick="goToSlide(7)">6. Levanto mis manos al cielo para proclamar tu nombre grande y hermoso, Señor.: Alabanza <span class="tone">Cierro mis ojos y veo tu gloria, Rey hermoso de toda la creación.</span></li>
+<li onclick="goToSlide(8)">7. Digno de alabar: Alabanza <span class="tone">DO</span></li>
+<li onclick="goToSlide(9)">8. Alma de Cristo hermoso, santifica mi vida entera con tu gracia infinita.: Contemplación <span class="tone">Tu cuerpo glorioso me salva porque tu misericordia es grande y hermosa.</span></li>
+<li onclick="goToSlide(10)">9. Alma de Cristo: Adoración <span class="tone">La-</span></li>
+<li onclick="goToSlide(11)">10. Jesús, tú eres la persona más importante y hermosa de toda la creación.: Adoración <span class="tone">Rey de reyes, tu grandeza hermosa llena cada rincón de este lugar santo.</span></li>
+<li onclick="goToSlide(12)">11. Jesús tu eres la persona: Adoración <span class="tone">Mi</span></li>
+<li onclick="goToSlide(13)">12. Escucha su voz hermosa porque el Señor habla con amor a tu corazón.: Entrega <span class="tone">No te resistas al amor grande y hermoso de Jesús, tu Salvador eterno.</span></li>
+<li onclick="goToSlide(14)">13. Entra Jesús: Entrega <span class="tone">Do</span></li>
+<li onclick="goToSlide(15)">14. Qué hermoso es estar en tu presencia, Señor glorioso, sintiendo tu paz y amor.: Adoración <span class="tone">Tu hermosura no tiene comparación, Dios grande, y quiero permanecer en tu amor.</span></li>
+<li onclick="goToSlide(16)">15. Que bien se está aquí: Adoración <span class="tone">Mi</span></li>
+<li onclick="goToSlide(17)">16. Cómo no creer en Ti, hermoso Señor, si todo lo que soy viene de Ti.: Alabanza <span class="tone">Respiro, camino y descanso en tu amor grande y hermoso, mi Salvador glorioso.</span></li>
+<li onclick="goToSlide(18)">17. Cómo no creer en Ti: Alabanza <span class="tone">Sol</span></li>
+<li onclick="goToSlide(19)">18. El Señor está presente en su santuario hermoso y su gloria llena todo.: Adoración <span class="tone">Vamos a alabar al Rey hermoso porque su misericordia grande nos sostiene siempre.</span></li>
+<li onclick="goToSlide(20)">19. El Señor está presente: Adoración <span class="tone">Mi-</span></li>
+<li onclick="goToSlide(21)">20. Ven Espíritu Santo, promesa divina que Jesús nos dejó con tanto amor.: Espíritu Santo <span class="tone">Llena nuestras vidas con tu fuego de amor hermoso, Espíritu Santo glorioso.</span></li>
+<li onclick="goToSlide(22)">21. Espíritu Santo: Invocación <span class="tone">Re</span></li>
+<li onclick="goToSlide(23)">22. Señor, quiero adorarte en espíritu y verdad porque tu amor es hermoso y grande.: Adoración <span class="tone">Dame un corazón sencillo para entrar en tu presencia hermosa y gloriosa, Señor.</span></li>
+<li onclick="goToSlide(24)">23. Adorador: Adoración <span class="tone">Do</span></li>
+
+                </ul>
+            </div>
+            <div class="footer">Presiona para ir directo al canto</div>
+        </div>
+    </div>
+
+    <!-- Bloques de Diapositivas -->
+    
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Adoración</h2>
+            <div class="tone-badge">Tono: Re</div>
+            <div class="lyrics">Tu fidelidad es grande.
+Tu fidelidad incomparable es.
+Nadie como tu bendito Dios.
+Grande es tu fidelidad.
+
+Tu amor por mi es grande.
+Tu amor por mi incomparable es.
+Nadie como tu bendito Dios.
+Grande es tu amor por mi.</div>
+            <div class="footer">Tu fidelidad - Pág. 1</div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Tuyo soy, Señor, porque tu amor en la cruz me dio vida eterna.</h2>
+            <div class="tone-badge">Tono: Toma mis manos, mis labios y mi vida entera, hermoso Padre celestial.</div>
+            <div class="lyrics">De rodillas ante tu grandeza reconozco mi pequeñez y te entrego todo.
+No soy nada, pero tu misericordia me levantó del polvo hasta tu gloria.
+
+Moriste por mí en la cruz y hoy mi corazón te pertenece.
+Qué hermoso es rendir mi vida entera ante tu presencia, bendito Jesús.
+
+Todo lo que tengo y todo lo que soy te pertenece, Señor.
+Tu grandeza me asombra y tu misericordia hermosa me sostiene cada día.
+
+Del polvo nací, pero tu amor tan grande me hizo tu hijo.
+Me entrego por completo a tus pies, hermoso Rey de toda gloria.
+
+Tuyo soy de corazón, de alma y de vida, mi hermoso Salvador.
+Tu sacrificio en la cruz es la prueba más hermosa de tu amor.
+
+No tengo más que darte que todo mi ser, y eso es tuyo.
+Cuando te miro de rodillas veo tu grandeza y mi corazón se rinde.
+
+Eres tan grande y misericordioso que mi pequeña vida cobra sentido en Ti.
+Toma mi vida entera, Padre hermoso, porque todo lo que soy es tuyo.
+
+Tu amor me rescató del polvo y me sentó en lugares celestiales.
+Ante la cruz solo puedo exclamar que soy tuyo para siempre, Jesús.
+
+Qué bello es saber que tu misericordia grande me acompaña cada momento.
+Tuyo soy, tuyo soy, porque tu amor hermoso y grande me conquistó.</div>
+            <div class="footer">Entrega - Pág. 2</div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Entrega</h2>
+            <div class="tone-badge">Tono: Do</div>
+            <div class="lyrics">|1|
+Yo no soy nada y del polvo nací
+pero Tú me amas y moriste por mí
+ante la cruz, sólo puedo exclamar
+
+tuyo soy, tuyo soy.
+Toma mis manos, te pido
+Toma mis labios, te amo
+Toma mi vida, Oh Padre.
+tuyo soy, tuyo soy.
+
+|2|
+Cuando de rodillas te miro, Jesús
+veo tu grandeza y mi pequeñez
+qué puedo darte yo, todo mi ser
+
+<span class="repeat">tuyo soy, tuyo ...</span></div>
+            <div class="footer">Tuyo soy - Pág. 3</div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Quiero alabarte más y más, hermoso Dios, porque tu gracia es infinita.</h2>
+            <div class="tone-badge">Tono: Las aves del cielo cantan tu grandeza y yo también quiero alabarte.</div>
+            <div class="lyrics">Busco tu voluntad cada día porque tu gracia hermosa me transforma siempre.
+Levanto mis manos al cielo para adorar tu nombre grande y misericordioso.
+
+Quiero seguirte más y más, hermoso Jesús, porque tu camino es vida.
+Toda la creación refleja tu poder y yo deseo alabarte con todo.
+
+Tu gracia es tan hermosa que mi corazón solo quiere servirte siempre.
+Quiero servirte con todo mi ser, Señor grande y lleno de misericordia.
+
+Más y más aún quiero conocer tu voluntad perfecta y tu amor.
+Las bestias del campo muestran tu poder y yo levanto mis manos.
+
+Tu nombre es hermoso sobre toda la tierra y quiero alabarte siempre.
+Quiero seguir tus pasos, misericordioso Salvador, porque tu gracia me sostiene hoy.
+
+Cada mañana busco tu voluntad para servirte con un corazón agradecido siempre.
+Tu grandeza es tan hermosa que toda mi vida quiere alabarte más.
+
+Levanto mis manos y mi voz para declarar que eres incomparable, Dios.
+Quiero conocer más de tu gracia porque tu misericordia es grande y bella.
+
+Servirte es mi mayor gozo, hermoso Padre, porque tu amor es eterno.
+Más y más aún quiero alabarte, Señor, porque tu fidelidad es grande.
+
+Tu creación entera canta tu hermosura y yo me uno a su alabanza.
+Quiero seguirte, alabarte y servirte porque eres el Dios más hermoso y grande.</div>
+            <div class="footer">Alabanza - Pág. 4</div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Quiero alabarte</h2>
+            <div class="tone-badge">Tono: Sol</div>
+            <div class="lyrics">Quiero alabarte más y más aún,
+quiero alabarte. Más y más aún,
+buscar tu voluntad, tu gracia conocer:
+quiero alabarte.
+
+Las aves del cielo cantan para tí,
+las bestias del campo reflejan tu poder.
+Quiero cantar, quiero levantar
+mis manos a tí.
+
+Quiero seguirte más y más aún,
+quiero seguirte. Más y más aún,
+buscar tu voluntad, tu gracia conocer:
+quiero seguirte.
+
+Quiero servirte más y más aún,
+quiero servirte. Más y más aún,
+buscar tu voluntad, tu gracia conocer:
+quiero servirte.</div>
+            <div class="footer">Alabanza - Pág. 5</div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Levanto mis manos al cielo para proclamar tu nombre grande y hermoso, Señor.</h2>
+            <div class="tone-badge">Tono: Cierro mis ojos y veo tu gloria, Rey hermoso de toda la creación.</div>
+            <div class="lyrics">Digno de alabar eres Tú, Dios de poder, majestad y misericordia infinita.
+Tu gloria y majestad llenan el cielo y toda la tierra te adora.
+
+Rey de la creación, tu nombre es poderoso y hermoso por siempre jamás.
+Levanto mis manos porque tu misericordia grande me sostiene cada día de vida.
+
+Proclamo tu nombre con gozo porque eres digno de toda alabanza y gloria.
+Dios de poder, tu majestad es tan hermosa que toda rodilla se dobla.
+
+Cierro mis ojos y siento tu presencia hermosa que llena todo este lugar.
+Gloria y majestad sean a Ti, Rey eterno, porque tu amor es grande.
+
+Eres digno de alabar por siempre, hermoso Dios, creador de cielos y tierra.
+Levanto mis manos y mi voz para declarar que eres el Rey eterno.
+
+Tu poder es tan grande y hermoso que toda la creación te alaba.
+Rey de la creación, tu gloria no tiene fin y tu misericordia abunda.
+
+Proclamo tu nombre poderoso porque eres digno de alabanza, honor y majestad.
+Cierro mis ojos ante tu grandeza y levanto mis manos en adoración pura.
+
+Dios de poder y misericordia, tu majestad hermosa brilla por toda la eternidad.
+Digno de alabar eres Tú, Señor, porque tu gloria llena toda la tierra.
+
+Por siempre y para siempre proclamamos que eres el Rey de toda creación.
+Levanto mis manos al Dios de poder, hermoso y misericordioso, digno de alabar.</div>
+            <div class="footer">Alabanza - Pág. 6</div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Digno de alabar</h2>
+            <div class="tone-badge">Tono: DO</div>
+            <div class="lyrics">Levanto mis manos,
+cierro mis ojos,
+para proclamar tu nombre,
+Dios de poder. (Bis)
+
+Digno de alabar, Señor.
+Gloria y majestad,  sean a Ti.
+Rey de la creación,
+por siempre. Ameeeeeeen.
+
+Digno de alabar, Señor.
+Gloria y majestad,  sean a Ti.
+Rey de la creación,
+por siempre. Amén.
+
+Levanto mis manos
+Cierro mis ojos,
+Para proclamar tu nombre,
+Dios de poder.
+
+Digno de alabar, Señor.
+Gloria y majestad,  sean a Ti.
+Rey de la creación,
+por siempre. Ameeeeeeen.
+
+Digno de alabar, Señor.
+Gloria y majestad,  sean a Ti.
+Rey de la creación,
+por siempre. Amén.
+Rey de la creación
+por siempre. Ameeeeeen.</div>
+            <div class="footer">Alabanza - Pág. 7</div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Alma de Cristo hermoso, santifica mi vida entera con tu gracia infinita.</h2>
+            <div class="tone-badge">Tono: Tu cuerpo glorioso me salva porque tu misericordia es grande y hermosa.</div>
+            <div class="lyrics">Sangre preciosa de Cristo, tu amor hermoso me limpia y me renueva.
+Agua de tu costado, lávame con tu misericordia grande y eterna siempre.
+
+Tu pasión gloriosa me conforta porque eres un Dios hermoso y poderoso.
+Oh buen Jesús, óyeme y escóndeme dentro de tus llagas misericordiosas y hermosas.
+
+No permitas que me aparte de ti, hermoso Salvador lleno de gracia.
+Defiéndeme del enemigo, Rey poderoso, porque tu amor grande me protege siempre.
+
+En la hora de mi muerte llámame a tu presencia hermosa y gloriosa.
+Mándame ir a Ti para alabarte con tus santos por toda la eternidad.
+
+Alma de Cristo, tu santidad es tan hermosa que transforma todo mi ser.
+Tu sangre preciosa es fuente de vida, misericordia y amor grande e infinito.
+
+Dentro de tus llagas encuentro refugio hermoso, paz y tu misericordia eterna.
+Oh buen Jesús, tu nombre es poderoso y tu gracia me santifica siempre.
+
+Tu cuerpo glorioso resucitado es la prueba más hermosa de tu amor grande.
+Agua de tu costado, fuente hermosa de misericordia que purifica toda mi vida.
+
+Tu pasión gloriosa me da fortaleza porque tu amor es grande e incomparable.
+Escóndeme en tu corazón misericordioso, hermoso Jesús, y nunca me apartes de Ti.
+
+Con tus santos te alabaré por siempre porque eres digno, hermoso y grande.
+Por los siglos de los siglos tu misericordia hermosa y grande reinará siempre.</div>
+            <div class="footer">Contemplación - Pág. 8</div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Alma de Cristo</h2>
+            <div class="tone-badge">Tono: La-</div>
+            <div class="lyrics">Alma de Cristo, santificame.
+Cuerpo de Cristo, sálvame.
+Sangre de Cristo, embriágame.
+Agua del costado de Cristo, lávame.
+Pasion de Cristo, confórtame
+
+Oh buen Jesus ¡Óyeme!
+y dentro de tus llagas, escóndeme.
+No permitas que me aparte de ti;
+
+Del enemigo, defiéndeme.
+En la horade mi muerte, llámame
+y mandame ir a Ti
+para con tus santos te alabe
+por los siglos de los siglos
+Amen.</div>
+            <div class="footer">Adoración - Pág. 9</div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Jesús, tú eres la persona más importante y hermosa de toda la creación.</h2>
+            <div class="tone-badge">Tono: Rey de reyes, tu grandeza hermosa llena cada rincón de este lugar santo.</div>
+            <div class="lyrics">Señor de señores, tu misericordia grande cambió mi vida para siempre y siempre.
+No hay nadie más importante que Tú, hermoso Jesús, en todo el universo.
+
+Tu presencia hermosa transforma este lugar porque eres el Rey de toda gloria.
+Rey de reyes y Señor de señores, tu amor grande me rescató siempre.
+
+Jesús, tu nombre es el más hermoso y poderoso en cielos y tierra.
+Aquel que cambió mi vida es el Rey más hermoso de toda creación.
+
+Eres la persona más importante, hermoso Salvador, porque tu misericordia es grande siempre.
+Señor de señores, tu gloria hermosa y grande llena todo este lugar hoy.</div>
+            <div class="footer">Adoración - Pág. 10</div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Jesús tu eres la persona</h2>
+            <div class="tone-badge">Tono: Mi</div>
+            <div class="lyrics">Jesus tu eres la persona
+mas importante de este lugar. (2)
+
+Rey de reyes. Señor de señores
+aquel que mi vida cambio. (2)</div>
+            <div class="footer">Adoración - Pág. 11</div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Escucha su voz hermosa porque el Señor habla con amor a tu corazón.</h2>
+            <div class="tone-badge">Tono: No te resistas al amor grande y hermoso de Jesús, tu Salvador eterno.</div>
+            <div class="lyrics">Entra Jesús a mi vida, toma mi ser, porque todo es para Ti.
+Entre tus brazos hermosos quiero sentir tu amor grande y tu misericordia eterna.
+
+El Señor espera con amor hermoso que le abras la puerta de tu corazón.
+Deja que Jesús more en ti porque su presencia es grande y hermosa.
+
+Su voz es dulce y poderosa, habla con misericordia grande a tu corazón.
+Rinde tu vida al Rey hermoso que quiere morar contigo por toda la eternidad.
+
+Abre tu corazón al Señor porque su amor grande y hermoso te transforma.
+En los brazos de Jesús encuentras amor hermoso, misericordia grande y paz eterna.</div>
+            <div class="footer">Entrega - Pág. 12</div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Entra Jesús</h2>
+            <div class="tone-badge">Tono: Do</div>
+            <div class="lyrics">Cuando escuches la voz del Señor,
+el está hablando a tu corazón,
+no te resistas y quieras seguir
+como un rebelde.
+
+Entra Jesús, toma mi vida
+toma mi ser,
+que es para Ti
+y entre Tus brazos, quiero sentir
+cuanto me amas. ( Bis )
+
+Porque Él está esperando
+a que le abras tu corazón,
+para entrar y morar junto a ti
+toda la vida.
+
+<span class="repeat">Entra Jesús ...</span></div>
+            <div class="footer">Entrega - Pág. 13</div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Qué hermoso es estar en tu presencia, Señor glorioso, sintiendo tu paz y amor.</h2>
+            <div class="tone-badge">Tono: Tu hermosura no tiene comparación, Dios grande, y quiero permanecer en tu amor.</div>
+            <div class="lyrics">Glorioso Señor, qué bien se está a tu lado sintiendo tu misericordia tan grande.
+Con todo mi corazón te adoro, hermoso Señor, porque tu amor es incomparable.
+
+Tu presencia hermosa llena este lugar de paz, de amor y de tu gloria.
+Quiero permanecer por siempre en tu amor hermoso, Señor, porque no tienes comparación.
+
+Eres tan hermoso y glorioso, Señor, que mi corazón solo quiere adorarte siempre.
+Qué bien se está aquí contigo, Dios hermoso, sintiendo tu grandeza y tu paz.
+
+Con todo mi corazón te alabo, Rey hermoso, porque tu gloria no tiene fin.
+Tu amor es tan grande y hermoso que quiero quedarme en tu presencia siempre.</div>
+            <div class="footer">Adoración - Pág. 14</div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Que bien se está aquí</h2>
+            <div class="tone-badge">Tono: Mi</div>
+            <div class="lyrics">|1|
+Qué bien se está aquí En tu presencia
+Glorioso por siempre Señor
+Qué bien se está aquí a tu lado
+Sintiendo tu paz y tu amor
+
+Cuán hermoso eres, Señor
+Tu no tienes comparación
+Quiero permanecer
+Por siempre en tu amor
+
+|2|
+Qué bien se está aquí En tu presencia
+Glorioso por siempre Señor
+Qué bien se está aquí a tu lado
+Sintiendo tu paz y tu amor
+
+Cuán hermoso eres, Señor
+Tu no tienes comparación
+Quiero permanecer
+Por siempre en tu amor
+
+Cuan hermoso eres, Señor
+Tu no tienes comparación
+Quiero permanecer
+Por siempre en tu amor
+
+Con todo, Mi corazón
+Te adoro, Señor
+
+Cuán hermoso eres, Señor
+Tu no tienes comparación
+Quiero permanecer
+Por siempre en tu amor
+
+Con todo, Mi corazón
+Te alabo, Señor
+
+Cuán hermoso eres, Señor
+Tu no tienes comparación
+Quiero permanecer
+Por siempre en tu amor
+
+Qué bien se está aquí,
+en tu presencia</div>
+            <div class="footer">Adoración - Pág. 15</div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Cómo no creer en Ti, hermoso Señor, si todo lo que soy viene de Ti.</h2>
+            <div class="tone-badge">Tono: Respiro, camino y descanso en tu amor grande y hermoso, mi Salvador glorioso.</div>
+            <div class="lyrics">Tu amor hermoso brota de mis ojos y transforma todo a mi alrededor.
+Miro el horizonte y los montes y te veo, hermoso y grande Señor.
+
+Todo a mi alrededor es paz, gozo y amor gracias a tu misericordia.
+Te amo, Señor Jesús, hermoso Salvador, porque tu gracia grande me transformó.
+
+Cómo no creer en Ti si tu misericordia hermosa me sostiene cada día.
+Tu amor grande y hermoso convierte mi camino en rosas de salvación eterna.
+
+Te veo en cada monte y en cada amanecer, hermoso Dios de poder.
+Te amo, mi Salvador hermoso, porque tu misericordia grande me dio la vida.</div>
+            <div class="footer">Alabanza - Pág. 16</div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Cómo no creer en Ti</h2>
+            <div class="tone-badge">Tono: Sol</div>
+            <div class="lyrics">Cómo no creer en Ti (bis)
+Si miro, respiro y hablo,
+camino, pienso y descanso solo en Ti
+¿Cómo no creer en Ti? ¿Cómo no creer en Ti?
+
+Si el amor q' brota d' mis ojos al mirar
+Es Tu amor q' quiere convertir y trans-
+formar
+
+Todo Alrededor en paz, en gozo y amor
+En camino de rosas y espinas
+que esperan ansiosos a quien camina
+llevando a los hombres la salvación.
+
+¿Cómo no creer en Ti?
+Como no creer en Ti, si Tan solo con volver
+los ojos al horizonte.
+Tan solo con mirar los montes
+Te veo Señor, Te veo Señor.
+Te amo Señor Jesús, Te amo Señor Jesús
+Te amo Señor Jesús, Te amo Señor Jesús
+Te amo Señor Jesús, Te amo Señor Jesús
+Te amo Señor Jesús.
+Mi Salvador.</div>
+            <div class="footer">Alabanza - Pág. 17</div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">El Señor está presente en su santuario hermoso y su gloria llena todo.</h2>
+            <div class="tone-badge">Tono: Vamos a alabar al Rey hermoso porque su misericordia grande nos sostiene siempre.</div>
+            <div class="lyrics">Canten al Señor con gozo porque su presencia hermosa llena todo este lugar.
+Amemos a Jesús con todo el corazón porque su amor grande es eterno.
+
+Sirvamos al Señor glorioso porque su misericordia hermosa nos transformó para siempre.
+Adoremos al Rey de reyes en su santuario porque su grandeza es hermosa.
+
+La presencia del Señor es tan hermosa que todo su santuario resplandece hoy.
+Alabemos a Jesús, hermoso Salvador, porque su misericordia grande y gloriosa nos salvó.
+
+Cantemos con alegría al Señor hermoso porque su amor grande llena nuestra vida.
+Adoremos al Señor presente en su santuario porque su gloria hermosa es eterna.</div>
+            <div class="footer">Adoración - Pág. 18</div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">El Señor está presente</h2>
+            <div class="tone-badge">Tono: Mi-</div>
+            <div class="lyrics">El Señor está presente en su santuario:
+vamos a alabarle.        (bis)
+Alábenle, alábenle, alaben a su Señor,
+alábenle, alábenle, alaben a Jesús.
+
+El Señor está presente en su santuario:
+vamos a cantarle.        (bis)
+Cántenle, cántenle, canten a su Señor,
+cántenle, cántenle, canten a Jesús.
+
+El Señor está presente en su santuario:
+vamos a amarle.           (bis)
+Ámenle, ámenle, amen a su Señor,
+ámenle, ámenle, amen a Jesús.
+
+El Señor está presente en su santuario:
+vamos a servirle.          (bis)
+Sírvanle, sírvanle, sirvan a su Señor,
+sírvanle, sírvanle, sirvan a Jesús.
+
+El Señor está presente en su santuario:
+vamos a adorarle.        (bis)
+Adórenle, adórenle, adoren a su Señor,
+adórenle, adórenle, adoren a Jesús.</div>
+            <div class="footer">Adoración - Pág. 19</div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Ven Espíritu Santo, promesa divina que Jesús nos dejó con tanto amor.</h2>
+            <div class="tone-badge">Tono: Llena nuestras vidas con tu fuego de amor hermoso, Espíritu Santo glorioso.</div>
+            <div class="lyrics">Eres la brisa fresca de Dios que trae alegría y paz a mi vida.
+Dador de vida, tu misericordia grande nos llena de gozo y amor eterno.
+
+Estoy unido a tu luz tan grande y hermosa, Espíritu Santo de Dios.
+Ven Espíritu Santo, fuego hermoso de amor que transforma toda nuestra vida entera.
+
+Tu presencia hermosa es la alegría más grande que mi corazón puede sentir.
+Promesa divina de Jesús, ven y llena este lugar con tu gloria hermosa.
+
+Espíritu Santo, tu luz grande y hermosa ilumina cada rincón de mi vida.
+Eres la brisa de Dios, hermosa y poderosa, que nos da vida eterna.</div>
+            <div class="footer">Espíritu Santo - Pág. 20</div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Espíritu Santo</h2>
+            <div class="tone-badge">Tono: Re</div>
+            <div class="lyrics">Ven promesa divina
+que en tiempos pasado Jesús nos legó
+
+Ven Espíritu Santo y llena nuestras vidas
+Ven Tu, dador de vida
+Oh fuego de amor
+
+Tu eres esa brisa
+eres la alegría de saber vivir
+Y es que estoy tan unido
+a esa luz tan grande, la luz de mi Dios
+<span class="repeat">Ven Espíritu Santo ...</span></div>
+            <div class="footer">Invocación - Pág. 21</div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Señor, quiero adorarte en espíritu y verdad porque tu amor es hermoso y grande.</h2>
+            <div class="tone-badge">Tono: Dame un corazón sencillo para entrar en tu presencia hermosa y gloriosa, Señor.</div>
+            <div class="lyrics">Quiero ser un verdadero adorador de tu nombre hermoso y tu misericordia grande.
+Tu presencia es tan hermosa que quiero entregarlo todo para estar contigo siempre.
+
+Dame un corazón agradecido, Señor hermoso, porque tu misericordia grande me sostiene siempre.
+Quiero adorarte en espíritu y verdad porque tu gloria hermosa llena todo lugar.
+
+Entrego todo mi ser a tu presencia hermosa porque tu amor es incomparable.
+Señor, tu misericordia es tan grande que mi corazón solo quiere agradecerte siempre.
+
+Un corazón sencillo y agradecido es lo que necesito para ver tu gloria.
+Quiero ser tu adorador fiel, hermoso Señor, entregando todo ante tu grandeza eterna.</div>
+            <div class="footer">Adoración - Pág. 22</div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <h2 class="song-title">Adorador</h2>
+            <div class="tone-badge">Tono: Do</div>
+            <div class="lyrics">Señor yo quiero ser
+un verdadero adorador
+en espíritu y en verdad
+yo te quiero adorar (Bis)
+
+Dame un corazón sencillo.
+Dame un corazón sencillo.
+Dame un corazón sencillo Señor
+para entrar en Tu presencia.
+
+<span class="repeat">Señor yo quiero ser...</span>
+
+Quiero ser agradecido.
+quiero ser agradecido.
+quiero ser agradecido Señor
+para entrar en Tu presencia
+
+<span class="repeat">Señor yo quiero ser...</span>
+
+Quiero entregarlo todo
+quiero entregarlo todo
+yo quiero entregarlo todo Señor
+para entrar en Tu presencia.</div>
+            <div class="footer">Adoración - Pág. 23</div>
+        </div>
+    </div>
+
+    <div class="nav-overlay">
+        <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+        <div id="pageIndicator" style="font-size: 14px; font-weight: 700; color: #64748b;">1 / 25</div>
+        <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+</div>
+
+<script>
+            let currentSlide = 0;
+            let currentFontSize = 22;
+            const slides = document.querySelectorAll('.slide');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const appFrame = document.getElementById('appFrame');
+            const maxBtn = document.getElementById('maxBtn');
+
+            function updateSlideVisibility() {
+                slides.forEach((slide, index) => {
+                    if(index === currentSlide) {
+                        slide.classList.add('active');
+                        slide.scrollTop = 0;
+                        const l = slide.querySelector('.lyrics'); if(l) l.scrollTop = 0;
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+                pageIndicator.innerText = (currentSlide + 1) + ' / ' + slides.length;
+            }
+
+            function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlideVisibility(); } }
+            function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlideVisibility(); } }
+            function goToSlide(idx) { if (idx >= 0 && idx < slides.length) { currentSlide = idx; updateSlideVisibility(); } }
+
+            function changeFontSize(amount) {
+                let n = currentFontSize + amount;
+                if (n >= 14 && n <= 36) { currentFontSize = n; document.documentElement.style.setProperty('--base-lyrics-size', n + 'px'); }
+            }
+
+            function toggleMaximize() {
+                appFrame.classList.toggle('windowed');
+                if (appFrame.classList.contains('windowed')) {
+                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                    maxBtn.title = "Desplegar completo";
+                    if (document.fullscreenElement && document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                } else {
+                    maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                    maxBtn.title = "Vista de Ventana";
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen().catch(err => {
+                            console.log("Pantalla completa sujeta a interacción de usuario.");
+                        });
+                    }
+                }
+            }
+
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    appFrame.classList.add('windowed');
+                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                } else {
+                    appFrame.classList.remove('windowed');
+                    maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') nextSlide(); if (e.key === 'ArrowLeft') prevSlide();
+            });
+
+            let ts = 0;
+            appFrame.addEventListener('touchstart', e => ts = e.changedTouches[0].screenX);
+            appFrame.addEventListener('touchend', e => {
+                let te = e.changedTouches[0].screenX;
+                if (ts - te > 60) nextSlide(); if (te - ts > 60) prevSlide();
+            });
+        </script>
+</body>
+</html>

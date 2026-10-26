@@ -1,0 +1,2681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repertorio Musical - Adelita</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        heading: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                            950: '#451a03',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(180, 83, 9, 0.2);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(180, 83, 9, 0.5);
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.2);
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(251, 191, 36, 0.5);
+        }
+        .verse-line {
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body class="bg-amber-50/40 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans transition-colors duration-200 min-h-screen flex flex-col">
+
+    <!-- Header Component -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-amber-200/60 dark:border-slate-800 shadow-sm transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg text-amber-800 dark:text-amber-400 hover:bg-amber-100/50 dark:hover:bg-slate-800 focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+
+                <!-- Title & Badge -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-amber-600 text-white rounded-xl shadow-md">
+                        <i data-lucide="music" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-heading font-bold text-lg sm:text-xl text-amber-900 dark:text-amber-200 tracking-wide">
+                            Repertorio Musical
+                        </h1>
+                        <p class="text-xs text-amber-700/80 dark:text-amber-400/70 font-serif italic hidden sm:block">
+                            Edición Especial - Adelita
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <!-- Search Quick Button (Mobile) -->
+                    <button id="quick-search-btn" class="sm:hidden p-2 text-slate-600 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </button>
+
+                    <!-- Font Resizer -->
+                    <div class="hidden sm:flex items-center bg-amber-100/60 dark:bg-slate-800 rounded-lg p-1 border border-amber-200/50 dark:border-slate-700">
+                        <button id="font-dec" class="px-2 py-1 text-xs font-bold text-amber-900 dark:text-amber-200 hover:bg-white dark:hover:bg-slate-700 rounded transition" title="Reducir letra">A-</button>
+                        <span class="text-xs text-amber-600 dark:text-amber-400 px-1 font-mono" id="font-size-label">16px</span>
+                        <button id="font-inc" class="px-2 py-1 text-xs font-bold text-amber-900 dark:text-amber-200 hover:bg-white dark:hover:bg-slate-700 rounded transition" title="Aumentar letra">A+</button>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-lg text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="flex-1 max-w-7xl w-full mx-auto flex overflow-hidden">
+
+        <!-- Sidebar / Song Index -->
+        <aside id="sidebar" class="fixed lg:relative inset-y-0 left-0 z-40 w-80 lg:w-96 bg-white dark:bg-slate-900 border-r border-amber-200/60 dark:border-slate-800 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none">
+            
+            <!-- Sidebar Header & Search -->
+            <div class="p-4 border-b border-amber-100 dark:border-slate-800 space-y-3">
+                <div class="flex items-center justify-between lg:hidden">
+                    <span class="font-heading font-bold text-amber-900 dark:text-amber-300">Índice de Cantos</span>
+                    <button id="sidebar-close-btn" class="p-1 rounded-md hover:bg-amber-100 dark:hover:bg-slate-800 text-slate-500">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-input" placeholder="Buscar canto o letra..." class="w-full pl-9 pr-8 py-2 bg-amber-50/50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 dark:text-slate-100 placeholder-slate-400">
+                    <button id="clear-search" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 hidden">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Category Filter Pills -->
+                <div class="flex items-center justify-between text-xs text-amber-800 dark:text-amber-400 font-medium pt-1">
+                    <span id="total-songs-count">Cargando cantos...</span>
+                    <button id="expand-all-sections" class="text-amber-600 hover:underline">Contraer todos</button>
+                </div>
+            </div>
+
+            <!-- Scrollable Grouped Index -->
+            <div id="index-container" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+                <!-- Dynamic categories and songs generated via JS -->
+            </div>
+        </aside>
+
+        <!-- Overlay backdrop for mobile menu -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+        <!-- Main Lyrics Display Area -->
+        <main class="flex-1 flex flex-col bg-amber-50/20 dark:bg-slate-950 overflow-y-auto custom-scrollbar">
+            
+            <!-- Floating control bar for active song -->
+            <div id="song-toolbar" class="hidden sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-amber-100 dark:border-slate-800 px-4 py-2.5 sm:px-6 flex items-center justify-between text-xs">
+                <div class="flex items-center space-x-2 text-amber-800 dark:text-amber-400">
+                    <span id="toolbar-category" class="font-semibold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded text-[11px]">Categoría</span>
+                    <span id="toolbar-number" class="font-mono font-bold">#00</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="copy-lyrics-btn" class="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-amber-100/70 hover:bg-amber-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-200 transition">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span id="copy-btn-text">Copiar</span>
+                    </button>
+                    <button id="print-lyrics-btn" class="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-amber-100/70 hover:bg-amber-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-200 transition">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        <span>Imprimir</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lyrics View Container -->
+            <div id="lyrics-view" class="flex-1 p-6 sm:p-10 max-w-3xl mx-auto w-full">
+                <!-- Welcome Placeholder state -->
+                <div id="welcome-state" class="h-full flex flex-col items-center justify-center text-center py-16 space-y-4">
+                    <div class="w-20 h-20 rounded-full bg-amber-100 dark:bg-slate-800 flex items-center justify-center text-amber-700 dark:text-amber-400 shadow-inner">
+                        <i data-lucide="book-open" class="w-10 h-10"></i>
+                    </div>
+                    <h2 class="font-heading text-2xl sm:text-3xl font-bold text-amber-950 dark:text-amber-100">
+                        Repertorio de Cantos
+                    </h2>
+                    <p class="text-slate-600 dark:text-slate-400 max-w-md text-sm sm:text-base leading-relaxed">
+                        Selecciona un canto del índice lateral o utiliza el buscador para visualizar la letra completa, tono y detalles liturgicos.
+                    </p>
+                    <div class="pt-4 flex flex-wrap justify-center gap-2">
+                        <span class="inline-flex items-center gap-1 text-xs bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full border border-amber-200/60 dark:border-slate-700 text-amber-800 dark:text-amber-300">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i> 11 Secciones Organizadas
+                        </span>
+                        <span class="inline-flex items-center gap-1 text-xs bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full border border-amber-200/60 dark:border-slate-700 text-amber-800 dark:text-amber-300">
+                            <i data-lucide="hash" class="w-3.5 h-3.5"></i> Enumeración por Grupo
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Active Lyric Content (Dynamic) -->
+                <article id="active-song-content" class="hidden space-y-6">
+                    <!-- Song Header -->
+                    <div class="border-b border-amber-200/80 dark:border-slate-800 pb-6 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span id="song-section-badge" class="px-3 py-1 bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-xs font-semibold uppercase tracking-wider rounded-full border border-amber-200 dark:border-amber-800">
+                                Sección
+                            </span>
+                            <span id="song-group-number" class="text-xs font-mono font-bold text-amber-700 dark:text-amber-400">
+                                Canto #00
+                            </span>
+                        </div>
+
+                        <h2 id="song-title" class="font-serif text-2xl sm:text-4xl font-bold text-amber-950 dark:text-amber-100 leading-tight">
+                            Título del Canto
+                        </h2>
+
+                        <!-- Song Metadata (Tone / Soloist if present) -->
+                        <div id="song-metadata" class="flex flex-wrap gap-4 text-xs font-medium text-slate-600 dark:text-slate-400 pt-1">
+                            <span id="song-tone" class="hidden items-center gap-1 bg-amber-50 dark:bg-slate-800/80 px-2.5 py-1 rounded-md border border-amber-200/50 dark:border-slate-700 text-amber-900 dark:text-amber-200">
+                                <i data-lucide="music-2" class="w-3.5 h-3.5 text-amber-600"></i>
+                                Tono: <strong id="song-tone-val" class="font-bold"></strong>
+                            </span>
+                            <span id="song-soloist" class="hidden items-center gap-1 bg-amber-50 dark:bg-slate-800/80 px-2.5 py-1 rounded-md border border-amber-200/50 dark:border-slate-700 text-amber-900 dark:text-amber-200">
+                                <i data-lucide="user" class="w-3.5 h-3.5 text-amber-600"></i>
+                                Solista: <strong id="song-soloist-val" class="font-bold"></strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Song Body / Verse text -->
+                    <div id="song-verses" class="font-serif whitespace-pre-line text-slate-800 dark:text-slate-200 leading-relaxed font-normal tracking-wide space-y-4">
+                        <!-- Verses injected here -->
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-amber-900 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center space-x-2 text-sm transform translate-y-20 opacity-0 transition-all duration-300">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i>
+        <span id="toast-msg">Mensaje</span>
+    </div>
+
+    <script>
+        // Comprehensive Song Database compiled from the user document
+        const SONG_SECTIONS = [
+            "Entrada o Salida",
+            "Penitencial",
+            "Lecturas",
+            "Santo",
+            "Paz, Cordero",
+            "Comunión",
+            "Alabanza",
+            "Adoración",
+            "Animación",
+            "Oración",
+            "María"
+        ];
+
+        const SONGS_DATA = [
+            // --- ENTRADA O SALIDA ---
+            {
+                title: "Aunque marche por la oscuridad",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `SOLISTA:
+
+Aunque marche por la oscuridad
+Nada he de temer
+Porque tú conmigo vas
+Mi pastor que me hace sosegar (2)
+
+Tú que me conduces
+A tus fuentes de paz
+Tú me has bautizado
+Por tu senda voy
+
+CORO (2)
+
+Tú que me preparas
+La mesa en el altar
+Tú me das la copa
+Rebosando está
+Tú bondad conmigo
+Llega hasta el final
+Y mi vida entera
+Para ti será
+CORO (2)`
+            },
+            {
+                title: "Aquí estamos Señor (Entrada)",
+                section: "Entrada o Salida",
+                tone: "DO / RE",
+                soloist: "",
+                lyrics: `Aquí estamos Señor
+En Tu casa otra vez
+Que alegría volverte a encontrar
+Vamos a compartir
+y expresar nuestra fé
+como hermanos entorno al altar
+
+En el nombre de Dios vamos a
+celebrar el misterio de la salvación
+El Señor nos dará su palabra y
+su pan, Es la fiesta del Pueblo de Dios
+
+Partiremos Tu pan signo de
+comunión,
+Beberemos Tu vino de amor
+y a la vez sellarás con nosotros Señor
+una alianza que viene de Dios
+
+En el nombre de Dios vamos a celebrar el misterio
+de la Salvación El Sr nos dará su palabra y su pan.
+Es la fiesta del Pueblo de Dios`
+            },
+            {
+                title: "Vamos a preparar el Camino al Señor",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Vamos a preparar, el camino del Señor
+Vamos a construir la Ciudad de nuestro Dios
+
+Vendrá el Señor con la Aurora
+Él Brillará en la Mañana
+Pregonará la Verdad
+Vendrá el Señor con su fuerza
+Él Romperá las Cadenas
+Él nos dará la Libertad (Coro)
+
+Él estará a nuestro lado
+Él Guiará nuestros Pasos
+Él nos dará la Salvación
+Nos limpiará del pecado
+ya no seremos esclavos
+Él nos dará la libertad (Coro)
+
+Visitará nuestras casas
+Nos llenará de Esperanza
+Él nos dará la Salvación
+Compartirá nuestros Cantos
+Todos seremos hermanos
+Él nos dará la libertad (Coro)
+
+Caminará con nosotros
+Nunca estaremos ya solos
+Él nos dará la Salvación
+Él cumplirá la promesa
+Él llevará nuestras penas
+Él nos dará la Libertad`
+            },
+            {
+                title: "Levántate",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Levántate que está llegando
+El Señor viene ya (2)
+
+Nos traerá su resplandor
+Nos traerá la luz la paz (2)
+
+En el Señor confiaré
+Él nos traerá la Salvación (2)
+
+Al mismo Dios, recibiré
+en mi interior se sembrará (2)
+
+Lo prometió, lo cumplirá
+Dios de amor nos salvará (2)
+
+Señor Ten piedad de Nosotros
+Cristo Ten piedad de nosotros
+
+Preparad el camino al Señor
+escuchad la Palabra de Dios
+Aleluya - Aleluya
+Preparad nuestro Corazón Aleluya`
+            },
+            {
+                title: "Ven Señor, no Tardes (Salida)",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Ven, Ven Señor no tardes
+Ven, Ven que Te esperamos
+Ven Ven Señor no tardes (2)
+Ven Pronto Señor.
+
+El mundo muere de frío
+El alma perdió el calor
+Los hombres no son hermanos
+el mundo no tiene amor
+
+Ven, Ven Señor no Tardes
+Ven, Ven que Te esperamos
+Ven, Ven Señor No Tardes
+Ven pronto Señor
+
+Envuelto en sombría noche
+El mundo sin paz no ve
+Buscando va una esperanza
+buscando Señor Tu fé
+
+Ven, Ven Señor, no tardes
+Ven, ven q' te esperamos
+Ven Señor no Tardes
+Ven pronto Señor.
+
+Al mundo le falta la Vida
+Al mundo le falta Luz
+Al mundo le falta el Cielo
+Al mundo le faltas Tú`
+            },
+            {
+                title: "Hosanna",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Hosanna Hosanna Hosanna
+Se acerca el Reino de Dios
+ya se acerca el Reino de Dios
+Se acerca la Salvación
+Ya se acerca la salvación
+
+Preparar los caminos
+Preparar los caminos del Señor (2) Coro
+
+Salid al encuentro de Dios
+Con los pobres viene el Señor
+Salid al encuentro de Dios
+Que el adviento es la Salvación
+
+Coro: Preparar los caminos
+Preparar los caminos del Señor (2) Hossanna Hosanna Hosanna
+
+Es hora de despertar
+Que se acerca la libertad
+Es hora de despertar
+Que el Señor nos trae la paz
+
+El amor la justicia
+Son las sendas para la paz
+El amor la justicia
+Son las sendas para la paz
+
+Hosana Hosana Hosana`
+            },
+            {
+                title: "Aclamad al Señor",
+                section: "Entrada o Salida",
+                tone: "Mi menor",
+                soloist: "",
+                lyrics: `Aclamad al Señor tierra entera
+Servid al Señor con alegría
+Llegad al Señor con cantares de gozo (2)
+
+Entrad por su puerta con himnos
+Dando gracias, Entrad por su patio
+Entre alegrías entre alabanzas
+Bendecid al Señor.`
+            },
+            {
+                title: "Éste es el día",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Este es el día, Este es el día
+Que hizo el Señor
+Que hizo el Señor
+Día de alegría, Día de alegría
+y de gozo, y de gozo
+Este es el día que hizo el Señor
+Día de alegría y de gozo
+Este es el día, Este es el día
+Que hizo el Señor
+
+Este es la misa, Este es la misa
+Que hizo el Señor
+Que hizo el Señor
+misa de alegría, misa de alegría
+y de gozo, y de gozo
+Este es el día.`
+            },
+            {
+                title: "Juntos como hermanos",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Cantando la alegría de vivir
+Llegamos a la casa del Señor
+Marchando Todos Juntos como hermanos
+Andemos los Caminos hacia Dios
+
+Venid entremos Todos dando gracias
+Venid cantemos Todos al Señor
+Gritemos a la roca que nos salva
+Cantemos la alabanza a nuestro Dios
+
+La paz del Señor sea con vosotros
+La paz que llena solo el corazón
+La paz de estar unidos como hermanos
+La paz que nos promete nuestro Dios
+
+Entremos por las puertas dando gracias
+Pidamos al Señor también perdón
+Perdón por nuestro pobre corazón
+
+Sabed que Dios nos hizo y somos suyos
+Sabed que el Señor es nuestro Dios
+Nosotros somos pueblo y las ovejas
+Ovejas del rebaño`
+            },
+            {
+                title: "Cuando comienza la misa",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `I
+Cuando comienza la misa
+se oye cantar, se oye cantar,
+el pueblo se ha reunido
+para rezar, para rezar.
+
+CORO
+Cuando comienza la misa se oye cantar,
+el pueblo se ha reunido para rezar (Bis)
+
+II
+Todos están en silencio
+junto al altar, junto al altar,
+misericordia implorando
+con humildad, con humildad.`
+            },
+            {
+                title: "Iglesia Peregrina",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Todos unidos formando un solo cuerpo
+Un pueblo que en la pascua nació
+Miembros de Cristo en sangre Redimidos
+Iglesia Peregrina de Dios
+
+Vive en Nosotros la fuerza del Espíritu
+Que el hijo desde el Padre envió
+Él nos empuja, nos guía y alimenta
+Iglesia Peregrina de Dios
+
+Somos en la tierra, semillas de otro reino
+Somos testimonio de Amor
+Paz para las guerras
+Y luz entre las sombras
+Iglesia Peregrina de Dios.
+
+Rugen tormentas y a veces nuestra barca
+parece que ha perdido el timón
+Miras con miedo y no tienes confianza
+Iglesia Peregrina de Dios
+
+Una esperanza nos llena de Alegría
+Presencia q'el Señor prometió
+Vamos cantando el viene con nosotros
+Iglesia Peregrina de Dios`
+            },
+            {
+                title: "Al pecho llevo una cruz",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Yo vengo del sur y del norte
+Del este y oeste y de todo lugar
+Caminos y vidas recorro
+Llevando socorro queriendo ayudar.
+
+Mensaje de paz es mi canto
+Y cruzo montañas y voy hasta el fin
+El mundo no me satisface
+Lo que busco es la paz,
+lo que quiero es vivir.
+
+AL PECHO LLEVO UNA CRUZ
+Y EN MI CORAZÓN
+LO QUE DICE JESÚS (2)
+
+Yo sé que no tengo la edad
+Ni la madurez de quien ya vivió
+Mas se que es de mi propiedad
+Buscar la verdad y gritar con mi voz.
+
+El mundo va herido y cansado
+De un negro pasado de guerras sin fin
+Hoy teme a la bomba que hizo
+La fe que deshizo y espera por mí.
+
+AL PECHO LLEVO UNA CRUZ
+Y EN MI CORAZÓN
+LO QUE DICE JESÚS (2)`
+            },
+            {
+                title: "El me invitó",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `El me invitó a su banquete su signo sobre
+mí es amor El me invitó a su banquete
+El me invitó a su banquete
+Su signo sobre mi es amor
+
+El es la roca de mi salvación su signo sobre mi es
+amor El es la roca de mi salvación, su signo sobre
+mi es amor El es la roca de mi salvación, su signo
+sobre mi es amor
+
+El es mi Padre y yo su hijo su signo sobre mi es amor
+El es mi Padre y yo soy su hijo, su signo sobre mi es amor
+El es mi Padre y yo soy su hijo, su signo sobre mi es amor
+
+El me transporta a lugares celestiales 
+su signo sobre mi es amor
+El me transporta a lugares celestiales 
+su signo sobre mi es amor
+El me transporta a lugares celestiales 
+su signo sobre mi es amor
+
+El me ama y yo le amo, su signo sobre mi amor (3 veces)
+Aleluya Aleluya Aleluya su signo sobre mi amor 3 veces`
+            },
+            {
+                title: "Libertador de Nazareth",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Libertador de Nazareth
+Ven junto a mí, Ven junto a mí
+Libertador de Nazareth, 
+¿qué puedo hacer sin Ti? (2)
+
+Yo sé que eres el camino, 
+que eres la vida y la verdad.
+Yo sé que el que te sigue, sabe a dónde va.
+
+Quiero vivir Tu vida, 
+seguir Tus huellas, llegar a Ti.
+Quiero beber Tu cáliz, 
+quiero llevar Tu cruz.
+
+Estribillo:
+Libertador de Nazareth, Ven junto a mí, Ven junto a mí
+Libertador de Nazareth, ¿qué puedo hacer sin Ti? (2)
+
+Quiero encender mi fuego, 
+alumbrar mi vida, seguirte a Ti.
+
+Quiero escucharte siempre
+quiero luchar por Ti.
+
+Busco un mensaje nuevo, 
+Te necesito Libertador, 
+no puedo estar sin rumbo.
+No puedo estar sin Dios.`
+            },
+            {
+                title: "Cuaresma (No podemos caminar)",
+                section: "Entrada o Salida",
+                tone: "Mi menor",
+                soloist: "",
+                lyrics: `No podemos caminar con las manos vacías
+dános siempre el mismo pan, Tu cuerpo y
+Sangre Señor
+
+I Comamos Todos de este pan, el pan de la unidad
+En un cuerpo nos unió el Señor Por medio del Amor
+
+II Señor, yo tengo sed de ti, sediento estoy de Dios. Pero pronto llegaré a la
+casa del Señor`
+            },
+            {
+                title: "Tú eres el Agua Viva",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Manifiesta tu santidad en mí.
+Tómame de entre lo que me disperse
+recógeme de donde me perdí y llévame de nuevo al corazón.
+
+Tú eres el agua viva, tú eres el agua pura,
+Inúndame, Inúndame y Todo se Transformará en mí. (Bis)
+
+Mi tierra se abrirá a Tu lluvia, mis rocas ya no
+harán daño a nadie.
+Mis montes se harán camino para Todos.
+Mi pasto abundante medicina será
+para todo el que coma de mí.
+Yo seré la tierra que mana leche y miel.
+
+Me darás unas entrañas nuevas, mis rocas ya no
+harán daño a nadie.
+Que quiera hacer morada en mí, y así tenga sabor a Ti
+entonces habitaré en la tierra que es mía, y yo seré Tu pueblo
+y Tú serás mi Dios.`
+            },
+            {
+                title: "Danos un corazón",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Danos un corazón grande para amar
+Danos un corazón fuerte para luchar
+
+Hombres nuevos creadores de la historia
+constructores de nueva humanidad.
+Pueblos nuevos que viven la existencia
+como riesgo de un largo caminar.
+
+Danos un corazón grande para amar
+Danos un corazón fuerte para luchar
+
+Pueblos nuevos luchando en esperanza
+caminantes sedientos de verdad.
+Pueblos nuevos sin frenos, ni cadenas
+Pueblos libres que exigen libertad.
+
+Pueblos nuevos amando sin fronteras
+Por encima de raza y lugar
+Pueblos nuevos al lado de los pobres
+Compartiendo con ellos techo y paz.`
+            },
+            {
+                title: "¿Quién es ese?",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `¿Quién es ese que camina por las aguas?
+¿Quién es ese que a los sordos hace oír?
+¿Quién es ese que a los muertos Resucita?
+¿Quién es ese que a su nombre quiero oír?
+
+Es Jesús, Es Jesús
+Dios y hombre que nos guía con su Luz
+Es Jesús, es Jesús.
+Dios y hombre que nos guía con su luz.`
+            },
+            {
+                title: "Dame del Agua que brota",
+                section: "Entrada o Salida",
+                tone: "",
+                soloist: "",
+                lyrics: `Dame del agua que brota para la vida eterna
+Dame del agua que brota para la vida eterna
+
+Del agua q' le diste a la mujer Samaritana
+Del agua q' le diste a la mujer Samaritana
+
+Ay q' nacer del Agua
+Ay q' nacer del Espíritu de Dios
+Ay q' nacer del Agua y del Espíritu de Dios
+Ay que nacer del Señor
+
+OH OH OH-OH Ay que nacer del agua y del
+Espíritu de Dios.
+Ay que nacer del Señor. (2)`
+            },
+
+            // --- PENITENCIAL ---
+            {
+                title: "Dame un nuevo corazón",
+                section: "Penitencial",
+                tone: "",
+                soloist: "",
+                lyrics: `Dame un nuevo corazón, Señor
+Un corazón para adorarte
+Un corazón para servirte
+yo quiero un nuevo corazón Señor (2)
+
+Limpio como el cristal, Dulce como la miel,
+Un Corazón Que sea, Como el tuyo señor
+Limpio como el cristal, Dulce como la miel,
+Un Corazón Q sea, Como el tuyo señor
+
+Dame un nuevo corazón, Señor
+Un corazón para adorarte
+Un corazón para servirte
+yo quiero un nuevo corazón Señor`
+            },
+            {
+                title: "Renuévame",
+                section: "Penitencial",
+                tone: "La",
+                soloist: "",
+                lyrics: `Renuévame, Señor Jesús
+Ya no quiero ser igual
+Renuévame, Señor Jesús
+Pon en mi Tu corazón
+
+Porque todo lo que hay dentro de mí
+Necesita ser cambiado, Señor
+Porque todo lo que hay dentro de mi corazón
+Necesita más de Ti
+
+Renuévame, Señor Jesús
+Ya no quiero ser igual
+Renuévame, Señor Jesús
+Pon en mi Tu corazón
+
+Porque todo lo que hay dentro de mí
+Necesita ser cambiado, Señor
+Porque todo lo que hay dentro de mi corazón
+Necesita más de Ti
+
+Necesita más de Ti
+Necesita más de Ti`
+            },
+            {
+                title: "Señor Ten Piedad",
+                section: "Penitencial",
+                tone: "",
+                soloist: "",
+                lyrics: `Señor Ten piedad
+Ten piedad de nosotros
+Señor Ten piedad
+Ten piedad de nosotros
+
+Cristo Ten piedad
+Ten piedad de mi
+Cristo Ten piedad
+Ten piedad de mi Señor
+
+Señor Ten piedad
+Ten piedad de nosotros
+Señor Ten piedad
+Ten piedad de nosotros.`
+            },
+            {
+                title: "Señor ten piedad (Luz del mundo)",
+                section: "Penitencial",
+                tone: "",
+                soloist: "",
+                lyrics: `Luz del mundo que vienes a iluminar
+a todos los que viven en las tinieblas
+del pecado
+
+Señor
+Señor ten piedad
+Señor
+Señor ten piedad
+
+Buen pastor que vienes a guiar
+a todo tu rebaño
+por las sendas de la verdad y la justicia
+
+Cristo
+Cristo ten piedad
+Cristo
+Cristo ten piedad
+
+Hijo de Dios que volverás un día
+para dar cumplimiento a las
+promesas del padre.
+
+Señor
+Señor ten piedad
+Señor ten piedad.`
+            },
+            {
+                title: "Señor Ten Piedad de Nosotros (MI)",
+                section: "Penitencial",
+                tone: "MI",
+                soloist: "",
+                lyrics: `Señor Ten Piedad de nosotros
+Ten Piedad de nosotros
+Señor Ten Piedad de nosotros
+Ten Piedad de nosotros.
+
+Cristo Ten Piedad Ten piedad de nosotros
+Cristo Ten Piedad Ten piedad de nosotros
+
+Señor Ten Piedad de nosotros
+Ten Piedad de nosotroooos.`
+            },
+            {
+                title: "Ten piedad (Señor, Señor, Señor)",
+                section: "Penitencial",
+                tone: "",
+                soloist: "",
+                lyrics: `Señor, Señor, Señor ten piedad,
+Señor, Señor, Señor ten piedad.
+
+Cristo, Cristo, Cristo ten piedad,
+Cristo, Cristo, Cristo ten piedad.
+
+Señor, Señor, Señor ten piedad,
+Señor, Señor, Señor ten piedad.`
+            },
+            {
+                title: "Sáname Señor",
+                section: "Penitencial",
+                tone: "",
+                soloist: "",
+                lyrics: `Hoy Señor Jesús vengo ante ti para alabarte
+Hoy Señor Jesús con Tu poder puedes cambiarme
+
+Sáname Señor
+Hoy quiero vivir
+Dame tu amor
+sin ti no puedo ser feliz
+
+Sáname Señor
+Líbrame del mal
+Toca al corazón
+para alcanzar la santidad`
+            },
+            {
+                title: "Señor Ten piedad RE de Nosotros",
+                section: "Penitencial",
+                tone: "RE",
+                soloist: "",
+                lyrics: `Señor, Señor Ten piedad de nosotros
+Señor Señor Ten piedad de nosotros
+
+Cristo Ten piedad de nosotros
+Cristo Ten piedad de nosotros
+
+Señor, Señor Ten piedad de nosotros
+Señor Señor, Ten piedad de nosotros`
+            },
+            {
+                title: "Ten piedad (Del prof)",
+                section: "Penitencial",
+                tone: "Mi",
+                soloist: "",
+                lyrics: `Seeeñor Ten piedad de nosotros
+Ten piedad de nosotros
+Seeeñor Ten piedad de nosotros
+ten piedad de nosotros
+
+Xto Ten piedad, Ten piedad de nosotros
+Xto ten piedad, Ten piedad de nosotros
+
+Señor ten piedad de nosotros
+Ten piedad de nosotro ooooh`
+            },
+
+            // --- LECTURAS ---
+            {
+                title: "Gloria Martin Valverde",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Gloria, gloria
+Gloria, gloria
+
+A Jesús, el Señor
+Al Cordero de Dios
+Al nombre
+Sobre todo, Nombre (Bis)`
+            },
+            {
+                title: "Gloria (Re)",
+                section: "Lecturas",
+                tone: "Re",
+                soloist: "",
+                lyrics: `Gloria gloria aleluya (3)
+en nombre del Señor.
+
+Gloria a Dios sea en el cielo
+gloria y en la tierra paz
+a los hombres que Dios ama
+con inmensa caridad.
+Por la gloria en nuestro cantar
+Dios Padre Celestial
+Gloria Aleluya.
+
+Señor nuestro Jesucristo
+Señor Cordero de Dios.
+Tú que quitas el pecado
+da a los hombres el perdón
+Tú que te sientas glorioso
+a la derecha del padre
+danos la salvación.
+Gloria aleluya
+
+Porque solo Tú eres Santo
+solo tu altísimo Señor
+solo tu eres Jesucristo
+digno de veneración
+en la gloria de Dios Padre
+y el espíritu de amor
+Jesús es el Señor.`
+            },
+            {
+                title: "Junto a ti Jesús, rezaré (Aleluya)",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Junto a ti, Jesús Rezare
+Tu palabra quiero vivir.
+
+Tú me haces sencillo Señor quedaré...
+En tus manos me dejaste.
+
+¡Aleluya! ¡Aleluya!
+¡Aleluya! ¡Aleluya! (bis)
+
+Cantaré el amor q' hay en Ti porq' me amas
+y estás aquí.
+Pones Paz en mi corazón
+Con Tu amor feliz yo seré.
+
+Aleluya! Aleluya! Aleluya! Aleluya!
+
+Nunca dejaré de cantar
+que Tu eres la Luz y el amor
+no me dejes solo Señor`
+            },
+            {
+                title: "Marta y Marta",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `A casa de Marta Jesús fue ese día, ella a la vista
+afanada servía y al ver q' a los pies del maestro,
+pasiva, María su hermana sentada lo oía, reprochaba a
+Jesús: ¡esto no puede ser! ¡Yo tan agobiada con tanto
+q' hacer! ¡Señor sola estoy! Di a mi hermana Marta que
+ayude también.
+
+"SON MUCHAS COSAS MARTA, MARTA, QUE TE ANGUSTIAN Y TE
+AFANAN, CUANDO EN VERDAD TAN SOLO HAY UNA NECESARIA",
+Y AUNQUE SENTADA ESTÉ CONMIGO, LA MEJOR PARTE ELLA HA
+ELEGIDO. NADIE SE LA QUITARÁ JESÚS LE DIJO.
+
+Quizás como Marta, también te dedicas de lleno a servir.
+¡Tanto es lo que hay que hacer! Pero no te olvides, es XTo el que guía
+con él hay q' estar como lo hizo María.
+Recuerda, q' no se trata de triunfar sino en sus manos
+dejarse llevar. Hoy pide al Señor serle fiel, ser su amigo
+Y unido a él estar.`
+            },
+            {
+                title: "Preparad el camino",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Preparad el camino al Señor
+Escuchad la palabra de Dios
+
+Aleluya, Aleluya
+preparad nuestro corazón
+
+Aleluya, Aleluya
+preparad nuestro corazón`
+            },
+            {
+                title: "Gloria a Dios en el Cielo",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Gloooria a Dios en el Cieeelo!
+Y en la tierra paz A los hombres Paz
+de Buena Voluntad (2)
+
+Te alabamos Te bendecimos
+Te adoramos Te glorificamos
+Tee damos gracias por Tu inmensa gloria
+Señor Dios Rey Celestial
+Dios Padre Todopoderesoooo
+
+Gloooria a Dios en el Cieeelo Y en la tierra paz
+a los hombres paz de Buena Voluntaad
+Señor Hijo único Jesucristo Señor Dios
+Cordero de Dios, Hijo del Padre.`
+            },
+            {
+                title: "Gloria en las alturas",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Gloria en las alturas
+y en la Tierra paz
+a las almas puras
+de buena voluntad (2 Veces)
+
+Hoy Te Bendecimos
+Señor Te adoramos
+Por Tu inmensa gloria
+Mil gracias Te damos
+
+Al Rey de los Cielos
+Dios Todopoderoso
+Y a su único hijo
+Cordero Glorioso`
+            },
+            {
+                title: "Aleluya (Sencillo)",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Aleluya, aleluya, aleluya,
+aleluya, aleluya, aleluya. (Bis)`
+            },
+            {
+                title: "Interlectura (Jesucristo me dejó inquieto)",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Jesucristo me dejó inquieto su palabra me llenó de luz.
+Nunca más yo pude ver al mundo sin sentirse aquello q' sintió Jesús.
+Aleluuyaa!`
+            },
+            {
+                title: "InterLectura (Con alegría en el corazón)",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Con alegría en el corazón
+Queremos cantarle Señor
+Con alegría queremos escuchar
+Tu palabra que da vida
+Con Esperanza con fe y con amor
+Queremos llegar a tu mesa Señor`
+            },
+            {
+                title: "Salmo (Palabras de vida eterna)",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Señor tú tienes
+palabras de vida eterna`
+            },
+            {
+                title: "Gloria Catecúmeno",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Glooria, Glooria a Dios en el cielo
+Glooria
+Y en la Tierra Paz / Y en la tierra Paz
+Paz a los hombres que aman al Señor
+Te alabamos (2) Te Bendecimos (2)
+Te adoramos (2) Te Glorificamos (2)
+Te damos Gracias por Tu gloria inmensa
+Señor Hijo unigenito / Jesucristo Señor Dios
+Cordero de Dios Hijo del Padre
+Tu q' quitas del mundo oo el pecado del Hombre ee
+Teen piedad Señor, Piedad de nosotros`
+            },
+            {
+                title: "Gloria Galindo",
+                section: "Lecturas",
+                tone: "Do",
+                soloist: "",
+                lyrics: `Gloria a Dios en el Cielo y en la tierra paz
+a los hombres que ama el Señor (2)
+
+| I | 
+Por Tu inmensa Gloria
+Te alabamos
+Te bendecimos
+Te adoramos
+Te glorificamos
+Te damos gracias
+Señor rey Celestial
+Dios Padre, Todopoderoso
+
+| II |
+Señor Hijo único, Jesucristo
+Señor Cordero de Dios, Hijo del Padre
+Tú que quitas el pecado del mundo
+Ten piedad de nosotros
+Tú que quitas el pecado del mundo
+atiende nuestra súplica
+Tú que estás sentado a la derecha del Padre
+Ten piedad de nosotros
+
+| III |
+Porque solo tú eres Santo
+solo Tú, OH Señor
+solo tu altísimo Jesucristo
+con el Espíritu Santo
+en la Gloria de Dios Padre`
+            },
+            {
+                title: "Aleluya (Alelu Aleluya)",
+                section: "Lecturas",
+                tone: "",
+                soloist: "",
+                lyrics: `Alelu Alelu Alelu Aleluya
+Gracias Señor
+Alelu Alelu Aleluya Alelu Aleluya
+Gracias Señor
+Aleluya Gracias Señor
+Aleluya Gracias Señor
+Aleluya Gracias Señor`
+            },
+            {
+                title: "Aleluya Danos Oh Señor",
+                section: "Lecturas",
+                tone: "Mi mayor",
+                soloist: "",
+                lyrics: `Aleluyaaa, aleluyaaa
+Aleluyaaa, aleluyaaa
+
+Danos OH Señor,
+Tu palabra que es Verdad
+Danos OH Señor
+Tu palabra que es amor
+
+Aleluyaaa, aleluyaaa
+Aleluyaaa, aleluyaaa`
+            },
+
+            // --- SANTO ---
+            {
+                title: "Santo Santo Santo (La)",
+                section: "Santo",
+                tone: "La",
+                soloist: "",
+                lyrics: `Santo Santo Saaanto
+Santo es el Señor.
+Santo es el Señor Dios del Universo
+Santo es el Señor Dios del Universo.
+
+Llenos están el cielo y la tierra de su Gloria
+Ohsanna, Ohsanna, Ohsanna en el cielo
+Ohsanna, Ohsanna, Ohsanna en el cieeeelo.
+
+Bendito el que viene en nombre de el Señor
+Ohsanna, Ohsanna, Ohsanna en el Cielo.
+Ohsanna, Ohsanna, Ohsanna en el cieeeelo.`
+            },
+            {
+                title: "Santo (Hosanna en cielo)",
+                section: "Santo",
+                tone: "",
+                soloist: "",
+                lyrics: `Santo, Santo, Santo es el Señor
+Dios del universo, llenos están el cielo y
+la tierra de tu gloria, llenos están el cielo y
+la tierra de tu gloria.
+*Hosanna en cielo, hosanna*
+
+Santo, Santo, Santo es el Señor
+Dios del universo, bendito el que viene en
+el nombre Señor, bendito el que viene en
+el nombre Señor.
+*Hosanna en cielo, hosanna*
+Santo, Santo, Santo es el Señor
+Santo, Santo // Santo es el Señor.`
+            },
+            {
+                title: "Santo (Santo es el Señor Dios del Universo)",
+                section: "Santo",
+                tone: "",
+                soloist: "",
+                lyrics: `Santo es el Señor
+Dios del Universo, Santo es el Señor
+
+Llenos de su gloria están el Cielo
+y la tierra.
+
+Santo es el Señor
+
+Bendito el que viene en su nombre
+Hosanna en el cielo.
+Santo es el Señor
+Santo es el Señor
+Santo es el Señor
+Santo es el Señor`
+            },
+            {
+                title: "Santo Sacro",
+                section: "Santo",
+                tone: "",
+                soloist: "",
+                lyrics: `Santo Santo, es el Señor del Universo
+llenos están el cielo y la Tierra de su glooriaa
+HOSANNA HOSANNA en el Ciecelooo
+bendito el que viene en el Nombre del Señor
+HOSANNA HOSANNA en el cieeloo`
+            },
+
+            // --- PAZ, CORDERO ---
+            {
+                title: "Cordero (Miserere)",
+                section: "Paz, Cordero",
+                tone: "",
+                soloist: "",
+                lyrics: `Cordero de Dios
+Tu que quitas el pecado del mundo
+Miserere nobis
+Miserere nobis.
+
+Cordero de Dios
+Tu quitas el pecado del mundo
+Dona nobis pacem
+Dona nobis pacem`
+            },
+            {
+                title: "Paz en la Tierra (Da la paz, hermano)",
+                section: "Paz, Cordero",
+                tone: "",
+                soloist: "",
+                lyrics: `Paz en la Tierra
+Paz en las alturas
+Que el gozo eterno reine en nuestro corazón (Bis)
+
+Da la paz, hermano da la paz
+Constrúyela en Tu ❤️
+Y con Tu gesto afirmarás que quieres la paz
+Que Tu paz hermanos sea un don
+Es el mejor signo de amor
+Que tú puedes ofrecer, un abrazo de paz.`
+            },
+            {
+                title: "Recibela La paz",
+                section: "Paz, Cordero",
+                tone: "",
+                soloist: "",
+                lyrics: `Recibe la paz 
+que Dios te da a tí, 
+serás muy feliz, recibe la paz.
+Recibe la paz 
+que Dios te da a tí, 
+serás libre al fin, recibe la paz`
+            },
+            {
+                title: "Paz (Dame la mano)",
+                section: "Paz, Cordero",
+                tone: "",
+                soloist: "",
+                lyrics: `No importa del sitio que vengas.
+pueblo, campo o de la ciudad
+Si tu corazón es como el mío.
+
+Dame la mano y Hermano serás
+Dame la mano, dame la mano.`
+            },
+            {
+                title: "Mi Paz Te doy",
+                section: "Paz, Cordero",
+                tone: "",
+                soloist: "",
+                lyrics: `Mi paz Te doy a Ti
+es la paz que el mundo no da
+es la paz que el mundo no entiende
+para Ti recíbela
+mi paz Te doy a Ti
+
+Mi amor Te doy a Ti
+es amor q' el mundo no da
+es amor q' el mundo no entiende
+para Ti recíbelo
+mi paz Te doy a Ti`
+            },
+            {
+                title: "Cordero (Flamenco)",
+                section: "Paz, Cordero",
+                tone: "",
+                soloist: "",
+                lyrics: `Cordero de Dios que quitas el pecado del mundo
+Cordero de Dios que quitas el pecado del mundo
+
+Ten piedad
+Ten Piedad deee nosotros
+Ten Piedad - Ten piedad de e nosotros
+
+Cordero de Dios que quitas el
+pecado del mundo
+Cordero de Dios que quitas el pecado
+del mundo (2)
+
+Danos paz AAA
+Danos paz AAAA
+Danos Paz`
+            },
+
+            // --- COMUNIÓN ---
+            {
+                title: "Huellas del Crucificado",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Rosas de sangre han florecido
+Reviven en tu cuerpo la Pasión
+Francisco de amor estás herido
+Las manos, los pies, el corazón.
+
+Tus manos que acogen a los pobres
+Y partes tu pan con el mendigo
+Yo quiero también amar a todos
+Ya puedes contar Señor conmigo.
+
+Sembrando la Paz y el Bien caminas
+Y yo sembrador iré a tu lado
+En ti el Evangelio es carne viva
+Y Cristo También Crucificado.`
+            },
+            {
+                title: "Tan cerca de Mí",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Tan cerca de mí, tan cerca de mí
+que hasta lo puedo tocar
+Jesús está aquí.
+
+No busques a Xto en lo alto
+ni lo busques en la oscuridad
+muy cerca de ti, en tu ♡
+puedes adorar a tu Señor.
+
+Tan cerca de mí...
+
+Le hablaré sin miedo al oído
+le contaré las cosas que hay en mí
+y que solo a él, le interesarán
+él es más que un mito para mí.
+
+Míralo a tu lado caminando
+paseando entre la multitud
+muchos ciegos van, sin quererlo ver
+llenos de ceguera espiritual.`
+            },
+            {
+                title: "Espíritu Santo derrámate (Ofertorio)",
+                section: "Comunión",
+                tone: "Sol",
+                soloist: "",
+                lyrics: `Espíritu Santo derrámate,
+sobre estas ofrendas
+que hoy te presentamos,
+para que se me transformen
+en el Cuerpo y Sangre,
+de nuestro Señor (Bis)
+
+Y podamos comer su cuerpo,
+Y podamos beber su sangre,
+Y podamos comer su cuerpo,
+Ven Espíritu Santo (Bis)`
+            },
+            {
+                title: "Un niño se te acercó",
+                section: "Comunión",
+                tone: "Do",
+                soloist: "",
+                lyrics: `Un niño se le acercó
+aquella tarde
+sus cinco panes te dio
+para ayudarte
+los dos hicieron
+que ya no hubiera hambre
+los 2 hicieron que ya no hubiera hambre.
+
+La Tierra, el aire y el sol
+son tus regalos
+y mil estrellas de luz
+sembró tu mano
+el hombre pone su amor
+y su trabajo
+el hombre pone su amor
+y su trabajo.
+
+También yo quiero poner
+sobre tu mesa
+mis cinco panes
+que son una promesa
+de darte todo mi amor
+y mi pobreza.`
+            },
+            {
+                title: "Me has Seducido Señor",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Señor no soy nada
+Porque me has llamado  
+Todas las veces que he venido a ti,  
+porque te has gustado en mí.  
+
+Me has seducido Señor con tu mirada  
+Y me has gustado al amor y a la amistad.  
+Es imposible conocerte y no asegurate  
+de ser tú el único que quieras.  
+Me has seducido Señor.`
+            },
+            {
+                title: "Quebrántame",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Oh, Señor mi Dios
+Te he buscado tanto tiempo
+y te encuentro hoy
+Y te hablo en oración, pero en mi corazón
+Hay heridas sin sanar,
+y en mi alma solo hay oscuridad.
+
+Oh, Jesús mi Señor
+Tu moriste en una cruz
+para mi salvación
+Y tu sangre derramaste por mi redención
+Solo tu tienes poder
+Solo en ti mi alma puede Renacer
+
+Quebrántame, toma lo que soy y
+Renuévame, hazme como tu, Señor
+Transfórmame, a tu imagen
+Quiero Renacer en ti`
+            },
+            {
+                title: "Alma de Cristo",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Alma de Cristo Santifícame
+Cuerpo de Cristo Sálvame
+Sangre de Cristo Embriágame
+Agua del Costado de Cristo Lávame
+Pasión de Cristo Confórtame
+Oh Buen Jesús Óyeme
+Y dentro de tus llagas escóndeme
+No Permitas que me aparte de ti
+Del enemigo defiéndeme
+En la hora de mi muerte, llámame
+Y mándame ir a ti
+Para con tus santos Te alaben por los
+siglos de los siglos
+Amén`
+            },
+            {
+                title: "Quiero recibirte",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Quiero recibirte en comunión
+Quiero q'entres en mí
+y que sientas en él su calor
+que hoy Te ofrece este pecador
+
+Ven, Ven, Ven Jesús
+Ven no tardes más
+Ven, Ven, Ven Jesús
+Ven a mi Corazón
+
+Hoy Te preparé mi corazón
+en el Sacramento del Perdón
+prometí amarte más y más
+Dar mi vida a todos los demás`
+            },
+            {
+                title: "Esperamos Señor Tu Venida",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Esperamos Señor Tu Venida
+Tu venida entorno al altar
+Presentamos el pan y el vino
+Te esperamos Maranata (2)
+
+Bendito sea Señor
+por este pan que nos das
+Nosotros forjamos la tierra
+y Tu pan de vida nos das`
+            },
+            {
+                title: "Este Pan y Vino Señor",
+                section: "Comunión",
+                tone: "DO",
+                soloist: "",
+                lyrics: `Este Pan y Vino, Señor se transformarán
+en Tu cuerpo y Sangre, Señor, en nuestro manjar
+
+Gracias al Sol y al labrador, en el altar florecen hoy
+las espigas, los racimos que presentamos a Dios.
+
+Lo q' sembré con mi dolor, Lo q' pedí en mi oración
+hoy son frutos, son ofrendas q' presentamos a Dios.`
+            },
+            {
+                title: "Deleite",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Es un deleite para mí
+Al recibirte en comunión
+Y saborear Tu Corazón
+Tu cuerpo y sangre mi Jesús
+
+Es un deleite para mí
+Al recibirte en comunión
+Y saborear Tu corazón
+Tu cuerpo y Sangre mi Jesús
+
+Incomparable es Tu amor por mi Jesús
+Incomparable es Tu gran amor Señor
+Que no puedo comprender
+Que siendo Tu el rey
+Te hayas quedado en este humilde pan`
+            },
+            {
+                title: "Sobre Tu altar",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Después de Preparar la tierra y de Sembrar
+Se ha recogido el trigo bajo el sol otoñal
+ha sido necesario blanca harina hacer
+es trabajo del hombre que ha hecho este pan.
+
+Este es el pan q' presentamos hoy
+el pan de Nuestra vida
+el pan de Nuestro amor
+el pan de Nuestra Tierra
+del gozo y del dolor
+Nuestro esfuerzo es hacer
+Nuestro mundo mejor`
+            },
+            {
+                title: "Maranatha (Adviento)",
+                section: "Comunión",
+                tone: "Mi",
+                soloist: "",
+                lyrics: `Ha llegado el tiempo de Adviento
+y ponemos sobre tu altar
+las ofrendas del vino y el pan,
+con María esperamos tu llegada
+para que conviertas estos dones
+en tu cuerpo y sangre Señor
+
+CORO
+Maranatha, Maranatha, Maranatha
+Ven Señor Jesús (Bis)
+
+Ofrecemos también nuestra vida,
+nuestro trabajo y nuestro dolor,
+con María esperamos tu llegada
+para que conviertas nuestra vida
+con tu amor.`
+            },
+            {
+                title: "Milagro de amor",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Jesús aquí presente, en forma real.
+Te pido un poco más de fe y de humildad
+Quisiera poder ser digno de compartir
+Contigo el Milagro más grande de amor
+
+Milagro de amor Tan infinito.
+En que tú mi Dios, Te has hecho, Tan pequeño y Tan humilde
+Para entrar en mi. Milagro de amor Tan infinito. En q' tu mi Dios
+Te olvidas de tu gloria y de Tu majestad Por mi`
+            },
+            {
+                title: "Jesús amigo",
+                section: "Comunión",
+                tone: "",
+                soloist: "",
+                lyrics: `Hoy Te quiero contar, Jesús amigo, 
+q' contigo estoy feliz
+si Tengo Tu amistad lo Tengo todo, 
+pues estás dentro de mí
+
+Después de comulgar, me haces como Tú 
+me llenas con Tu Paz
+En cada pedacito de este pan 
+completo estás y así Te das
+
+Estás ahí por mí, porque conoces 
+que sin Ti, pequeño soy
+De ahora en adelante nada nos 
+separará Ya lo verás`
+            },
+
+            // --- ALABANZA ---
+            {
+                title: "Tú el único Rey",
+                section: "Alabanza",
+                tone: "",
+                soloist: "",
+                lyrics: `Tú el único Rey que tiene que reinar,
+El único Señor al que voy a alabar
+Hoy levanto el corazón
+al que lo conquistó,
+Simplemente porque Tú eres Dios.
+
+Quiero ponerte por encima de todo
+En cada momento sentarte en el trono
+Que tu alabanza esté siempre en mi boca
+Y reconocer que tú eres Dios`
+            },
+            {
+                title: "Mi música eres tú",
+                section: "Alabanza",
+                tone: "",
+                soloist: "",
+                lyrics: `CORO
+Quiero cantar a Dios, toda
+mi vida y tocar para El mien-
+tras exista (BIS)
+
+I
+Mi música eres Tú Señor
+yo canto para ti
+y mi vida es obra de tu amor
+por eso soy feliz.
+
+II
+Que canten todos en Tu honor
+que bailen para Ti
+grandezas El ha hecho en mí
+que grande es su amor.`
+            },
+            {
+                title: "Yo no canto solo por cantar",
+                section: "Alabanza",
+                tone: "",
+                soloist: "",
+                lyrics: `Yo no canto solo por cantar
+Yo canto porque el Señor lo pidió
+
+Y si la voz un día, me llegara faltar
+Le cantaría con el corazón
+Le cantaría con el corazón
+
+Y hoy vuelvo a orar y lo vuelvo a escuchar.
+Él nunca me abandona él no me va olvidar
+Y siempre me acompaña al caminar`
+            },
+            {
+                title: "Cómo no creer en Ti",
+                section: "Alabanza",
+                tone: "",
+                soloist: "",
+                lyrics: `Coro:
+Cómo no creer en Ti (bis)
+Si miro, respiro y hablo, 
+camino, pienso y descanso solo en Ti
+¿Cómo no creer en Ti? ¿Cómo no creer en Ti?
+
+Si el amor q' brota d' mis ojos al mirar
+Es Tu amor q' quiere convertir y trans-
+formar
+
+Todo Alrededor en paz, en gozo y amor
+En camino de rosas y espinas
+que esperan ansiosos a quien camina
+llevando a los hombres la salvación.`
+            },
+
+            // --- ADORACIÓN ---
+            {
+                title: "Yo creo en las promesas de Dios",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Yo creo en las promesas de Dios
+Yo creo en las promesas de Dios
+Yo creo en las promesas de mi Señor
+
+Si soy fiel en lo poco él me confiará más
+Si soy fiel en lo poco mis pasos me guiará
+
+Yo creo en la misericordia de Dios
+Yo creo en la misericordia de Dios
+Yo creo en la misericordia de mi Señor
+
+Yo creo en el Espíritu de Dios
+Yo creo en el Espíritu de mi Señor (2)
+
+Yo creo en el amor de Dios`
+            },
+            {
+                title: "ABBA PADRE",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Abba ABBA, Padre
+alfarero eres Tú
+nosotros arcilla
+Hechura de Tus manos
+moldéanos (Oh Señor)
+moldéanos Señor (Señor)
+
+Conviértenos en la imagen
+de tu Hijo
+Tu Hijo Jesús`
+            },
+            {
+                title: "Un amor que siempre está a tu lado",
+                section: "Adoración",
+                tone: "Mi",
+                soloist: "",
+                lyrics: `Un amor que siempre está a tu lado
+y que no te exige nunca nada
+así es el amor de mi Dios
+así es el amor de mi Dios
+
+Un amor que sufre cuando sufres
+un amor que ríe cuando ríes
+ese es el amor de mi Dios
+ese es el amor de mi Dios`
+            },
+            {
+                title: "VEN ESPÍRITU VEN",
+                section: "Adoración",
+                tone: "Sol",
+                soloist: "",
+                lyrics: `Ven Espíritu, ven
+y lléname Señor
+con Tu preciosa unción. (BIS)
+
+Purifícame
+Lávame
+Renuévame
+Restáurame Señor
+con Tu poder
+Te quiero conocer`
+            },
+            {
+                title: "Hay una unción aquí",
+                section: "Adoración",
+                tone: "Sol",
+                soloist: "",
+                lyrics: `Hay una unción aquí
+cayendo sobre mí
+curándome
+cambiando mi ser (2)
+
+Mi Espíritu y mi alma
+se están llenando
+con el poder de tu espíritu santo
+mi vida nunca más será igual (2)`
+            },
+            {
+                title: "Está cayendo su gloria sobre mí",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Algo está cayendo aquí
+Es tan fuerte sobre mí
+Mis manos levantaré
+Y su gloria tocaré (BIS)
+
+Está cayendo
+Su gloria sobre mí
+Sanando heridas
+Levantando al caído
+Su gloria está aquí (BIS)`
+            },
+            {
+                title: "Úngeme",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Úngeme
+Señor, úngeme
+Que yo pueda ver
+Lo que estás haciendo en mí
+
+Mi corazón anhela tu presencia
+Y mi alma desea tu altar
+Yo solo quiero
+recibir un toque tuyo
+Y que tu unción me pueda transformar`
+            },
+            {
+                title: "Que bien se esta aqui",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Que bien se está aquí, en tu presencia
+Glorioso por siempre Señor
+Que bien se está aquí, a tu lado
+Sintiendo tu paz y tu amor
+
+Cuán hermoso eres Señor
+Tú no tienes comparación
+Quiero permanecer por siempre en tu amor`
+            },
+            {
+                title: "Simplemente",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `He intentado tantas veces alejarme de Ti  
+Porque siento muy dentro que no te merezco  
+He querido dejar de cantar para Ti  
+Porque pienso que es poco lo que te offeredco  
+Pero Tú me persigues Señor  
+Y te encuentro donde quiera que voy  
+
+Simplemente te antojaste de mí  
+Simplemente yo soy tuyo Señor  
+Simplemente Tú me amas así tal como soy  
+Simplemente no me puedo escapar  
+De tu inmensa manera de amar`
+            },
+            {
+                title: "Tuyo soy",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Yo no soy nada y del Polvo nací
+Pero Tu me amas y moriste por mi
+Ante la Cruz, solo puedo exclamar
+Tuyo soy, Tuyo soy.
+
+Toma mis manos, Te pido Toma mis labios
+Te amo Toma mi vida.
+Oh Padre Tuyo Soy`
+            },
+            {
+                title: "Hasta la locura",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Me puede faltar todo en la vida
+Me pude faltar hasta la vida
+Pero nunca quiero que me falte
+El deseo de amarte hasta el final
+
+Hasta la locura te amo, Señor
+Ya no quedan dudas en mi corazón
+De que te amo, De que te amo,
+Señor`
+            },
+            {
+                title: "Tantum ergo Sacramentum",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Tantum ergo Sacramentum
+Veneremur cernui:
+Et antiquum documentum
+Novo cedat ritui:
+Praestet fides supplementum
+Sensuum defectui.
+
+Genitori Genitoque
+Laus et Iubilatio:
+Salus, honor, virtus quoque
+Sit et benedictio
+Procedenti ab utroque
+Compar sit Laudatio.
+Amén`
+            },
+            {
+                title: "Alabado sea el Santísimo",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Alabado sea el Santísimo
+Sacramento del altar
+
+y la Virgen concebida
+sin pecado original
+
+El manjar regalado 
+de este suelo terrenal
+Es Jesús sacramentado,
+Dios eterno e inmortal.`
+            },
+            {
+                title: "Bendito, bendito sea Dios",
+                section: "Adoración",
+                tone: "",
+                soloist: "",
+                lyrics: `Bendito, bendito, bendito sea Dios
+Los ángeles cantan y alaban a Dios
+Los ángeles cantan y alaban a Dios
+
+1.- Yo creo, Jesús mío, que estás en el altar
+Oculto en la hostia te vengo a adorar
+Oculto en la hostia te vengo a adorar`
+            },
+
+            // --- ANIMACIÓN ---
+            {
+                title: "ÁNGELES DE DIOS",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Si sientes un murmullo Muy cerca de ti
+un ángel llegando para recibir
+Todas tus oraciones
+y llevarlas al cielo
+Así Abre el corazón y comienza a alabar
+el gozo del cielo está sobre el altar
+
+Hay ángeles volando en este lugar
+En medio del pueblo y junto al altar
+Subiendo y bajando
+En todas las direcciones`
+            },
+            {
+                title: "El espíritu de dios está aquí",
+                section: "Animación",
+                tone: "Sol",
+                soloist: "",
+                lyrics: `El Espíritu de Dios está aquí
+y se está moviendo
+El Espíritu de Dios está aquí
+y yo lo siento (2)
+
+El Espíritu de Dios me llena
+El Espíritu de Dios me levanta
+El Espíritu de Dios me da vida
+y me hace feliz. (2)`
+            },
+            {
+                title: "Huracán",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Me he hecho tantas preguntas intentando entender.
+Me he lanzado a buscarte, sin saberte ver.
+Me he asomado al abismo
+Me he atrevido a saltar y caer
+
+Y un huracán romperá el cielo desde mi garganta
+Gritándote, donde estás cuando me haces falta (Bis)
+
+Estoy aquí en el SILENCIO. Estoy aquí en este VIENTO
+Estoy aquí, soy ese TROZO D' PAN`
+            },
+            {
+                title: "Despierta",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Despierta, que nació un nuevo día
+despierta, si te encuentras dormida
+El sol ya salió y los pajaritos cantan
+levántate ya, y no calientes la cama
+Disculpa, si interrumpo tus sueños
+pero no tardes más, porque vengo a
+decir con amor Jesús te ama.`
+            },
+            {
+                title: "Vive Jesus",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `/Vive Jesús el Señor/4
+
+Él vive, vive, Él vive, vive, vive Jesús el Señor.
+
+/Reina Jesús el Señor/4
+
+Él reina, reina, Él reina, reina, reina Jesús el Señor`
+            },
+            {
+                title: "Bartimeo",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Jesús caminaba por Jericó
+sanando enfermos predicando de
+Dios con mucho amor él enseño
+Había un ciego que comienza
+escuchar muchas personas por
+aquel lugar Era Bartimeo y
+a Cristo gritó:
+
+Hijo de David Ten piedad de mí
+Que reciba la vista hijo de David`
+            },
+            {
+                title: "Transfiguración (Vamos cantad)",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Vamos cantad
+Cantemos en la paz de mi Señor Jesús
+y que el amor de Dios se torne en nuestras
+vidas Luz (Bis)
+
+Es tan bueno estar aquí
+Juntos cantando al Señor
+Soltando nuestra voz así
+exaltar a un Dios de amor`
+            },
+            {
+                title: "Estamos de fiesta con Jesús",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Estamos de fiesta con Jesús, Al Cielo,
+Queremos ir. Y Todos reunidos en la mesa es Cristo
+el que va a servir...
+
+Poderoso es nuestro Dios / Poderoso es nuestro Dios
+
+El sana, el salva poderoso es nuestro Dios
+El viene, Bautiza,
+Poderoso es nuestro Dios!`
+            },
+            {
+                title: "Popurrí - Confirmación",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Como corren ríos dentro de mi ser
+Como corre río dentro de mi ser
+
+Es que yo confío en Cristo, mi Rey
+Es que yo confío en Cristo mi Rey
+
+OH, OH, OH, OH
+Hay que nacer del agua
+Y del Espíritu de Dios
+
+Yo Tengo un gozo en el alma
+¡Aleluya, gloria a Dios!`
+            },
+            {
+                title: "Enciende una luz",
+                section: "Animación",
+                tone: "",
+                soloist: "",
+                lyrics: `Enciende una luz déjala brillar
+No lo puedes esconder
+No Te puedes callar
+Ante tal necesidad
+Enciende una luz en la oscuridad
+
+Esta es la Luz de Xto
+déjala brillar
+Esta es la Luz de Xto Yo la haré brillar
+Brillará, brillará sin cesar`
+            },
+
+            // --- ORACIÓN ---
+            {
+                title: "San Francisco (Hazme un instrumento)",
+                section: "Oración",
+                tone: "",
+                soloist: "",
+                lyrics: `Un amigo que ha vivido entre las flores.
+Un amigo que ha llamado hermano al sol.
+Y en silencio meditaba y en silencio hacia su oración.
+
+Coro:
+Es San Francisco, es nuestro guía, es el que canta la vida
+Hermana Creación.
+
+HAZME TÚ SEÑOR, INSTRUMENTO DE TU PAZ
+
+Hazme un instrumento de tu paz
+Donde haya odio lleve yo tu amor
+Donde haya injuria tu perdón señor
+Donde haya duda fe en ti`
+            },
+            {
+                title: "Sáname (Espíritu de Dios)",
+                section: "Oración",
+                tone: "Do",
+                soloist: "",
+                lyrics: `Espíritu de Dios, sáname
+Espíritu de Dios, sáname
+Sana las heridas
+Que hay dentro de mí
+Sánalas
+Espíritu de Dios`
+            },
+            {
+                title: "Tócame espíritu santo",
+                section: "Oración",
+                tone: "Do",
+                soloist: "",
+                lyrics: `Tócame, Espíritu Santo
+Tócame, Espíritu de Dios
+Es que yo quiero sentir,
+la fuerza de Tu amor
+Ven y tócame Espíritu de Dios
+
+Lléname, Espíritu Santo
+Lléname, Espíritu de Dios`
+            },
+            {
+                title: "Te presento hoy (Familia)",
+                section: "Oración",
+                tone: "",
+                soloist: "",
+                lyrics: `Te presento hoy
+Lo más grande que Tengo
+lo que me da fuerzas para continuar
+en cada momento
+
+CORO
+Aquí está mi Familia Señor Te necesitan
+Es lo más grande que Tengo protégelos
+Aquí está mi familia Señor Te necesitan
+es lo más grande que Tengo Bendícelos (BIS)`
+            },
+            {
+                title: "Comunión Espiritual",
+                section: "Oración",
+                tone: "",
+                soloist: "",
+                lyrics: `En el silencio de nuestros corazones
+unimos nuestras voces y pensamientos
+en un momento de oración y reflexión.
+Hoy nos reunimos para elevar nuestras
+súplicas y pensamientos hacia el cielo,
+orando por aquellos que enfrentan los
+desafíos de la enfermedad, el dolor y el sufrimiento.
+
+"Jesús manso y humilde de corazón.
+Haz mi corazón, semejante al tuyo"`
+            },
+            {
+                title: "Paz en la tormenta",
+                section: "Oración",
+                tone: "",
+                soloist: "",
+                lyrics: `Cuando lloras por las veces que intentaste
+Y tratas de olvidar las lágrimas que lloraste
+Solo tienes pena y tristeza
+El futuro incierto espera
+Puedes tener paz en la tormenta
+
+Puedes tener; paz en la tormenta
+Fe y esperanza cuando no puedas seguir
+Aun con tu mundo hecho pedazos
+El señor guiara tus pasos`
+            },
+            {
+                title: "Hay Momentos",
+                section: "Oración",
+                tone: "",
+                soloist: "",
+                lyrics: `Hay Momentos, en los que siento como
+si Dios estuviera durmiendo, como
+si hablara sola en el viento y lo único que
+escucho, es mi lamento.
+
+Por eso hoy te pido mi Señor que me perdones
+por mi gran error, seguramente Tú me estás
+hablando y soy yo la que no te está
+escuchando.`
+            },
+            {
+                title: "Señor danos Sacerdotes",
+                section: "Oración",
+                tone: "",
+                soloist: "",
+                lyrics: `Señor danos Sacerdotes
+
+Santos y sabios como eres Tú
+Y vos, María velad por ellos para
+que sean otros Jesús
+
+El cáliz de nuestra acción y gracias
+nos une a todos en la Sangre de
+XTO.`
+            },
+
+            // --- MARÍA ---
+            {
+                title: "La Guadalupana",
+                section: "María",
+                tone: "Do",
+                soloist: "",
+                lyrics: `Desde el cielo, una hermosa mañana
+Desde el cielo, una hermosa mañana
+La Guadalupana, La guadalupana
+La Guadalupana bajó al Tepeyac
+
+Suplicante juntaba sus manos
+Suplicante juntaba sus manos
+Y eran mejicanos, y eran mejicanos
+Y eran mejicanos su porte y su paz.
+
+Su llegada llenó de alegría
+De luz y armonía y de Libertad`
+            },
+            {
+                title: "La Fe de María",
+                section: "María",
+                tone: "",
+                soloist: "",
+                lyrics: `¿Qué hubiese pasado
+Si ella hubiese dicho que no
+O ignorado o dilatado
+El anuncio de tu ángel de amor?
+
+En cambio creyó en tu palabra
+Y se hizo Tu esclava
+En un acto perfecto y de fé
+Y hoy quiero ser como ella
+Y amarte aunque me duelan
+Las espinas y el camino de la cruz
+
+Dame la Fe Señor (dame la fé Señor)
+La Fé de María
+Para decirte si
+Un si sin medidas`
+            },
+            {
+                title: "Quiero caminar contigo María",
+                section: "María",
+                tone: "",
+                soloist: "",
+                lyrics: `Quiero caminar contigo María
+Pues Tu eres mi madre eres mi guía
+Tu eres para mí el más grande ejemplo
+de santidad, de humildad.
+
+Quiero caminar contigo María
+no solo un momento, Todos los días
+necesito Tu amor de madre Tu intercesión
+ante el Señor.`
+            },
+            {
+                title: "Candelaria Hermosa",
+                section: "María",
+                tone: "",
+                soloist: "",
+                lyrics: `Candelaria hermosa, brillante lucero
+Fuiste aparecida el 2 de Febrero (2 veces)
+
+El 2 de Febrero fue Tu aparición
+Y el pueblo Te añora con gran devoción
+
+Esta guitarrita con que canto yo (Bis)
+Me la dio Santa Ana abuela de Dios (Bis)`
+            },
+            {
+                title: "María tú Intercesora",
+                section: "María",
+                tone: "",
+                soloist: "",
+                lyrics: `María tú intercesora
+María tú nuestra Señora
+María tú intercesora
+María tú nuestra Señora
+
+Eres la gracia viva
+Dios contigo
+Eres la elegida
+Y tu hijo Jesucristo`
+            },
+            {
+                title: "Acaso no estoy yo aquí",
+                section: "María",
+                tone: "",
+                soloist: "",
+                lyrics: `Hijo mío, lo que te aflige y asusta
+Se encuentra en las manos de Dios
+Se encuentra en las manos de Dios
+
+CORO
+Acaso no estoy yo aquí
+que soy tu madre?
+Bajo mi manto y en mi regazo
+Te cuidaré`
+            },
+            {
+                title: "Dijiste Sí",
+                section: "María",
+                tone: "",
+                soloist: "",
+                lyrics: `Dijiste Sí y la tierra
+estalló de alegría
+Dijiste Sí y en tu vientre
+Latía divina la salvación
+
+Hágase en mí, de corazón
+La voluntad de mi Señor
+que se cumplan en mí cada día los sueños de Dios.`
+            },
+            {
+                title: "Magnificat (Kairoi)",
+                section: "María",
+                tone: "",
+                soloist: "",
+                lyrics: `Proclama mi alma la grandeza de Dios
+se alegra mi espíritu en Dios mi Salvador
+Porque ha mirado la humillación de su esclava
+Desde ahora me felicitarán todas las generaciones.`
+            }
+        ];
+
+        let currentFontSize = 16;
+        let activeSongId = null;
+        let openCategories = new Set(SONG_SECTIONS); // All open by default
+
+        // Assign numbers by section group
+        const processedSongs = [];
+        const sectionCounters = {};
+
+        SONG_SECTIONS.forEach(sec => sectionCounters[sec] = 0);
+
+        SONGS_DATA.forEach((song, idx) => {
+            const sec = song.section || "Adoración";
+            sectionCounters[sec] = (sectionCounters[sec] || 0) + 1;
+            const groupNum = sectionCounters[sec];
+            
+            processedSongs.push({
+                ...song,
+                id: idx,
+                groupNumber: groupNum,
+                formattedNumber: `#${String(groupNum).padStart(2, '0')}`
+            });
+        });
+
+        // Elements
+        const indexContainer = document.getElementById('index-container');
+        const searchInput = document.getElementById('search-input');
+        const clearSearchBtn = document.getElementById('clear-search');
+        const totalSongsCount = document.getElementById('total-songs-count');
+        const lyricsView = document.getElementById('lyrics-view');
+        const welcomeState = document.getElementById('welcome-state');
+        const activeSongContent = document.getElementById('active-song-content');
+        const songToolbar = document.getElementById('song-toolbar');
+        
+        // Active Song DOMs
+        const songTitleEl = document.getElementById('song-title');
+        const songBadgeEl = document.getElementById('song-section-badge');
+        const songGroupNumEl = document.getElementById('song-group-number');
+        const songToneVal = document.getElementById('song-tone-val');
+        const songToneBox = document.getElementById('song-tone');
+        const songSoloistVal = document.getElementById('song-soloist-val');
+        const songSoloistBox = document.getElementById('song-soloist');
+        const songVersesEl = document.getElementById('song-verses');
+
+        // Toolbar DOMs
+        const toolbarCategory = document.getElementById('toolbar-category');
+        const toolbarNumber = document.getElementById('toolbar-number');
+
+        function renderIndex(filterText = '') {
+            indexContainer.innerHTML = '';
+            const query = filterText.toLowerCase().trim();
+            let visibleCount = 0;
+
+            SONG_SECTIONS.forEach(sectionName => {
+                const songsInSection = processedSongs.filter(s => {
+                    const matchSec = s.section === sectionName;
+                    if (!matchSec) return false;
+                    if (!query) return true;
+                    return s.title.toLowerCase().includes(query) || s.lyrics.toLowerCase().includes(query);
+                });
+
+                if (songsInSection.length === 0) return;
+                visibleCount += songsInSection.length;
+
+                const isGroupOpen = openCategories.has(sectionName) || query.length > 0;
+
+                // Group Accordion Card
+                const groupEl = document.createElement('div');
+                groupEl.className = 'border border-amber-200/60 dark:border-slate-800 rounded-xl overflow-hidden bg-white/50 dark:bg-slate-900/50';
+
+                // Accordion Header
+                const headerBtn = document.createElement('button');
+                headerBtn.className = 'w-full px-3.5 py-2.5 flex items-center justify-between bg-amber-100/50 dark:bg-slate-800/60 hover:bg-amber-100 dark:hover:bg-slate-800 transition text-left';
+                headerBtn.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="${isGroupOpen ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4 text-amber-700 dark:text-amber-400"></i>
+                        <span class="font-heading text-xs font-bold text-amber-950 dark:text-amber-200 tracking-wider uppercase">${sectionName}</span>
+                    </div>
+                    <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-white dark:bg-slate-900 text-amber-800 dark:text-amber-300 border border-amber-200/50 dark:border-slate-700">
+                        ${songsInSection.length}
+                    </span>
+                `;
+
+                headerBtn.addEventListener('click', () => {
+                    if (openCategories.has(sectionName)) {
+                        openCategories.delete(sectionName);
+                    } else {
+                        openCategories.add(sectionName);
+                    }
+                    renderIndex(searchInput.value);
+                });
+
+                groupEl.appendChild(headerBtn);
+
+                // Songs List Container
+                if (isGroupOpen) {
+                    const listEl = document.createElement('div');
+                    listEl.className = 'divide-y divide-amber-100/60 dark:divide-slate-800/60';
+
+                    songsInSection.forEach(song => {
+                        const songItem = document.createElement('button');
+                        const isActive = activeSongId === song.id;
+
+                        songItem.className = `w-full text-left px-3.5 py-2 flex items-center justify-between text-xs transition ${
+                            isActive 
+                            ? 'bg-amber-600 text-white font-medium shadow-sm' 
+                            : 'hover:bg-amber-50 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-300'
+                        }`;
+
+                        songItem.innerHTML = `
+                            <span class="truncate pr-2">${song.title}</span>
+                            <span class="font-mono text-[10px] opacity-80 shrink-0">${song.formattedNumber}</span>
+                        `;
+
+                        songItem.addEventListener('click', () => {
+                            selectSong(song.id);
+                            if (window.innerWidth < 1024) {
+                                toggleMobileSidebar(false);
+                            }
+                        });
+
+                        listEl.appendChild(songItem);
+                    });
+
+                    groupEl.appendChild(listEl);
+                }
+
+                indexContainer.appendChild(groupEl);
+            });
+
+            totalSongsCount.textContent = `${visibleCount} cantos encontradas`;
+            lucide.createIcons();
+        }
+
+        function selectSong(songId) {
+            activeSongId = songId;
+            const song = processedSongs.find(s => s.id === songId);
+            if (!song) return;
+
+            welcomeState.classList.add('hidden');
+            activeSongContent.classList.remove('hidden');
+            songToolbar.classList.remove('hidden');
+
+            songTitleEl.textContent = song.title;
+            songBadgeEl.textContent = song.section;
+            songGroupNumEl.textContent = `${song.section} ${song.formattedNumber}`;
+
+            toolbarCategory.textContent = song.section;
+            toolbarNumber.textContent = song.formattedNumber;
+
+            // Tone
+            if (song.tone) {
+                songToneVal.textContent = song.tone;
+                songToneBox.classList.remove('hidden');
+                songToneBox.classList.add('flex');
+            } else {
+                songToneBox.classList.add('hidden');
+            }
+
+            // Soloist
+            if (song.soloist) {
+                songSoloistVal.textContent = song.soloist;
+                songSoloistBox.classList.remove('hidden');
+                songSoloistBox.classList.add('flex');
+            } else {
+                songSoloistBox.classList.add('hidden');
+            }
+
+            // Format lyrics text
+            songVersesEl.textContent = song.lyrics;
+
+            // Re-render sidebar to highlight active song
+            renderIndex(searchInput.value);
+
+            // Scroll top of lyrics container
+            lyricsView.parentElement.scrollTop = 0;
+        }
+
+        // Font scaling
+        function updateFontSize(delta) {
+            currentFontSize = Math.min(Math.max(currentFontSize + delta, 12), 28);
+            songVersesEl.style.fontSize = `${currentFontSize}px`;
+            document.getElementById('font-size-label').textContent = `${currentFontSize}px`;
+        }
+
+        document.getElementById('font-inc').addEventListener('click', () => updateFontSize(2));
+        document.getElementById('font-dec').addEventListener('click', () => updateFontSize(-2));
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Copy Lyric
+        document.getElementById('copy-lyrics-btn').addEventListener('click', () => {
+            if (activeSongId === null) return;
+            const song = processedSongs.find(s => s.id === activeSongId);
+            if (!song) return;
+
+            const textToCopy = `${song.title}\n[${song.section} ${song.formattedNumber}]\n\n${song.lyrics}`;
+            
+            // Clipboard fallback as specified
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Letra copiada al portapapeles');
+            } catch (err) {
+                showToast('No se pudo copiar');
+            }
+            document.body.removeChild(textarea);
+        });
+
+        // Print Lyric
+        document.getElementById('print-lyrics-btn').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Search Handlers
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.length > 0) {
+                clearSearchBtn.classList.remove('hidden');
+            } else {
+                clearSearchBtn.classList.add('hidden');
+            }
+            renderIndex(val);
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearchBtn.classList.add('hidden');
+            renderIndex('');
+        });
+
+        // Mobile Drawer Toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function toggleMobileSidebar(open) {
+            if (open) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => toggleMobileSidebar(true));
+        document.getElementById('sidebar-close-btn').addEventListener('click', () => toggleMobileSidebar(false));
+        overlay.addEventListener('click', () => toggleMobileSidebar(false));
+        document.getElementById('quick-search-btn').addEventListener('click', () => {
+            toggleMobileSidebar(true);
+            setTimeout(() => searchInput.focus(), 300);
+        });
+
+        // Expand / Collapse all
+        let allExpanded = true;
+        document.getElementById('expand-all-sections').addEventListener('click', (e) => {
+            if (allExpanded) {
+                openCategories.clear();
+                e.target.textContent = 'Expandir todos';
+            } else {
+                SONG_SECTIONS.forEach(s => openCategories.add(s));
+                e.target.textContent = 'Contraer todos';
+            }
+            allExpanded = !allExpanded;
+            renderIndex(searchInput.value);
+        });
+
+        // Theme Toggle Logic
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderIndex();
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

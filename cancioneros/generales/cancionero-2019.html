@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancionero Litúrgico 2019 - Modo Offline</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            liturgical: {
+              gold: '#D4AF37',
+              navy: '#1B2A4A',
+              purple: '#5B2C6F',
+              green: '#1E8449',
+              red: '#900C3F'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <!-- Header principal -->
+  <header class="no-print sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-2 sm:gap-3 cursor-pointer min-w-0" onclick="resetFilters()">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+            <i class="fa-solid fa-book-bible text-lg sm:text-xl"></i>
+          </div>
+          <div class="truncate">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <h1 class="text-base sm:text-lg font-bold leading-tight text-slate-900 dark:text-white truncate">Cancionero 2019</h1>
+              <span class="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-full border border-emerald-300 dark:border-emerald-800 items-center gap-1 shrink-0">
+                <i class="fa-solid fa-wifi-slash"></i> Offline
+              </span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-amber-600 dark:text-amber-400 font-medium truncate">Repertorio y Letras</p>
+          </div>
+        </div>
+
+        <!-- Global Actions -->
+        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <!-- Pitch Pipe / Tono Button -->
+          <button onclick="openToneModal()" title="Afinador / Tono" class="p-2 sm:p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition touch-manipulation">
+            <i class="fa-solid fa-music text-base sm:text-lg"></i>
+          </button>
+          
+          <!-- Mass Planner Button -->
+          <button onclick="openPlannerModal()" title="Planificador de Misa" class="px-2.5 sm:px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-sm transition touch-manipulation">
+            <i class="fa-solid fa-clipboard-list text-sm"></i>
+            <span class="hidden sm:inline">Guía de Misa</span>
+            <span id="plannerBadge" class="hidden w-5 h-5 bg-white text-amber-600 font-bold text-[10px] rounded-full flex items-center justify-center">0</span>
+          </button>
+
+          <!-- Dark Mode Toggle -->
+          <button id="themeToggle" onclick="toggleTheme()" class="p-2 sm:p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition touch-manipulation">
+            <i id="themeIcon" class="fa-solid fa-moon text-base sm:text-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6">
+    
+    <!-- Hero / Search Box -->
+    <div class="no-print bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-4 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none text-7xl sm:text-9xl">
+        <i class="fa-solid fa-hands-praying"></i>
+      </div>
+      
+      <div class="max-w-2xl relative z-10">
+        <h2 class="text-xl sm:text-3xl font-bold tracking-tight mb-1 sm:mb-2">Planificación Litúrgica Sin Conexión</h2>
+        <p class="text-slate-300 text-xs sm:text-base mb-4 sm:mb-6">Busca por número, título o cualquier estrofa de la letra almacenada en tu dispositivo.</p>
+        
+        <!-- Search Input -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-base"></i>
+          <input 
+            type="text" 
+            id="searchInput" 
+            oninput="handleSearch()"
+            placeholder="Buscar por título, número o estrofa..." 
+            class="w-full pl-10 sm:pl-11 pr-10 py-3 sm:py-3.5 bg-white/10 backdrop-blur border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 text-base sm:text-base transition"
+          />
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-2 touch-manipulation">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <section class="no-print">
+      <div class="flex items-center justify-between mb-2 sm:mb-3">
+        <h3 class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Filtrar por Parte de la Misa</h3>
+        <span id="resultsCount" class="text-xs font-medium text-amber-600 dark:text-amber-400">0 cantos disponibles</span>
+      </div>
+
+      <!-- Desplegable para pantallas pequeñas (móviles) -->
+      <div class="sm:hidden mb-1">
+        <div class="relative">
+          <select 
+            id="categorySelectMobile" 
+            onchange="setCategory(this.value)" 
+            class="w-full py-2.5 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none shadow-sm pr-9"
+          >
+            <!-- JS inserts category options here -->
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 dark:text-slate-400">
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pastillas de filtro para pantallas medianas/grandes -->
+      <div id="categoryContainer" class="hidden sm:flex gap-2 overflow-x-auto pb-2 custom-scrollbar touch-pan-x snap-x">
+        <!-- JS inserts category pills here -->
+      </div>
+    </section>
+
+    <!-- Songs Grid -->
+    <section class="flex-1">
+      <div id="songsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <!-- Dynamic song cards -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden flex flex-col items-center justify-center py-12 sm:py-16 text-center">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 text-xl sm:text-2xl mb-3 sm:mb-4">
+          <i class="fa-solid fa-music-slash"></i>
+        </div>
+        <h3 class="text-base font-semibold text-slate-800 dark:text-slate-200">No se encontraron cantos</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">Intenta buscar con otra palabra o selecciona otro tiempo litúrgico.</p>
+        <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition touch-manipulation">
+          Ver todos los cantos
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: VER / EDITAR LETRA COMPLETA -->
+  <div id="songModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[92vh] sm:max-h-[90vh] overflow-hidden my-auto animate-in fade-in zoom-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700 flex items-start justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/50">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <span id="modalNum" class="px-2.5 py-1 bg-amber-500 text-white font-bold text-xs sm:text-sm rounded-lg shadow-sm shrink-0">#0</span>
+          <div class="min-w-0">
+            <h3 id="modalTitle" class="text-base sm:text-xl font-bold text-slate-900 dark:text-white truncate">Título del Canto</h3>
+            <div class="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1 flex-wrap">
+              <span id="modalCategory" class="px-2 py-0.5 text-[11px] sm:text-xs font-semibold rounded bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
+                Categoría
+              </span>
+              <span id="modalTone" class="px-2 py-0.5 text-[11px] sm:text-xs font-semibold rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 hidden">
+                Tono
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <button onclick="closeSongModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 touch-manipulation">
+          <i class="fa-solid fa-xmark text-lg sm:text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 custom-scrollbar">
+        <!-- Theme & Author Info -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700 pb-2.5 gap-1">
+          <span id="modalTheme" class="italic">Tema del canto</span>
+          <span id="modalAuthor" class="font-medium">Autor / Tradicional</span>
+        </div>
+
+        <!-- Complete Lyrics Viewer Box -->
+        <div class="bg-amber-50/30 dark:bg-slate-900/70 rounded-xl p-3.5 sm:p-5 border border-amber-200/60 dark:border-slate-700">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 border-b border-amber-200/40 dark:border-slate-800 pb-2.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-file-lines"></i>
+              <span>Letra Completa del Canto</span>
+            </span>
+
+            <div class="flex items-center gap-2">
+              <button onclick="copyModalLyrics()" class="text-xs px-2.5 py-1.5 sm:py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition flex items-center gap-1 touch-manipulation">
+                <i id="copyIcon" class="fa-regular fa-copy"></i>
+                <span id="copyText">Copiar</span>
+              </button>
+              <button onclick="toggleEditLyrics()" class="text-xs px-2.5 py-1.5 sm:py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition font-medium flex items-center gap-1 touch-manipulation">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span id="editBtnText">Editar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Lyrics Display -->
+          <div id="modalLyricsDisplay" class="text-sm sm:text-base font-serif text-slate-800 dark:text-slate-200 whitespace-pre-line leading-relaxed min-h-[100px]">
+            <!-- Complete song lyrics rendered here -->
+          </div>
+
+          <!-- Lyrics Editor (hidden by default) -->
+          <div id="lyricsEditor" class="hidden mt-3 flex flex-col gap-2">
+            <textarea id="lyricsInput" rows="8" class="w-full p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-base sm:text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-amber-500 outline-none font-serif leading-relaxed custom-scrollbar"></textarea>
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+              <span class="text-[11px] text-slate-400">Los cambios se guardan localmente en tu dispositivo.</span>
+              <div class="flex gap-2">
+                <button onclick="resetModalLyrics()" class="flex-1 sm:flex-none px-3 py-1.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs transition touch-manipulation">
+                  Restaurar Original
+                </button>
+                <button onclick="saveModalLyrics()" class="flex-1 sm:flex-none px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 touch-manipulation">
+                  <i class="fa-solid fa-floppy-disk"></i>
+                  <span>Guardar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <button id="modalFavBtn" onclick="toggleFavoriteFromModal()" class="w-full sm:w-auto px-3.5 py-2.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition touch-manipulation">
+          <i id="modalFavIcon" class="fa-regular fa-star text-amber-500"></i>
+          <span id="modalFavText">Añadir a Favoritos</span>
+        </button>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="addCurrentToPlanner()" class="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-medium text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 touch-manipulation">
+            <i class="fa-solid fa-plus"></i>
+            <span>Asignar a Misa</span>
+          </button>
+          <button onclick="closeSongModal()" class="px-4 py-2.5 sm:py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium text-xs rounded-xl transition touch-manipulation">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: TONO DE REFERENCIA (PITCH PIPE) -->
+  <div id="toneModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3.5">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between mb-3 sm:mb-4">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-music text-amber-500 text-lg sm:text-xl"></i>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Tono de Referencia</h3>
+        </div>
+        <button onclick="closeToneModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 touch-manipulation">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 sm:mb-6">Genera la frecuencia afinada directamente en tu teléfono o tablet.</p>
+
+      <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-5">
+        <button onclick="playNote(261.63, 'Do / C')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white active:bg-amber-600 font-bold text-sm transition touch-manipulation">C (Do)</button>
+        <button onclick="playNote(293.66, 'Re / D')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white active:bg-amber-600 font-bold text-sm transition touch-manipulation">D (Re)</button>
+        <button onclick="playNote(329.63, 'Mi / E')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white active:bg-amber-600 font-bold text-sm transition touch-manipulation">E (Mi)</button>
+        <button onclick="playNote(349.23, 'Fa / F')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white active:bg-amber-600 font-bold text-sm transition touch-manipulation">F (Fa)</button>
+        <button onclick="playNote(392.00, 'Sol / G')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white active:bg-amber-600 font-bold text-sm transition touch-manipulation">G (Sol)</button>
+        <button onclick="playNote(440.00, 'La / A')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white active:bg-amber-600 font-bold text-sm transition touch-manipulation">A (La)</button>
+        <button onclick="playNote(493.88, 'Si / B')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white active:bg-amber-600 font-bold text-sm transition touch-manipulation">B (Si)</button>
+        <button onclick="stopAudio()" class="p-3 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 font-bold text-xs hover:bg-rose-200 transition touch-manipulation">Detener</button>
+      </div>
+
+      <div id="notePlayingStatus" class="text-center text-xs font-medium text-amber-600 dark:text-amber-400 h-4">
+        <!-- Audio status -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PLANIFICADOR / GUÍA DE MISA -->
+  <div id="plannerModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3.5 sm:p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh]">
+      
+      <div class="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-700 mb-3 sm:mb-4">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-list text-amber-500 text-lg sm:text-xl"></i>
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Guía de Misa Seleccionada</h3>
+            <p class="text-[11px] sm:text-xs text-slate-400">Guardado en este dispositivo</p>
+          </div>
+        </div>
+        <button onclick="closePlannerModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 touch-manipulation">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Form del Titulo de la Celebración -->
+      <div class="mb-3 sm:mb-4">
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Nombre / Ocasión de la Misa</label>
+        <input 
+          type="text" 
+          id="massTitleInput" 
+          value="Misa Dominical" 
+          onchange="savePlannerState()"
+          class="w-full px-3 py-2 text-base sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-amber-500 outline-none"
+        />
+      </div>
+
+      <!-- Slots de la Misa -->
+      <div id="plannerList" class="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1">
+        <!-- JS inserts liturgical slots -->
+      </div>
+
+      <!-- Acciones de Guia de Misa -->
+      <div class="pt-3.5 border-t border-slate-100 dark:border-slate-700 mt-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <button onclick="clearPlanner()" class="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center justify-center sm:justify-start gap-1 py-1 touch-manipulation">
+          <i class="fa-solid fa-trash"></i>
+          <span>Vaciar Guía</span>
+        </button>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="exportPlannerText()" class="flex-1 sm:flex-none px-3 py-2.5 sm:py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-xs rounded-xl hover:bg-slate-200 transition flex items-center justify-center gap-1 touch-manipulation">
+            <i class="fa-solid fa-file-export"></i>
+            <span>Copiar Resumen</span>
+          </button>
+          <button onclick="window.print()" class="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-medium text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 touch-manipulation">
+            <i class="fa-solid fa-print"></i>
+            <span>Imprimir</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT CON BASE DE DATOS Y LETRAS COMPLETAS DEL CANCIONERO 2019 -->
+  <script>
+    // Database with COMPLETE lyrics directly extracted for offline use
+    const SONGS_DATA = [
+      // ENTRADA
+      {
+        num: 1, title: "Alabaré", category: "Entrada", tone: "Sol", theme: "Canto de gozo y alabanza comunitaria al Dios Creador.",
+        lyrics: `Alabaré, alabaré, alabaré, alabaré,
+alabaré a mi Señor. (Bis)
+
+Juan vio el número de los redimidos
+y todos alababan al Señor:
+unos cantaban, otros oraban,
+y todos alababan al Señor.
+
+Todos unidos, muy juntos cantemos
+glorias y alabanzas al Señor.
+Gloria al Padre, gloria al Hijo,
+y gloria al Espíritu de amor.
+
+Somos tus hijos, Dios Padre eterno,
+tú nos has creado por amor,
+te alabamos, te bendecimos,
+y todos cantamos en tu honor.`
+      },
+      {
+        num: 2, title: "Alegre la Mañana", category: "Entrada", tone: "Do", theme: "Agradecimiento matutino por la luz resucitada y la creación renovada.",
+        lyrics: `Alegre la mañana que nos habla de ti,
+alegre la mañana. (Bis)
+
+En nombre del Padre, del Hijo y del Espíritu,
+salimos de la noche y estrenamos la aurora;
+saludamos el gozo de la luz que regresa,
+que llena el cielo entero de gloria y de alabanza.
+
+Regresa los trabajos de la mesa y la casa,
+regresa los esfuerzos de la fe y la esperanza.
+Tu mano nos conduce por el día presente,
+tu amor nos fortalece para siempre cantar.
+
+Bendita la mañana que trae la gran noticia,
+de tu presencia viva entre la gente humilde,
+que busca tu justicia y quiere tu consuelo,
+alegre la mañana que nos habla de ti.`
+      },
+      {
+        num: 3, title: "A Edificar la Iglesia", category: "Entrada", tone: "Re", theme: "Llamado a la unidad de los hermanos para construir la comunidad.",
+        lyrics: `A edificar la Iglesia, a edificar la Iglesia,
+a edificar la Iglesia del Señor.
+Hermano, ven ayúdame; hermana, ven ayúdame
+a edificar la Iglesia del Señor.
+
+Yo soy la Iglesia, tú eres la Iglesia,
+somos la Iglesia del Señor.
+Hermano, ven ayúdame; hermana, ven ayúdame
+a edificar la Iglesia del Señor.
+
+Los niños son la Iglesia, los jóvenes son la Iglesia,
+somos la Iglesia del Señor.
+Hermano, ven ayúdame; hermana, ven ayúdame
+a edificar la Iglesia del Señor.`
+      },
+      {
+        num: 4, title: "Ahora Que", category: "Entrada", tone: "Mi", theme: "Reunión fraternal para unificar el dolor y elevar plegarias de esperanza.",
+        lyrics: `Ahora que nos encontramos no vamos a hacer solo una fiesta.
+Ahora que estamos reunidos, vamos a hacer algo más:
+vamos a juntar el dolor disperso
+de los que no tienen con qué cantar.
+
+Porque la fiesta es de todos,
+porque el banquete es de Dios.
+Unidos en el trabajo,
+unidos en el amor.
+
+Aquí traemos los sueños, la lucha de nuestro pueblo,
+traemos las esperanzas de un mundo que renacerá.
+Señor, en torno a tu mesa, enséñanos a compartir.`
+      },
+      {
+        num: 5, title: "Alégrate Pueblo de Dios", category: "Entrada", tone: "Sol", theme: "Alabanza a la Trinidad por la presencia viva de Dios.",
+        lyrics: `Alégrate, pueblo de Dios,
+porque el Señor en medio de ti está.
+Alza tus brazos, cierra tus ojos,
+deja que inunde tu corazón.
+
+Él es tu Dios, Él es tu Salvador,
+Él es tu gozo, tu fortaleza.
+Alégrate, pueblo de Dios,
+porque el Señor en medio de ti está.`
+      },
+      {
+        num: 6, title: "Alza tus Ojos y Mira", category: "Entrada", tone: "La", theme: "Exhortación a anunciar el Evangelio a todas las naciones.",
+        lyrics: `Alza tus ojos y mira, la cosecha está lista;
+el tiempo ha llegado, la mies está madura.
+Esfuérzate y sé valiente, levántate y predica
+a todas las naciones que Cristo es la vida.
+
+Y YHVH dirá: "A quién enviaré, quién irá por nosotros?"
+Heme aquí Señor, envíame a mí,
+yo iré por los caminos anunciando tu amor.`
+      },
+      {
+        num: 7, title: "A ti Levanto mis Ojos", category: "Entrada", tone: "Rem", theme: "Salmo de confianza elevando la mirada al Creador.",
+        lyrics: `A ti levanto mis ojos, tú que habitas en los cielos;
+míralos, son los ojos de tu siervo.
+Alzo mis ojos a los montes, mi mirada a la inmensidad.
+
+Misericordia, Señor, misericordia,
+que estamos saciados de burlas y desprecios;
+nuestra alma está saciada del sarcasmo de los opulentos.`
+      },
+      {
+        num: 8, title: "Bienvenidos", category: "Entrada", tone: "Sol", theme: "Acogida cálida en la casa hogar del Señor.",
+        lyrics: `Bienvenidos a la tierra de Dios,
+bienvenidos a la casa hogar del Señor;
+un abrazo de amor, de esperanza y de fe.
+Bienvenidos a la casa hogar del Señor.
+
+Aquí hay un lugar para ti y para mí,
+un lugar para todos los que buscan la paz.
+Juntos cantemos la gloria de Dios.`
+      },
+      {
+        num: 9, title: "Bueno es Alabarte", category: "Entrada", tone: "Re", theme: "Reconocimiento de las grandes obras de Dios.",
+        lyrics: `Bueno es alabar, oh Señor, tu nombre,
+darte gloria, honra y honor por siempre.
+Bueno es alabarte Señor, y gozarme en tu poder.
+
+Porque grande eres Tú, grandes son tus obras;
+porque grande eres Tú, grande es tu amor,
+grande es tu amor.`
+      },
+      {
+        num: 10, title: "Canta Jerusalén", category: "Entrada", tone: "Mim", theme: "Pueblo escogido que camina con fe hacia la salvación.",
+        lyrics: `Canta Jerusalén, canta Jerusalén, canta Jerusalén.
+
+Eres pueblo santo escogido por la gracia del Señor.
+Juntos caminamos en la fe que nos conduce a nuestro Dios.
+
+Canta Jerusalén, canta Jerusalén, canta Jerusalén.
+
+Eres templo vivo del Espíritu que habita en ti,
+luz de las naciones que testimonia la verdad.`
+      },
+      {
+        num: 22, title: "Hacia ti Morada Santa", category: "Entrada", tone: "Rem", theme: "Canto procesional de peregrinación hacia la mesa del Redentor.",
+        lyrics: `Hacia ti, morada santa, hacia ti, tierra del Salvador,
+peregrinos, caminantes, vamos hacia ti.
+
+Venimos a tu mesa, comeremos tu carne,
+beberemos tu sangre, tu Cuerpo nos saciará.
+
+Somos tu pueblo santo que camina unido,
+tú vas entre nosotros, tu amor es nuestro pan.
+
+Hacia ti, morada santa, hacia ti, tierra del Salvador,
+peregrinos, caminantes, vamos hacia ti.`
+      },
+      {
+        num: 26, title: "Juntos Cantando la Alegría", category: "Entrada", tone: "Do", theme: "Alegría de la Iglesia peregrina que camina unida.",
+        lyrics: `Juntos cantando la alegría
+de vernos unidos en la fe y el amor.
+Juntos sintiendo en nuestras vidas
+la alegre presencia del Señor.
+
+Somos la Iglesia peregrina que Él fundó,
+somos un pueblo que camina sin cesar.
+Entre penas y esperanzas descubrimos
+tu presencia que nos guía al caminar.
+
+Juntos cantando la alegría
+de vernos unidos en la fe y el amor.`
+      },
+      {
+        num: 27, title: "Juntos como Hermanos", category: "Entrada", tone: "Re", theme: "Procesión de entrada atravesando el desierto de la vida.",
+        lyrics: `Juntos como hermanos, miembros de una Iglesia,
+vamos caminando al encuentro del Señor.
+
+Un largo caminar, por el desierto bajo el sol,
+no podemos avanzar sin la ayuda del Señor.
+
+La Iglesia en marcha está, a un mundo nuevo vamos ya,
+donde reinará el amor, donde reinará la paz.`
+      },
+      {
+        num: 30, title: "Qué Alegría", category: "Entrada", tone: "Do", theme: "Inspirado en el Salmo 122 sobre el gozo de ir a la casa del Señor.",
+        lyrics: `Qué alegría cuando me dijeron: "Vamos a la casa del Señor".
+Ya están pisando nuestros pies tus umbrales, Jerusalén.
+
+Jerusalén está fundada como ciudad bien compacta.
+Allá suben las tribus, las tribus del Señor.
+
+Según el costumbre de Israel, a celebrar el nombre del Señor.
+En ella están los tribunales de justicia, en el palacio de David.`
+      },
+
+      // PIEDAD
+      {
+        num: 41, title: "Hoy Perdóname", category: "Piedad", tone: "Rem", theme: "Petición sincera de perdón y retorno al Padre.",
+        lyrics: `Hoy perdóname, hoy por siempre,
+sin mirar a la mentira, el vacío en nuestras vidas,
+nuestras faltas de amor y caridad.
+
+Hoy perdóname, hoy por siempre.
+Señor, ten piedad de nosotros,
+Cristo, ten piedad de nosotros,
+Señor, ten piedad de nosotros.`
+      },
+      {
+        num: 42, title: "Piedad (Suave)", category: "Piedad", tone: "Lam", theme: "Plegaria meditativa solicitando la piedad divina.",
+        lyrics: `Señor, ten piedad, Señor, ten piedad.
+Señor, ten piedad de nosotros.
+
+Cristo, ten piedad, Cristo, ten piedad.
+Cristo, ten piedad de nosotros.
+
+Señor, ten piedad, Señor, ten piedad.
+Señor, ten piedad de nosotros.`
+      },
+      {
+        num: 45, title: "Ten Piedad", category: "Piedad", tone: "Mim", theme: "Confesión personal de la fragilidad del pecador.",
+        lyrics: `Ten piedad, ten piedad, ten piedad, ten piedad.
+
+Ten piedad, Señor, ten piedad,
+soy pecador, ten piedad.
+Y de mí, Cristo, apiádate,
+contra ti yo pequé.
+
+Ten piedad, Señor, ten piedad,
+por tu inmensa bondad, ten piedad.`
+      },
+
+      // GLORIA
+      {
+        num: 49, title: "Gloria Aleluya", category: "Gloria", tone: "Sol", theme: "Himno gozoso alabando al Padre, Hijo y Espíritu Santo.",
+        lyrics: `Gloria, gloria, aleluya! (3 veces)
+En nombre del Señor.
+
+Gloria a Dios sea en el cielo,
+gloria y en la tierra paz,
+a los hombres que Dios ama
+con inmensa caridad.
+
+Te alabamos, te bendecimos,
+te adoramos, Señor,
+te damos gracias, Padre,
+por tu inmensa gloria.`
+      },
+      {
+        num: 50, title: "Gloria (Mancini)", category: "Gloria", tone: "Re", theme: "Adaptación ritmada y solemne del texto litúrgico oficial.",
+        lyrics: `Gloria, gloria a Dios en el cielo,
+y en la tierra paz a los hombres que ama el Señor.
+
+Te alabamos, te bendecimos, te adoramos, te glorificamos,
+te damos gracias por tu inmensa gloria.
+Señor Dios, Rey celestial, Dios Padre todopoderoso.
+
+Señor Hijo único, Jesucristo,
+Señor Dios, Cordero de Dios, Hijo del Padre;
+Tú que quitas el pecado del mundo, ten piedad de nosotros;
+Tú que quitas el pecado del mundo, atiende nuestra súplica.
+
+Porque sólo Tú eres Santo, sólo Tú Señor,
+sólo Tú Altísimo, Jesucristo,
+con el Espíritu Santo en la gloria de Dios Padre. Amén.`
+      },
+
+      // PALABRA / ALELUYA
+      {
+        num: 53, title: "Aleluya", category: "Palabra", tone: "Do", theme: "Aclamación a la Palabra creadora de la tierra y del Amor.",
+        lyrics: `Aleluya, aleluya, aleluya, aleluya.
+
+Tu palabra creó la tierra, el mar, el cielo y la hierba.
+Tu palabra creó el amor y lo diste a cada corazón.
+
+Aleluya, aleluya, aleluya, aleluya.`
+      },
+      {
+        num: 56, title: "Busca Primero", category: "Palabra", tone: "Re", theme: "Basado en Mateo 6,33 sobre la prioridad del Reino.",
+        lyrics: `Busca primero el reino de Dios y su justicia,
+y todo lo demás se te dará por añadidura.
+Aleluya, aleluya.
+
+No sólo de pan el hombre vivirá,
+sino de toda palabra
+que sale de la boca de Dios.
+Aleluya, aleluya.`
+      },
+      {
+        num: 65, title: "Señor tu Palabra me da Vida", category: "Palabra", tone: "Mim", theme: "Guía para caminar en verdad y justicia.",
+        lyrics: `Señor, tu palabra me da vida, me llena de amor el corazón.
+Me enseña a caminar por el sendero lleno de amor y humanidad.
+
+Dichoso el que con vida intachable camina en la ley del Señor.
+Dichoso el que guardando sus preceptos lo busca de todo corazón.`
+      },
+
+      // OFERTORIO
+      {
+        num: 69, title: "Ante tu Altar", category: "Ofertorio", tone: "Do", theme: "Presentación del pan y vino fruto del esfuerzo humano.",
+        lyrics: `Ante tu altar, hoy como hermanos
+el pan y el vino te presentamos.
+Fruto del sudor y del esfuerzo del hombre,
+que es transformado en cuerpo y sangre de nuestro Señor.
+
+Bendito seas por siempre Señor,
+por este pan que nos diste.
+Fruto de la tierra y del trabajo,
+te lo presentamos con amor.`
+      },
+      {
+        num: 78, title: "Entre tus Manos", category: "Ofertorio", tone: "Re", theme: "Entrega confiada recordando la parábola del grano de trigo.",
+        lyrics: `Entre tus manos está mi vida, Señor.
+Entre tus manos pongo mi existir.
+Hay que morir para vivir.
+Entre tus manos confío mi ser.
+
+Si el grano de trigo no muere,
+si no muere, solo quedará;
+pero si muere, en abundancia dará
+un fruto eterno que no morirá.
+
+Entre tus manos está mi vida, Señor...`
+      },
+      {
+        num: 90, title: "Saber que Vendrás", category: "Ofertorio", tone: "Do", theme: "Plegaria de esperanza ofreciendo el pan de nuestro trabajo.",
+        lyrics: `En este mundo que Cristo nos da, hacemos la ofrenda del pan:
+el pan de nuestro trabajo sin fin, y el vino de nuestro cantar.
+Traemos ante tu altar con amor la alegría de nuestro vivir.
+
+Saber que vendrás, saber que estarás
+partiendo a los pobres tu pan. (bis)
+
+La sed de todos los hombres sin luz, la pena y el triste llorar,
+el odio de los que mueren sin fe, cansados de tanto luchar.`
+      },
+      {
+        num: 96, title: "Tú Pones lo Demás", category: "Ofertorio", tone: "Re", theme: "Ofrenda de nuestras pequeñas capacidades para el milagro divino.",
+        lyrics: `Un día de bodas el vino faltó, imposible poderlo comprar.
+¡Qué bello milagro hiciste, Señor, con el agua de aquel manantial!
+
+Es muy poco, Señor, lo que vengo a traer:
+mi trabajo es el agua que quiero ofrecer.
+Tradúcelo en vino de amor y bondad,
+pon tú lo demás, pon tú lo demás.
+
+Cinco panes y un par de pescados trajo un niño dispuesto a ayudar.
+Alimentaste a la multitud en aquella montaña cerca del mar.`
+      },
+      {
+        num: 98, title: "Una Espiga Dorada por el Sol", category: "Ofertorio", tone: "Sol", theme: "Unión Eucarística de la Iglesia como granos de trigo.",
+        lyrics: `Una espiga dorada por el sol, el racimo que corta el viñador,
+se convierten ahora en pan y vino de amor,
+en el cuerpo y la sangre del Señor.
+
+Compartimos la misma comunión, somos trigo del mismo sembrador.
+Un molino, la vida, nos tritura con dolor,
+Dios nos hace un solo pan de amor.
+
+Como granos que forman un solo pan, como gotas que integran el mar,
+los cristianos un solo cuerpo formarán,
+en la mesa del Reino celestial.`
+      },
+
+      // SANTO
+      {
+        num: 100, title: "Santo es el Señor mi Dios", category: "Santo", tone: "Mim", theme: "Aclamación de alabanza universal al Dios del universo.",
+        lyrics: `Santo es el Señor mi Dios, Dios del universo. (3 veces)
+Llenos están los cielos y la tierra de su gloria.
+
+Hosanna en el cielo, hosanna en el cielo.
+Bendito el que viene en el nombre del Señor.`
+      },
+      {
+        num: 101, title: "Santo de los Querubines", category: "Santo", tone: "Rem", theme: "Canto alegre en unión con los ángeles.",
+        lyrics: `Santo, Santo, Santo dicen los querubines,
+Santo, Santo, Santo es nuestro Rey Yahvé.
+Santo, Santo, Santo es el que nos redime,
+porque mi Dios es Santo y la tierra llena de su gloria está.
+
+Cielo y tierra pasarán, más su palabra no pasará. (bis)
+No, no, no pasará!
+
+Bendito el que viene en nombre del Señor,
+da gloria a Jesucristo, el Hijo de David.`
+      },
+
+      // PADRE NUESTRO
+      {
+        num: 107, title: "Padre Nuestro (Rápido)", category: "Padre Nuestro", tone: "La", theme: "Oración dominical cantada con acompañamiento rítmico.",
+        lyrics: `Padre que estás en los cielos,
+santificado sea tu nombre.
+Venga a nosotros tu Reino,
+hágase tu voluntad
+así en la tierra como en el cielo.
+
+El pan danos hoy, nuestro pan de cada día.
+Perdona nuestras deudas
+así como perdonamos a nuestros deudores.
+Y no nos dejes caer en tentación,
+más líbranos del mal. Amén.`
+      },
+      {
+        num: 108, title: "Padre Nuestro (Tradicional)", category: "Padre Nuestro", tone: "Do", theme: "Plegaria por el reino de verdad, amor y perdón.",
+        lyrics: `Padre nuestro, Tú que estás en los que aman la verdad,
+haz que el reino que por Ti se dio llegue pronto a nuestro corazón,
+que el amor que tu Hijo nos dejó, el amor, habite en nosotros.
+
+Y en el pan de la unidad, Cristo danos Tú la paz,
+y olvida nuestro mal si olvidamos el de los demás,
+no nos dejes caer en la tentación, oh Padre nuestro,
+ten piedad, ten piedad.`
+      },
+
+      // PAZ Y CORDERO
+      {
+        num: 109, title: "Agnus Dei", category: "Paz y Cordero", tone: "Lam", theme: "Invocación clásica para la fracción del pan.",
+        lyrics: `Agnus Dei, qui tollis peccata mundi:
+miserere nobis. (bis)
+
+Agnus Dei, qui tollis peccata mundi:
+dona nobis pacem.`
+      },
+      {
+        num: 110, title: "Cordero de Dios", category: "Paz y Cordero", tone: "Rem", theme: "Súplica por la misericordia y la paz.",
+        lyrics: `Cordero de Dios que quitas el pecado del mundo,
+ten piedad de nosotros, ten piedad. (bis)
+
+Cordero de Dios que quitas el pecado del mundo,
+danos la paz, danos la paz.`
+      },
+      {
+        num: 114, title: "Mi Paz te Doy", category: "Paz y Cordero", tone: "Re", theme: "Don de la paz entregado por Jesús.",
+        lyrics: `Mi paz te doy a ti, esa paz que el mundo no da,
+esa paz que el mundo no entiende,
+para ti, recíbela, mi paz te doy a ti.
+
+Mi amor te doy a ti, ese amor que el mundo no da,
+ese amor que el mundo no entiende,
+para ti, recíbelo, mi amor te doy a ti.`
+      },
+
+      // COMUNIÓN
+      {
+        num: 125, title: "A Cristo, sólo a Cristo", category: "Comunión", tone: "Sol", theme: "Adoración y ensalzamiento exclusivo a Cristo Rey.",
+        lyrics: `A Cristo, sólo a Cristo yo adoraré,
+a Cristo, sólo a Cristo yo ensalzaré.
+Porque me ha dado vida eterna,
+porque me ha dado el poder,
+porque me ha dado la victoria,
+Él es mi Rey, Él es mi Rey.`
+      },
+      {
+        num: 126, title: "Amar como Jesús Amó", category: "Comunión", tone: "Do", theme: "Reflexión sobre los valores esenciales para ser feliz.",
+        lyrics: `Un día un niño me paró, me miró y me dijo así:
+"¿Qué debo hacer para ser feliz?"
+Le dije: "Escucha bien lo que enseña el Señor":
+
+Amar como Jesús amó, soñar como Jesús soñó,
+pensar como Jesús pensó, vivir como Jesús vivió.
+Sentir lo que Jesús sentía, reír como Jesús reía,
+y al fin del día al acostarme, sentir que la vida valió la pena.`
+      },
+      {
+        num: 128, title: "Al Taller del Maestro", category: "Comunión", tone: "Sol", author: "Alex Campos", theme: "Sanación interior reconociendo la mano del Carpintero Divino.",
+        lyrics: `Ay como me duele estar despierto y no poder cantar,
+como me duele hablar y no poder decir la verdad.
+Pero ahí en el silencio escucho tu voz suave.
+
+Al taller del maestro vengo pues Él me curará,
+me tomará entre sus brazos y cada herida sanará.
+Las herramientas del maestro mi alma remendará,
+martillo en mano y mucho fuego aunque me duela ayudará.
+
+Aquí estoy Señor, sobando mis heridas,
+aquí estoy para ser restaurado por ti.`
+      },
+      {
+        num: 135, title: "Canción de la Familia", category: "Comunión", tone: "Fa", theme: "Oración de bendición por la santidad del hogar.",
+        lyrics: `Que ninguna familia comience en cualquier de repente,
+que ninguna familia se acabe por falta de amor.
+El esposo y la esposa se amen de uno a otro sin fin,
+y que nadie en el mundo ponga un freno a la vida de los dos.
+
+Bendecid, oh Señor, las familias. Amén.
+Bendecid, oh Señor, la mía también. (bis)
+
+Que los niños aprendan la gracia de la libertad,
+que la familia sea un espacio donde reine la paz.`
+      },
+      {
+        num: 144, title: "Corazón de Barro", category: "Comunión", tone: "Re", author: "Alfareros", theme: "Plegaria para ser moldeados con humildad por el Alfarero.",
+        lyrics: `Hazme un corazón de barro, rompe el corazón de piedra,
+dale las vueltas que sea, pero hazlo a tu manera.
+Dame un corazón sencillo, hazme un corazón como el tuyo.
+
+Quiero ser vasija nueva en las manos del alfarero,
+quitar todo lo malo que impida tu reflejo.
+Móldame Señor, según tu voluntad.`
+      },
+      {
+        num: 156, title: "Danos un Corazón", category: "Comunión", tone: "Rem", theme: "Oración por hombres nuevos constructores de la historia.",
+        lyrics: `Danos un corazón grande para amar.
+Danos un corazón fuerte para luchar.
+
+Hombres nuevos creadores de la historia,
+constructores de nueva humanidad.
+Hombres nuevos sin frenos ni cadenas,
+hombres libres que exigen libertad.
+
+Danos un corazón grande para amar...`
+      }
+    ];
+
+    // Liturgical Categories list
+    const CATEGORIES = [
+      "Todos", "Favoritos", "Entrada", "Piedad", "Gloria", "Palabra", "Ofertorio", "Santo", "Padre Nuestro", "Paz y Cordero", "Comunión"
+    ];
+
+    // App State
+    let currentCategory = "Todos";
+    let searchQuery = "";
+    let favorites = JSON.parse(localStorage.getItem('cancionero_favs') || '[]');
+    let customLyricsStore = JSON.parse(localStorage.getItem('cancionero_custom_lyrics') || '{}');
+    let massPlanner = JSON.parse(localStorage.getItem('cancionero_planner') || JSON.stringify({
+      title: "Misa Dominical",
+      slots: {
+        "Entrada": null,
+        "Piedad": null,
+        "Gloria": null,
+        "Palabra": null,
+        "Ofertorio": null,
+        "Santo": null,
+        "Padre Nuestro": null,
+        "Paz y Cordero": null,
+        "Comunión": null
+      }
+    }));
+
+    let activeModalSong = null;
+    let audioCtx = null;
+    let activeOscillator = null;
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderCategories();
+      renderSongs();
+      updatePlannerBadge();
+    });
+
+    function initTheme() {
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('themeIcon').className = 'fa-solid fa-sun text-lg';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('themeIcon').className = 'fa-solid fa-moon text-lg';
+      }
+    }
+
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        document.getElementById('themeIcon').className = 'fa-solid fa-moon text-lg';
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        document.getElementById('themeIcon').className = 'fa-solid fa-sun text-lg';
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoryContainer');
+      const mobileSelect = document.getElementById('categorySelectMobile');
+
+      if (container) {
+        container.innerHTML = CATEGORIES.map(cat => {
+          const isActive = cat === currentCategory;
+          const activeClasses = isActive 
+            ? 'bg-amber-500 text-white shadow-sm font-semibold' 
+            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 font-medium';
+          return `
+            <button onclick="setCategory('${cat}')" class="px-3.5 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all flex items-center gap-1.5 ${activeClasses}">
+              ${cat === 'Favoritos' ? '<i class="fa-solid fa-star text-amber-300"></i>' : ''}
+              <span>${cat}</span>
+            </button>
+          `;
+        }).join('');
+      }
+
+      if (mobileSelect) {
+        mobileSelect.innerHTML = CATEGORIES.map(cat => {
+          const isFav = cat === 'Favoritos';
+          const label = isFav ? '★ Favoritos' : cat;
+          return `<option value="${cat}" ${cat === currentCategory ? 'selected' : ''}>${label}</option>`;
+        }).join('');
+      }
+    }
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      renderCategories();
+      renderSongs();
+    }
+
+    function handleSearch() {
+      const input = document.getElementById('searchInput');
+      searchQuery = input.value.trim().toLowerCase();
+      
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (searchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      renderSongs();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      searchQuery = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      renderSongs();
+    }
+
+    function resetFilters() {
+      currentCategory = 'Todos';
+      clearSearch();
+      renderCategories();
+    }
+
+    function getEffectiveLyrics(song) {
+      return customLyricsStore[song.num] || song.lyrics || 'Letra no disponible';
+    }
+
+    function renderSongs() {
+      const grid = document.getElementById('songsGrid');
+      const emptyState = document.getElementById('emptyState');
+      const countLabel = document.getElementById('resultsCount');
+
+      let filtered = SONGS_DATA.filter(song => {
+        // Category Filter
+        let matchesCat = false;
+        if (currentCategory === 'Todos') matchesCat = true;
+        else if (currentCategory === 'Favoritos') matchesCat = favorites.includes(song.num);
+        else matchesCat = song.category === currentCategory;
+
+        // Search Query Filter
+        let matchesQuery = true;
+        if (searchQuery) {
+          const q = searchQuery;
+          const numStr = song.num.toString();
+          const lyricsText = getEffectiveLyrics(song).toLowerCase();
+          
+          matchesQuery = song.title.toLowerCase().includes(q) ||
+                         numStr === q ||
+                         song.category.toLowerCase().includes(q) ||
+                         song.theme.toLowerCase().includes(q) ||
+                         lyricsText.includes(q);
+        }
+
+        return matchesCat && matchesQuery;
+      });
+
+      countLabel.textContent = `${filtered.length} canto${filtered.length === 1 ? '' : 's'} disponible${filtered.length === 1 ? '' : 's'}`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      grid.innerHTML = filtered.map(song => {
+        const isFav = favorites.includes(song.num);
+        const effectiveLyrics = getEffectiveLyrics(song);
+        const snippet = effectiveLyrics.split('\n').slice(0, 3).join('\n');
+
+        return `
+          <div onclick="openSongModal(${song.num})" class="group bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md hover:border-amber-400 dark:hover:border-amber-500/50 transition-all cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="px-2.5 py-1 bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs rounded-lg">
+                  #${song.num}
+                </span>
+                <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                  ${song.category}
+                </span>
+              </div>
+
+              <h4 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-1 mb-1">
+                ${song.title}
+              </h4>
+
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-serif italic line-clamp-3 leading-relaxed mb-3 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                "${snippet}"
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs">
+              <span class="text-slate-400 text-[11px]">
+                ${song.tone ? 'Tono: ' + song.tone : 'Ver letra completa'}
+              </span>
+              
+              <div class="flex items-center gap-2">
+                <button onclick="event.stopPropagation(); toggleFavorite(${song.num})" class="p-1.5 text-slate-400 hover:text-amber-500 transition" title="Marcar favorito">
+                  <i class="${isFav ? 'fa-solid text-amber-500' : 'fa-regular'} fa-star"></i>
+                </button>
+                <span class="text-amber-600 dark:text-amber-400 font-semibold group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+                  Ver Letra <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleFavorite(num) {
+      if (favorites.includes(num)) {
+        favorites = favorites.filter(id => id !== num);
+      } else {
+        favorites.push(num);
+      }
+      localStorage.setItem('cancionero_favs', JSON.stringify(favorites));
+      renderSongs();
+      if (activeModalSong && activeModalSong.num === num) {
+        updateModalFavState();
+      }
+    }
+
+    function openSongModal(num) {
+      const song = SONGS_DATA.find(s => s.num === num);
+      if (!song) return;
+
+      activeModalSong = song;
+
+      document.getElementById('modalNum').textContent = `#${song.num}`;
+      document.getElementById('modalTitle').textContent = song.title;
+      document.getElementById('modalCategory').textContent = song.category;
+      
+      const toneBadge = document.getElementById('modalTone');
+      if (song.tone) {
+        toneBadge.textContent = `Tono: ${song.tone}`;
+        toneBadge.classList.remove('hidden');
+      } else {
+        toneBadge.classList.add('hidden');
+      }
+
+      document.getElementById('modalTheme').textContent = song.theme;
+      document.getElementById('modalAuthor').textContent = song.author ? `Autor: ${song.author}` : "Canto Litúrgico Tradicional";
+
+      loadLyricsInModal(song);
+      updateModalFavState();
+
+      document.getElementById('songModal').classList.remove('hidden');
+    }
+
+    function loadLyricsInModal(song) {
+      const display = document.getElementById('modalLyricsDisplay');
+      const input = document.getElementById('lyricsInput');
+      const editor = document.getElementById('lyricsEditor');
+      const btnText = document.getElementById('editBtnText');
+
+      editor.classList.add('hidden');
+      btnText.textContent = 'Editar / Personalizar';
+
+      const currentText = getEffectiveLyrics(song);
+      display.textContent = currentText;
+      input.value = currentText;
+    }
+
+    function toggleEditLyrics() {
+      const editor = document.getElementById('lyricsEditor');
+      const btnText = document.getElementById('editBtnText');
+      if (editor.classList.contains('hidden')) {
+        editor.classList.remove('hidden');
+        btnText.textContent = 'Cancelar';
+      } else {
+        editor.classList.add('hidden');
+        btnText.textContent = 'Editar / Personalizar';
+      }
+    }
+
+    function saveModalLyrics() {
+      if (!activeModalSong) return;
+      const input = document.getElementById('lyricsInput').value.trim();
+      
+      if (input) {
+        customLyricsStore[activeModalSong.num] = input;
+      } else {
+        delete customLyricsStore[activeModalSong.num];
+      }
+      
+      localStorage.setItem('cancionero_custom_lyrics', JSON.stringify(customLyricsStore));
+      loadLyricsInModal(activeModalSong);
+      renderSongs();
+    }
+
+    function resetModalLyrics() {
+      if (!activeModalSong) return;
+      delete customLyricsStore[activeModalSong.num];
+      localStorage.setItem('cancionero_custom_lyrics', JSON.stringify(customLyricsStore));
+      loadLyricsInModal(activeModalSong);
+      renderSongs();
+    }
+
+    function copyModalLyrics() {
+      if (!activeModalSong) return;
+      const textToCopy = getEffectiveLyrics(activeModalSong);
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const icon = document.getElementById('copyIcon');
+        const text = document.getElementById('copyText');
+        icon.className = 'fa-solid fa-check text-emerald-500';
+        text.textContent = '¡Copiado!';
+        setTimeout(() => {
+          icon.className = 'fa-regular fa-copy';
+          text.textContent = 'Copiar';
+        }, 2000);
+      });
+    }
+
+    function closeSongModal() {
+      document.getElementById('songModal').classList.add('hidden');
+      activeModalSong = null;
+    }
+
+    function updateModalFavState() {
+      if (!activeModalSong) return;
+      const isFav = favorites.includes(activeModalSong.num);
+      const icon = document.getElementById('modalFavIcon');
+      const text = document.getElementById('modalFavText');
+
+      if (isFav) {
+        icon.className = 'fa-solid fa-star text-amber-500';
+        text.textContent = 'En Favoritos';
+      } else {
+        icon.className = 'fa-regular fa-star text-slate-400';
+        text.textContent = 'Añadir a Favoritos';
+      }
+    }
+
+    function toggleFavoriteFromModal() {
+      if (activeModalSong) {
+        toggleFavorite(activeModalSong.num);
+      }
+    }
+
+    // Audio Tone Generator (Pitch Pipe)
+    function openToneModal() {
+      document.getElementById('toneModal').classList.remove('hidden');
+    }
+
+    function closeToneModal() {
+      stopAudio();
+      document.getElementById('toneModal').classList.add('hidden');
+    }
+
+    function playNote(freq, noteName) {
+      stopAudio();
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+        
+        activeOscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        activeOscillator.type = 'sine';
+        activeOscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+
+        activeOscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        activeOscillator.start();
+        document.getElementById('notePlayingStatus').textContent = `Sonando nota de afinación: ${noteName} (${freq} Hz)`;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function stopAudio() {
+      if (activeOscillator) {
+        activeOscillator.stop();
+        activeOscillator.disconnect();
+        activeOscillator = null;
+      }
+      if (audioCtx) {
+        audioCtx.close();
+        audioCtx = null;
+      }
+      const status = document.getElementById('notePlayingStatus');
+      if (status) status.textContent = '';
+    }
+
+    // Mass Planner Logic
+    function openPlannerModal() {
+      document.getElementById('massTitleInput').value = massPlanner.title || "Misa Dominical";
+      renderPlannerSlots();
+      document.getElementById('plannerModal').classList.remove('hidden');
+    }
+
+    function closePlannerModal() {
+      document.getElementById('plannerModal').classList.add('hidden');
+    }
+
+    function savePlannerState() {
+      const titleInput = document.getElementById('massTitleInput');
+      if (titleInput) massPlanner.title = titleInput.value;
+      localStorage.setItem('cancionero_planner', JSON.stringify(massPlanner));
+      updatePlannerBadge();
+    }
+
+    function addCurrentToPlanner() {
+      if (!activeModalSong) return;
+      
+      const cat = activeModalSong.category;
+      if (massPlanner.slots.hasOwnProperty(cat)) {
+        massPlanner.slots[cat] = activeModalSong;
+      } else {
+        massPlanner.slots["Comunión"] = activeModalSong;
+      }
+
+      savePlannerState();
+      closeSongModal();
+      openPlannerModal();
+    }
+
+    function removeFromPlanner(slotKey) {
+      massPlanner.slots[slotKey] = null;
+      savePlannerState();
+      renderPlannerSlots();
+    }
+
+    function clearPlanner() {
+      Object.keys(massPlanner.slots).forEach(k => massPlanner.slots[k] = null);
+      savePlannerState();
+      renderPlannerSlots();
+    }
+
+    function updatePlannerBadge() {
+      const badge = document.getElementById('plannerBadge');
+      const count = Object.values(massPlanner.slots).filter(s => s !== null).length;
+      if (count > 0) {
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function renderPlannerSlots() {
+      const container = document.getElementById('plannerList');
+      container.innerHTML = Object.keys(massPlanner.slots).map(slot => {
+        const song = massPlanner.slots[slot];
+        return `
+          <div class="p-3 rounded-xl border ${song ? 'border-amber-300 dark:border-amber-600 bg-amber-50/40 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40'} flex items-center justify-between gap-3">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 block">
+                ${slot}
+              </span>
+              ${song ? `
+                <div class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2 mt-0.5">
+                  <span class="text-xs px-1.5 py-0.5 bg-amber-500 text-white rounded font-bold">#${song.num}</span>
+                  <span>${song.title}</span>
+                  ${song.tone ? `<span class="text-xs text-slate-400 font-normal">(${song.tone})</span>` : ''}
+                </div>
+              ` : `
+                <span class="text-xs text-slate-400 italic">Sin canto asignado</span>
+              `}
+            </div>
+
+            ${song ? `
+              <button onclick="removeFromPlanner('${slot}')" class="p-1.5 text-rose-500 hover:text-rose-700 transition" title="Quitar canto">
+                <i class="fa-solid fa-xmark text-sm"></i>
+              </button>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function exportPlannerText() {
+      let summary = `GUÍA DE MISA: ${massPlanner.title}\n`;
+      summary += `------------------------------------\n`;
+      Object.keys(massPlanner.slots).forEach(slot => {
+        const song = massPlanner.slots[slot];
+        summary += `${slot.toUpperCase()}: ${song ? `#${song.num} ${song.title} ${song.tone ? '(' + song.tone + ')' : ''}` : '---'}\n`;
+      });
+      
+      navigator.clipboard.writeText(summary).then(() => {
+        alert("¡Resumen de la Guía de Misa copiado al portapapeles para compartir offline!");
+      });
+    }
+  </script>
+</body>
+</html>
