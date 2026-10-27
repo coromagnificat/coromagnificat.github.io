@@ -73,11 +73,9 @@
     }
 
     /* ── Listados con scroll interno: máx. 10 filas visibles ───────────── */
-    /* display:block es CRÍTICO: neutraliza el flex-column de .list-group    */
-    /* de Bootstrap, que comprime los hijos para caber y rompe el scroll.    */
     .song-list,
     .file-list {
-      max-height: 450px !important;   /* 10 filas × 45px */
+      max-height: 450px !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
       display: block !important;
@@ -93,7 +91,6 @@
     .song-list::-webkit-scrollbar-thumb:hover,
     .file-list::-webkit-scrollbar-thumb:hover { background: #718096; }
 
-    /* Altura fija + flex-shrink:0 para que el cálculo 10×45 sea exacto */
     .song-list .list-group-item,
     .file-list .list-group-item {
       height: 45px !important;
@@ -105,7 +102,6 @@
       align-items: center;
       padding: .55rem 1rem;
     }
-    /* Títulos largos: una sola línea truncada con elipsis */
     .song-list .list-group-item > a,
     .file-list .list-group-item > a {
       flex: 1 1 auto;
@@ -124,14 +120,35 @@
 </head>
 <body>
 
-  <nav class="navbar navbar-custom navbar-dark sticky-top">
+  <nav class="navbar navbar-custom navbar-dark sticky-top navbar-expand-lg">
     <div class="container">
       <a class="navbar-brand fw-bold" href="index.html">
         <i class="bi bi-music-note-beamed me-2"></i>Coro Magníficat
       </a>
-      <span class="navbar-text d-none d-md-inline text-light small">
-        <i class="bi bi-calendar3 me-1"></i>27/10/2026
-      </span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#cmNavbar" aria-controls="cmNavbar"
+              aria-expanded="false" aria-label="Alternar navegación">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="cmNavbar">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="cancioneros/index.html">
+              <i class="bi bi-journal-text me-1"></i>Cancioneros
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="cancioneros/misas-dominicales/index.html">
+              <i class="bi bi-calendar-week me-1"></i>Domingo
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="herramientas/index.html">
+              <i class="bi bi-tools me-1"></i>Herramientas
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 
@@ -441,10 +458,12 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
-          <strong>Coro Magníficat</strong>  -  <a href="herramientas/somos.html">Quiénes somos</a>
+          <strong>Coro Magníficat</strong> · Portal litúrgico
+          <span class="mx-2">·</span>
+          <a href="herramientas/somos.html">Quiénes somos</a>
         </div>
         <div class="col-md-6 text-center text-md-end small">
-          Generado el 27 de October de 2026, 09:56
+          Generado el 27 de October de 2026, 10:31
         </div>
       </div>
     </div>
@@ -485,7 +504,6 @@
         ul.style.setProperty('overflow-y', 'auto', 'important');
         ul.style.setProperty('overflow-x', 'hidden', 'important');
         ul.style.setProperty('display', 'block', 'important');
-        // Bloquear la compresión flex de Bootstrap en cada fila
         Array.prototype.forEach.call(ul.children, function (li) {
           li.style.setProperty('height', ROW_H + 'px', 'important');
           li.style.setProperty('min-height', ROW_H + 'px', 'important');
