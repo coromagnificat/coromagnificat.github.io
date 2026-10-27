@@ -1,6 +1,6 @@
 {
   "site_root": "/tmp/_deZ",
-  "generated_at": "2026-10-26T11:40:29",
+  "generated_at": "2026-10-26T21:39:22",
   "files": [
     {
       "filename": "cancionero_lit_rgico_2019.html",
@@ -42,7 +42,7 @@
       "filename": "excel_merger_tool.html",
       "title": "Fusionador Excel - CantosOrdenadosV3",
       "description": "",
-      "category": "cancioneros/tiempos-liturgicos"
+      "category": "herramientas"
     },
     {
       "filename": "Esquema20260614.html",
@@ -58,7 +58,7 @@
     },
     {
       "filename": "esquema20260712.html",
-      "title": "Misa del 12/07/26",
+      "title": "Misa del 20260712",
       "description": "",
       "category": "cancioneros/misas-dominicales"
     },
@@ -139,6 +139,24 @@
       "title": "Cancionero Adelita",
       "description": "",
       "category": "cancioneros/generales"
+    },
+    {
+      "filename": "esquema_cantos_misa.html",
+      "title": "Generador de esquema de Cantos",
+      "description": "",
+      "category": "herramientas"
+    },
+    {
+      "filename": "generador-esquema.html",
+      "title": "Generador de cancioneros",
+      "description": "",
+      "category": "cancioneros/misas-dominicales"
+    },
+    {
+      "filename": "Tablero1.html",
+      "title": "Métricas",
+      "description": "",
+      "category": "herramientas"
     }
   ]
 }
