@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
   "site_root": "/tmp/_deZ4",
   "generated_at": "2026-10-28T08:15:42",
+=======
+  "site_root": "/tmp/_deZdeepSeek",
+  "generated_at": "2026-10-27T10:31:07",
+>>>>>>> 94808b6ccfba43ad3c7f47c65e463c8178e44da2
   "files": [
     {
       "filename": "cancionero_lit_rgico_2019.html",
