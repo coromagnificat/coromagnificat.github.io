@@ -1,11 +1,6 @@
 {
-<<<<<<< HEAD
-  "site_root": "/tmp/_deZ4",
-  "generated_at": "2026-10-28T08:15:42",
-=======
-  "site_root": "/tmp/_deZdeepSeek",
-  "generated_at": "2026-10-27T10:31:07",
->>>>>>> 94808b6ccfba43ad3c7f47c65e463c8178e44da2
+  "site_root": "/tmp/_deZ",
+  "generated_at": "2026-11-02T15:37:10",
   "files": [
     {
       "filename": "cancionero_lit_rgico_2019.html",
@@ -168,6 +163,18 @@
       "title": "Quiénes Somos",
       "description": "Coro Magníficat, ministerio de música de la Parroquia Nuestra Señora de Guadalupe, Campo Claro, Arquidiócesis de Mérida.",
       "category": "herramientas"
+    },
+    {
+      "filename": "Cantos_Misa20261101.html",
+      "title": "Domingo 1-11-2026, 9:00 a.m.",
+      "description": "",
+      "category": "cancioneros/misas-dominicales"
+    },
+    {
+      "filename": "Cantos_Misa202611012-difuntos.html",
+      "title": "Fieles Difuntos",
+      "description": "",
+      "category": "cancioneros/celebraciones-especiales"
     }
   ]
 }
