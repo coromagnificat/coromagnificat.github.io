@@ -1,6 +1,6 @@
 {
   "site_root": "/tmp/_deZ",
-  "generated_at": "2026-11-02T15:37:10",
+  "generated_at": "2026-11-02T19:18:36",
   "files": [
     {
       "filename": "cancionero_lit_rgico_2019.html",
@@ -165,16 +165,16 @@
       "category": "herramientas"
     },
     {
+      "filename": "Cantos_Misa20261102-difuntos.html",
+      "title": "Fieles difuntos",
+      "description": "",
+      "category": "cancioneros/celebraciones-especiales"
+    },
+    {
       "filename": "Cantos_Misa20261101.html",
       "title": "Domingo 1-11-2026, 9:00 a.m.",
       "description": "",
       "category": "cancioneros/misas-dominicales"
-    },
-    {
-      "filename": "Cantos_Misa202611012-difuntos.html",
-      "title": "Fieles Difuntos",
-      "description": "",
-      "category": "cancioneros/celebraciones-especiales"
     }
   ]
 }
