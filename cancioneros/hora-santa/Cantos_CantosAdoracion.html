@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Momentos de adoración</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --base-lyrics-size: 15px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #0f172a; font-family: 'Quicksand', sans-serif; min-height: 100vh; min-height: 100dvh; overflow: hidden; color: #1e293b; margin: 0; }
+        .app-container { width: 100vw; height: 100vh; height: 100dvh; position: relative; background-color: #fff; overflow: hidden; transition: all 0.3s ease; }
+        .app-container.windowed { width: min(405px, 100vw); height: min(720px, 100vh); height: min(720px, 100dvh); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 75px 24px 90px 24px; text-align: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1; overflow: hidden; }
+        .slide-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: 0 auto; width: 100%; overflow: hidden; }
+        .slide:not(:first-child) .slide-content { max-width: 80%; }
+        .slide.active { opacity: 1; visibility: visible; z-index: 2; }
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding: 0 4px; display: flex; flex-direction: column; max-height: 100%; }
+        .bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.03; z-index: 0; pointer-events: none; }
+        .bg-watermark i { font-size: 450px; color: #000; }
+        .bg-cream { background-color: #fffaf0; } .bg-mint { background-color: #f4fff8; } .bg-sky { background-color: #f0f7ff; } .bg-rose { background-color: #fff5f7; } .bg-lavender { background-color: #f9f8ff; } .bg-peach { background-color: #fff5ea; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 28px; color: #0f172a; margin-top: 10px; }
+        h2.song-title { font-family: 'Poppins', sans-serif; font-size: 22px; color: #334155; text-transform: uppercase; flex-shrink: 0; margin-top: 10px; }
+        .tone-badge { align-self: center; background-color: rgba(0, 0, 0, 0.06); padding: 4px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; color: #475569; margin: 6px 0 12px 0; flex-shrink: 0; }
+        .moment-label { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 10px; margin-bottom: 2px; flex-shrink: 0; }
+        .lyrics { font-size: var(--base-lyrics-size); line-height: 1.45; font-weight: 700; white-space: pre-line; color: #1e293b; margin: auto 0; transition: font-size 0.15s ease; padding: 0 4px; text-align: left; }
+        .repeat { color: #94a3b8; font-style: italic; font-weight: bold; font-size: 0.9em; display: block; margin-top: 2px; }
+        .footer { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; padding-top: 8px; flex-shrink: 0; text-align: center; }
+        .index-container { width: 100%; padding-right: 5px; margin-bottom: 5px; }
+        .index-list { list-style: none; width: 100%; text-align: left; }
+        .index-list li { padding: 12px 8px; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: calc(var(--base-lyrics-size) * 0.7); font-weight: 700; color: #334155; }
+        .index-list li:hover { background-color: rgba(0,0,0,0.03); }
+        .index-list li span.tone { color: #64748b; font-size: 0.75em; background: rgba(0,0,0,0.04); padding: 2px 8px; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+        .nav-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 24px env(safe-area-inset-bottom, 12px) 24px; background: linear-gradient(to top, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, transparent 100%); pointer-events: none; }
+        .nav-btn { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.08); width: 48px; height: 48px; border-radius: 50px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); cursor: pointer; display: flex; justify-content: center; align-items: center; color: #475569; font-size: 18px; pointer-events: auto; }
+        .top-actions { position: absolute; top: 15px; left: 0; width: 100%; padding: 0 20px; z-index: 101; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .action-group { display: flex; gap: 8px; pointer-events: auto; }
+        .action-btn { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); backdrop-filter: blur(4px); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; color: #475569; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="appFrame">
+    <div class="top-actions">
+        <div class="action-group">
+            <button class="action-btn" onclick="changeFontSize(-1)" title="Reducir Letra"><i class="fa-solid fa-minus"></i></button>
+            <button class="action-btn" onclick="changeFontSize(1)" title="Aumentar Letra"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="action-group">
+            <button class="action-btn" onclick="goToSlide(1)" title="Ir al Índice"><i class="fa-solid fa-list"></i></button>
+            <button class="action-btn" onclick="toggleMaximize()" id="maxBtn" title="Pantalla Completa"><i class="fa-solid fa-expand"></i></button>
+        </div>
+    </div>
+
+    <!-- Portada -->
+    <div class="slide bg-cream active">
+        <div class="bg-watermark"><i class="fa-solid fa-church"></i></div>
+        <div class="slide-content" style="justify-content: center;">
+            <h1>Momentos de adoración</h1>
+            <p style="font-size: 16px; color: #64748b; margin-top: 5px; font-weight: 700;">Parroquia NS de Guadalupe</p>
+            <div class="footer" style="margin-top: 60px;">Usa los botones</div>
+        </div>
+    </div>
+
+    <!-- Índice -->
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-book"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <h2 class="song-title" style="margin-bottom: 10px;">Esquema</h2>
+                <div class="index-container">
+                    <ul class="index-list">
+                        <li onclick="goToSlide(2)">1. Alabanza: A ti Levanto mis Ojos <span class="tone">Re</span></li>
+<li onclick="goToSlide(3)">2. Adoración: Alma de Cristo <span class="tone">La-</span></li>
+<li onclick="goToSlide(4)">3. Adoración: Andando de tu mano <span class="tone">Do / Sol</span></li>
+<li onclick="goToSlide(5)">4. Adoración: Bendito sea Dios <span class="tone">Do</span></li>
+<li onclick="goToSlide(6)">5. Adoración: Canta alma mía <span class="tone">Re</span></li>
+<li onclick="goToSlide(7)">6. Adoración: Cantemos al Amor de los amores <span class="tone">Do</span></li>
+<li onclick="goToSlide(8)">7. Adoración: Conocí una vez a un hombre [Aquí estoy, Señor] <span class="tone">La</span></li>
+<li onclick="goToSlide(9)">8. Adoración: Dame un nuevo corazón <span class="tone">Mi</span></li>
+<li onclick="goToSlide(10)">9. Adoración: Digno de alabar <span class="tone">Si</span></li>
+<li onclick="goToSlide(11)">10. Adoración: Dios esta aquí <span class="tone">Do</span></li>
+<li onclick="goToSlide(12)">11. Adoración: El Espiritu de Dios esta en este lugar <span class="tone">Do</span></li>
+<li onclick="goToSlide(13)">12. Adoración: El Señor es mi pastor <span class="tone">Sol</span></li>
+<li onclick="goToSlide(14)">13. Adoración: El Señor está Presente <span class="tone">La-</span></li>
+<li onclick="goToSlide(15)">14. Entra Jesús: Entra Jesús <span class="tone">Do</span></li>
+<li onclick="goToSlide(16)">15. HASTA LA LOCURA: HASTA LA LOCURA <span class="tone">Mi</span></li>
+<li onclick="goToSlide(17)">16. Incomparable es tu Amor: Incomparable es tu Amor <span class="tone">Re</span></li>
+<li onclick="goToSlide(18)">17. JESÚS AMIGO: JESÚS AMIGO <span class="tone">Do</span></li>
+<li onclick="goToSlide(19)">18. JESÚS ESTÁ VIVO: JESÚS ESTÁ VIVO <span class="tone">Tanto amó Dios al mundo</span></li>
+<li onclick="goToSlide(20)">19. Jesús hijo del padre: Jesús hijo del padre <span class="tone">Re</span></li>
+<li onclick="goToSlide(21)">20. Mi alma tiene sed de ti: Mi alma tiene sed de ti <span class="tone">Espíritu de Dios, Espíritu Santo</span></li>
+<li onclick="goToSlide(22)">21. Oh Jesús divino tesoro: Oh Jesús divino tesoro <span class="tone">La</span></li>
+<li onclick="goToSlide(23)">22. Que bien se está aquí: Que bien se está aquí <span class="tone">Qué bien se está aquí</span></li>
+<li onclick="goToSlide(24)">23. Tantum ergo: Tantum ergo <span class="tone">Tantum ergo sacramentum</span></li>
+<li onclick="goToSlide(25)">24. Quiero alabarte: Quiero alabarte <span class="tone">Sol</span></li>
+<li onclick="goToSlide(26)">25. Renuévame: Renuévame <span class="tone">Do</span></li>
+<li onclick="goToSlide(27)">26. TE NECESITO: TE NECESITO <span class="tone">DO</span></li>
+<li onclick="goToSlide(28)">27. Tú el único rey: Tú el único rey <span class="tone">Do</span></li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="footer">Presiona para ir directo al canto</div>
+        </div>
+    </div>
+
+    <!-- Bloques de Diapositivas -->
+    
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">A ti Levanto mis Ojos</div>
+                <h2 class="song-title">Alabanza</h2>
+                <div class="tone-badge">Re</div>
+                <div class="lyrics">A ti levanto mis ojos,
+Tú que habitas en los cielos.
+Míralos, son los ojos de tu siervo.
+
+Alzo mis ojos a los montes,
+mi mirada a la inmensidad
+de los cielos que anuncian tu grandeza.
+
+Y mis manos te alaban,
+y mi corazón te canta,
+y siento tu presencia.
+Gracias, Señor</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Alma de Cristo</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">La-</div>
+                <div class="lyrics">Alma de Cristo, santificame.
+Cuerpo de Cristo, sálvame.
+Sangre de Cristo, embriágame.
+Agua del costado de Cristo, lávame.
+Pasion de Cristo, confórtame
+
+Oh buen Jesus ¡Óyeme!
+y dentro de tus llagas, escóndeme.
+No permitas que me aparte de ti;
+
+Del enemigo, defiéndeme.
+En la horade mi muerte, llámame
+y mandame ir a Ti
+para con tus santos te alabe
+por los siglos de los siglos
+Amen.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Andando de tu mano</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Do / Sol</div>
+                <div class="lyrics">Desde que voy junto a ti
+La tierra que yo piso es como espuma
+Desde que voy junto a ti
+La noche mas obscura tiene luz
+Yo pienso que la vida no es tan dura
+Si todo en realidad me lo das tu
+
+Andando de tu mano que fácil es la vida
+Andando de tu mano el mundo es ideal Señor
+
+Desde que voy junto a ti
+Mis ojos se iluminan por completo
+Desde que voy junto a ti
+No se porque la gente llorara
+Yo solo en este mundo tengo miedo
+Del día en que Tu no regreses mas.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Bendito sea Dios</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Bendito sea Dios.
+Bendito sea su Santo Nombre.
+Bendito sea Jesucristo, Dios y Hombre verdadero.
+Bendito sea el Nombre de Jesús.
+
+Bendito sea su Sacratísimo Corazón.
+Bendita sea su Preciosísima Sangre.
+Bendito sea Jesús
+en el Santísimo Sacramento del Altar.
+Bendito sea el Espíritu Santo Paráclito.
+
+Bendita sea la excelsa Madre de Dios, María Santísima.
+Bendita sea su Santa e Inmaculada Concepción.
+Bendita sea su Gloriosa Asunción.
+Bendito sea el nombre de María, Virgen y Madre.
+Bendito sea San José, su castísimo Esposo.
+Bendito sea Dios en sus Ángeles y en sus Santos.
+
+¡Bendito sea Dios! ¡Bendito sea Dios!
+¡Bendito sea Dios! ¡Bendito sea Dios!
+
+https://www.luispomusica.es/wp-content/uploads/2025/12/Bendito-sea-Dios.pdf</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Canta alma mía</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Re</div>
+                <div class="lyrics">Canta alma mía
+elogios al Señor.
+su amor eterno en la cruz derramó.
+
+El te libró de la muerte,
+vida nueva te dió.
+
+Canta alma  (2v)
+canta elogios al Señor.
+
+https://comunidadreydavid.blogspot.com/2014/08/canto-misa-domingo-100814.html</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Cantemos al Amor de los amores</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">1. Cantemos al Amor de los amores,
+cantemos al Señor.
+Dios está aquí; venid adoradores,
+adoremos a Cristo Redentor.
+
+GLORIA A CRISTO JESÚS;
+CIELOS Y TIERRA, BENDECID AL SEÑOR;
+HONOR Y GLORIA A TI, REY DE LA GLORIA,
+AMOR POR SIEMPRE A TI, DIOS DEL AMOR. [BIS]
+
+2. Unamos nuestra voz a los cantares
+del Coro Celestial,
+Dios está aquí, al Dios de los Altares
+alabemos con gozo angelical.
+
+3. Por nuestro amor oculta en el sagrario
+su gloria y esplendor;
+para nuestro bien se queda en el santuario
+esperando al justo y pecador.
+
+4. Oh gran prodigio del amor divino,
+milagro sin igual;
+prenda de amistad, banquete al peregrino,
+do se come el Cordero celestial.
+
+5. ¡Jesús potente, Rey de las victorias!
+¡A ti loor sin fin!
+¡Canten tu poder, autor de nuestras glorias,
+cielo y tierra hasta el último confín!
+
+6. Tu nombre ensalzamos y alabamos
+con toda nuestra voz.
+¡Rey de majestad, por siempre te aclamamos,
+y Señor de las almas, Cristo Dios!
+
+7. Oh, sí cristianos fervorosos vamos
+a Cristo en el altar,
+y con fe viva su Cuerpo recibamos cada día
+y siempre hasta expirar.
+
+8. Al pie de tu sagrario nos convidas
+a recibir tu amor;
+porque Tú, Jesús, al alma das la vida y la llenas
+de fuerza y de valor.
+
+https://www.coroesteiro.es/repertorio/letra.php?numero=313</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Conocí una vez a un hombre [Aquí estoy, Señor]</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">La</div>
+                <div class="lyrics">Conocí una vez a un hombre
+Su rostro estaba lleno de luz
+Su cuerpo maltratado
+Cargaba con una cruz
+Me dijo que él quería
+Que le ayudara a caminar
+Que le ayudara en mis hermanos, qué le ayudara a levantar
+
+
+¡Aquí estoy, Señor!
+¿Qué quieres de mí?
+No soy nada, no tengo nada
+Pero con tu amor, con tu ardor
+Te puedo ayudar (bis)
+
+
+Él me dijo que en el mundo
+Mucha gente no conocía su amor
+Que Había sed de su palabra
+Y hambre de perdón
+
+Qué quería que le ayudara
+A construir un mundo mejor
+A construirlos sobre la roca
+La Roca de su amor
+
+https://www.bananacifras.com/es/cifra/h/hno-leonardo-rincon/aqui-estoy-senor-conoci-una-vez-a-un-hombre-part-picma</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Dame un nuevo corazón</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Mi</div>
+                <div class="lyrics">Dame un nuevo corazón, Señor
+Un corazón para adorarte
+Un corazón para servirte
+yo quiero un nuevo corazón Señor (2)
+
+Limpio como el cristal, Dulce como la miel,
+Un Corazón Que sea, Como el tuyo Señor
+Limpio como el cristal, Dulce como la miel,
+Un Corazón Q sea, Como el tuyo Señor
+
+Dame un nuevo corazón, Señor
+Un corazón para adorarte
+Un corazón para servirte
+yo quiero un nuevo corazón Señor
+
+[Cancnionero Adelita]</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Digno de alabar</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Si</div>
+                <div class="lyrics">Levanto mis manos
+Cierro mis ojos
+Para proclamar tu nombre
+Dios de poder.
+
+Levanto mis manos
+Cierro mis ojos
+Para proclamar tu nombre
+Dios de poder.
+
+Digno de alabar, Señor
+
+Gloria y majestad, sean a ti
+Rey de la creación
+Por siempre
+Amén.
+
+Digno de alabar, Señor
+Gloria y majestad, sean a ti
+Rey de la creación
+Por siempre
+
+Amén.
+
+https://chords.lacuerda.net/athenas/digno_de_alabar.shtml</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Dios esta aquí</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Dios esta aquí.
+Tan cierto como el aire que respiro.
+Tan cierto como en la mañana se levantan.
+Tan cierto como que te hablo y me puedes oír. (Bis)
+
+Le puedes sentir a tu lado en este mismo instante.
+Le puedes sentir dentro de tu corazón.
+Le puedes contar ese problema que tienes.
+Jesús está aquí y si quieres le puedes seguir.
+
+https://acordes.lacuerda.net/musica_religiosa/Dios_esta_aqui-4.shtml</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">El Espiritu de Dios esta en este lugar</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">El Espiritu de Dios esta en este lugar
+el Espiritu de Dios se mueve en este lugar
+
+esta aqui para consolar
+esta aqui para liberar
+esta aqui para guiar
+El Espiritu de Dios esta aqui
+
+//Muévete en mi... muévete en mi.
+Toca mi mente y mi corazon,
+llena mi vida de tu amor.
+Muévete en mi Dios Espiritu muévete en mi//
+
+Muévete en mi Dios Espiritu muévete en mi
+
+https://acordes.lacuerda.net/inspiracion/el_espiritu_de_Dios_esta_en_este_lugar</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">El Señor es mi pastor</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">Sol</div>
+                <div class="lyrics">El Señor es mi pastor nada me falta
+El Señor es mi pastor (2v)
+
+En praderas reposa mi alma,
+en Su agua descansa mi sed,
+El me guía por senderos justos
+por amor, por amor de Su nombre.
+Aunque pase por valles oscuros
+ningún mal, ningún mal temeré.
+Porque sé que el Señor va conmigo
+su cayado sostiene mi fe
+
+El Señor es mi pastor nada me falta
+El Señor es mi pastor (2v)
+
+Tú preparas por mi una mesa
+frente a aquellos que buscan mi mal,
+con aceite me ungiste Señor
+y mi copa rebosa por Ti.
+Gloria a Dios padre omnipotente
+y a Su hijo Jesús el Señor,
+y al espíritu que habita en el mundo.
+Por los siglos eternos, amén
+
+El Señor es mi pastor nada me falta
+El Señor es mi pastor (2v)</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">El Señor está Presente</div>
+                <h2 class="song-title">Adoración</h2>
+                <div class="tone-badge">La-</div>
+                <div class="lyrics">El Señor está presente en su santuario:
+vamos a alabarle.        (bis)
+Alábenle, alábenle, alaben a su Señor,
+alábenle, alábenle, alaben a Jesús.
+
+El Señor está presente en su santuario:
+vamos a cantarle.        (bis)
+Cántenle, cántenle, canten a su Señor,
+cántenle, cántenle, canten a Jesús.
+
+El Señor está presente en su santuario:
+vamos a amarle.           (bis)
+Ámenle, ámenle, amen a su Señor,
+ámenle, ámenle, amen a Jesús.
+
+El Señor está presente en su santuario:
+vamos a servirle.          (bis)
+Sírvanle, sírvanle, sirvan a su Señor,
+sírvanle, sírvanle, sirvan a Jesús.
+
+El Señor está presente en su santuario:
+vamos a adorarle.        (bis)
+Adórenle, adórenle, adoren a su Señor,
+adórenle, adórenle, adoren a Jesús.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Entra Jesús</div>
+                <h2 class="song-title">Entra Jesús</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Cuando escuches la voz del Señor,
+el está hablando a tu corazón,
+no te resistas y quieras seguir
+como un rebelde.
+Porque Él está a la puerta esperando
+que le abras tu corazón,
+para entrar y orar junto a ti
+toda la vida.
+
+Entra Jesús, toma mi vida
+y toma mi ser, es para ti
+y entre tus brazos, quiero sentir
+cuanto me amas. ( Bis )
+
+Porque Él está a la puerta esperando
+que le abras tu corazón,
+para entrar y orar junto a ti
+toda la vida.
+
+Entra Jesús . . .
+
+https://acordes.lacuerda.net/arcoiris/entra_Jesús</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">HASTA LA LOCURA</div>
+                <h2 class="song-title">HASTA LA LOCURA</h2>
+                <div class="tone-badge">Mi</div>
+                <div class="lyrics">Me puede faltar todo en la vida
+Me pude faltar hasta la vida
+Pero nunca quiero que me falte
+El deseo de amarte hasta el final
+
+Hasta la locura te amo, Señor
+Ya no quedan dudas en mi corazón
+De que te amo (De que te amo)
+De que te amo, Señor
+Hasta la locura te amo, Señor
+Ya no quedan dudas en mi corazón
+De que te amo (De que te amo)
+De que te amo, Señor
+
+Quiero amarte hasta el extremo
+Sin reservas darme por entero
+Como los que se han enamorado
+Yo te canto, mi amado, hasta el final
+
+Hasta la locura te amo, Señor…
+
+Tú eres todo lo que tengo
+Todo lo que sueño y cuanto pienso
+Y mi corazón te lo he entregado
+Desde siempre, mi amado, hasta el final
+
+Hasta la locura te amo, Señor…</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Incomparable es tu Amor</div>
+                <h2 class="song-title">Incomparable es tu Amor</h2>
+                <div class="tone-badge">Re</div>
+                <div class="lyrics">Es un deleite para mí
+Al recibirte en comunión
+Y saborear tu corazón,
+Tu cuerpo y sangre mi Jesús.
+
+Es un deleite para mí
+Al recibirte en comunión
+Y saborear tu corazón,
+Tu cuerpo y sangre mi Jesús.
+Incomparable es tu amor por mí, Jesús,
+
+Incomparable es tu gran amor, Señor,
+Que no puedo comprender
+Que siendo tú el Rey
+Te hayas quedado en este humilde pan.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">JESÚS AMIGO</div>
+                <h2 class="song-title">JESÚS AMIGO</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Hoy te quiero contar Jesús Amigo,
+que contigo estoy feliz,
+Si tengo tu amistad lo tengo todo,
+pues estás dentro de mí,
+Después de comulgar
+me haces como Tú,
+me llenas con tu paz,
+En cada pedacito de este Pan,
+completo estás y así te das.
+
+Estás ahí por mí, porque conoces
+que sin ti pequeño soy,
+De ahora en adelante,
+nada nos separará ya lo verás.
+
+Te escondes en el Pan
+y aunque no te pueda ver,
+te puedo acompañar,
+es mi lugar preferido.
+
+Hoy quiero comulgar
+abrirte mi corazón,
+y así de par en par
+eres mi mejor amigo.
+
+Dos mil años atrás a tus amigos,
+invitaste a cenar,
+ahí les prometiste que con ellos,
+por siempre ibas a estar.
+Y ahora cada vez que el sacerdote
+eleva el Pan en el altar,
+me pongo de rodillas porque sé
+que en esa Hostia Tú estás.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">JESÚS ESTÁ VIVO</div>
+                <h2 class="song-title">JESÚS ESTÁ VIVO</h2>
+                <div class="tone-badge">Tanto amó Dios al mundo</div>
+                <div class="lyrics">Que a su único Hijo, Él entregó
+Para que todo aquel que crea en Él
+No muera mas tenga vida eterna
+¡Jesús está vivo!, ¡Jesús está vivo!
+Es el pan de vida, bajado del cielo
+¡Jesús está vivo!, ¡Jesús está vivo!
+Su sangre me sana y sacia mi alma
+Está vivo
+Está presente
+Mi Dios es real
+Y yo le adoro reverente
+Tanto amó Dios al mundo
+Que a su único Hijo, Él entregó
+Para que todo aquel que crea en Él
+No muera mas tenga vida eterna
+¡Jesús está vivo!, ¡Jesús está vivo!
+Es el pan de vida, bajado del cielo
+¡Jesús está vivo!, ¡Jesús está vivo!
+Su sangre me sana y sacia mi alma
+Está vivo
+Está presente
+Mi Dios es real
+Y yo le adoro reverente
+Uh, uh, uh, uh, uh, uh
+¡Vivo!, ¡vivo!
+Oh, ¡Jesús está vivo! ¡Jesús está vivo!...</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Jesús hijo del padre</div>
+                <h2 class="song-title">Jesús hijo del padre</h2>
+                <div class="tone-badge">Re</div>
+                <div class="lyrics">Jesus hijo del padre
+hombre de carne y hueso como yo
+muestranos el camino a seguir
+para llegar a Dios.
+
+Te pedimos Señor por este mundo.
+Te pedimos Señor por el amor
+que perdones y cambies, la ambicion de los hombres
+te pedimos por nuestra salvacion.
+
+Te pedimos Señor por nuestro pueblo.
+Por la gente que quiere trabajar.
+Que perdones aquellos que no tienen respeto
+del derecho a vivir con dignidad.
+
+Te pedimos Señor por la injusticia.
+Te pedimos Señor por la oprecion.
+Que perdones al hombre que somete a los hombres
+con poder egercido sin razon.
+
+Te pedimos por los que tienen hambre.
+Por aquellos que ya no tienen fe.
+Por los niños y ancianos por los negros y blancos,
+por la paz, la esperanza y por el bien.
+
+Jesús hijo del padre ... (2v)</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Mi alma tiene sed de ti</div>
+                <h2 class="song-title">Mi alma tiene sed de ti</h2>
+                <div class="tone-badge">Espíritu de Dios, Espíritu Santo</div>
+                <div class="lyrics">Espíritu de Dios, Espíritu Santo
+
+Mi alma tiene sed de ti,
+mi alma tiene sed
+
+Espíritu de Dios, Espíritu Santo oh el
+Espíritu de Dios, Espíritu Santo
+
+Mi alma tiene sed de ti,
+mi alma tiene sed
+
+Espíritu de Dios, Espíritu Santo
+
+Espíritu Santo ven a ver
+Derrama tu fuego y tu poder
+
+Actúa en mí
+Actúa en mí
+Actúa en mí
+
+Espíritu de Dios, Espíritu Santo
+Espíritu de Dios, Espíritu Santo
+
+Mi alma tiene sed de ti,
+mi alma tiene sed de ti
+
+Espíritu Santo ven a arder
+Derrama tu fuego y tu poder
+
+Actúa en mí
+Actúa en mí
+Actúa en mí
+
+Estas derramando la unción aquí
+Estas derramando la unción aquí
+Estas derramando la unción aquí
+Estas derramando la unción aquí
+
+Espíritu Santo ven a arder
+Derrama tu fuego y tu poder
+
+Actúa en mí
+Actúa en mí
+Actúa en mí
+
+Espíritu de Dios
+Espíritu Santo
+Espíritu Santo</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Oh Jesús divino tesoro</div>
+                <h2 class="song-title">Oh Jesús divino tesoro</h2>
+                <div class="tone-badge">La</div>
+                <div class="lyrics">Has pensado alguna vez
+lo grande y hermoso que es
+recibir a Jesucristo
+en un pedazo de Pan. (Bis)
+
+¡Oh Jesus! Divino Tesoro
+hay estas hay estas
+esperando por nosotros
+hay estas hay estas
+vivo sobre el altar
+
+Quizas nunca imaginaste
+que en este pedazo de pan
+estaba el cuerpo de Cristo
+queriendote salvar (Bis)</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-peach">
+        <div class="bg-watermark"><i class="fa-solid fa-dove"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Que bien se está aquí</div>
+                <h2 class="song-title">Que bien se está aquí</h2>
+                <div class="tone-badge">Qué bien se está aquí</div>
+                <div class="lyrics">En tu presencia
+Glorioso por siempre Señor
+Qué bien se está aquí
+A tu lado
+Sintiendo tu paz y tu amor
+
+Cuán hermoso eres, Señor
+Tu no tienes comparación
+Quiero permanecer
+Por siempre en tu amor
+
+Qué bien se está aquí
+En tu presencia
+Glorioso por siempre Señor
+Qué bien se está aquí
+Sintiendo tu paz y tu amor
+
+Cuán hermoso eres, Señor
+Tu no tienes comparación
+Quiero permanecer</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-lavender">
+        <div class="bg-watermark"><i class="fa-solid fa-heart"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Tantum ergo</div>
+                <h2 class="song-title">Tantum ergo</h2>
+                <div class="tone-badge">Tantum ergo sacramentum</div>
+                <div class="lyrics">Veneremur cernui,
+et antiquum documentum
+novo cedat ritui.
+Præstet fides supplementum
+sensuum defectui.
+
+Genitori genitoque
+laus et jubilatio,
+Salus, honor, virtus quoque
+sit et benedictio!
+Procedenti ab utroque
+compar sit laudatio!
+Amen.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-cream">
+        <div class="bg-watermark"><i class="fa-solid fa-sun"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Quiero alabarte</div>
+                <h2 class="song-title">Quiero alabarte</h2>
+                <div class="tone-badge">Sol</div>
+                <div class="lyrics">Quiero alabarte más y más aún,
+quiero alabarte.
+Más y más aún,
+
+Buscar tu voluntad,
+tu gracia conocer:
+quiero alabarte.
+
+Las aves del cielo
+cantan para tí,
+las bestias del campo
+reflejan tu poder.
+Quiero cantar,
+quiero levantar
+mis manos a tí.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-sky">
+        <div class="bg-watermark"><i class="fa-solid fa-music"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Renuévame</div>
+                <h2 class="song-title">Renuévame</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">Renuévame Señor Jesús
+ya no quiero ser igual
+
+Renuévame Señor Jesús
+pon en mí tu corazón
+
+//Porque todo lo que hay
+dentro de mi
+necesita ser cambiado Señor
+Porque todo lo que hay
+dentro de mi corazón
+necesita mas de ti.//
+
+FINAL
+Necesita más de ti.</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-rose">
+        <div class="bg-watermark"><i class="fa-solid fa-guitar"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">TE NECESITO</div>
+                <h2 class="song-title">TE NECESITO</h2>
+                <div class="tone-badge">DO</div>
+                <div class="lyrics">//Te necesito
+dentro de mi corazón,
+siento en tus brazos,
+rebozar mi alma de amor//
+
+//Como el ave
+necesita del viento
+y las flores
+necesitan del sol,
+así mi alma
+Necesita de ti;
+de sentir tú presencia divina
+cuando llenas mi vida vacía
+del amor, de tú espíritu en mí//</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide bg-mint">
+        <div class="bg-watermark"><i class="fa-solid fa-hands-praying"></i></div>
+        <div class="slide-content">
+            <div class="scroll-area">
+                <div class="moment-label">Tú el único rey</div>
+                <h2 class="song-title">Tú el único rey</h2>
+                <div class="tone-badge">Do</div>
+                <div class="lyrics">TÚ ÉL ÚNICO REY,QUE TIENE QUE REINAR
+EL ÚNICO SEÑOR AL QUE VOY A ALABAR.
+HOY LEVANTO EL CORAZÓN AL QUE LO CONQUISTÓ
+SIMPLEMENTE PORQUE TÚ ERES DIOS.
+
+Quiero ponerte por encima de todo
+En casa momento sentarte en el trono
+Que tú alabanza esté siempre en mi boca
+Y reconocer que Tú eres Dios.
+
+Que alabarte a tí Señor,
+sea siempre lo primero
+Fijo mi mirada en el cielo.
+
+TÚ EL ÚNICO REY...
+
+Y a ti toda alabanza Todo el poder
+y el honor Toda la gloria al Señor.(x4)
+
+TÚ EL ÚNICO REY...(x2)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-overlay">
+        <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+        <div id="pageIndicator" style="font-size: 14px; font-weight: 700; color: #64748b;">1 / 29</div>
+        <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+</div>
+
+<script>
+            let currentSlide = 0;
+            let currentFontSize = 15;
+            const slides = document.querySelectorAll('.slide');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const appFrame = document.getElementById('appFrame');
+            const maxBtn = document.getElementById('maxBtn');
+
+            function updateSlideVisibility() {
+                slides.forEach((slide, index) => {
+                    if(index === currentSlide) {
+                        slide.classList.add('active');
+                        slide.scrollTop = 0;
+                        const sa = slide.querySelector('.scroll-area'); if(sa) sa.scrollTop = 0;
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+                pageIndicator.innerText = (currentSlide + 1) + ' / ' + slides.length;
+            }
+
+            function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlideVisibility(); } }
+            function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlideVisibility(); } }
+            function goToSlide(idx) { if (idx >= 0 && idx < slides.length) { currentSlide = idx; updateSlideVisibility(); } }
+
+            function changeFontSize(amount) {
+                let n = currentFontSize + amount;
+                if (n >= 10 && n <= 25) { currentFontSize = n; document.documentElement.style.setProperty('--base-lyrics-size', n + 'px'); }
+            }
+
+            function toggleMaximize() {
+                if (document.fullscreenElement) {
+                    // Estaba maximizado -> salir de pantalla completa
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                } else {
+                    // No estaba maximizado -> entrar en pantalla completa
+                    const el = document.documentElement;
+                    const reqFS = el.requestFullscreen
+                        || el.webkitRequestFullscreen
+                        || el.msRequestFullscreen;
+                    if (reqFS) {
+                        reqFS.call(el).catch(() => {});
+                    }
+                }
+            }
+
+            // Único listener que sincroniza el icono con el estado REAL de FS.
+            // Así nunca aparece un tercer estado desincronizado.
+            function syncMaxBtn() {
+                const isFS = document.fullscreenElement
+                    || document.webkitFullscreenElement
+                    || document.msFullscreenElement;
+                if (isFS) {
+                    appFrame.classList.remove('windowed');
+                    maxBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                    maxBtn.title = "Salir de Pantalla Completa";
+                } else {
+                    maxBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                    maxBtn.title = "Pantalla Completa";
+                }
+            }
+            document.addEventListener('fullscreenchange', syncMaxBtn);
+            document.addEventListener('webkitfullscreenchange', syncMaxBtn);
+            document.addEventListener('MSFullscreenChange', syncMaxBtn);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') nextSlide(); if (e.key === 'ArrowLeft') prevSlide();
+            });
+
+        </script>
+</body>
+</html>
